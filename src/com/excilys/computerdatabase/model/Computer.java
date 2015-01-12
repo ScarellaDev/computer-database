@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.bean;
+package com.excilys.computerdatabase.model;
 
 import java.time.LocalDateTime;
 
@@ -76,7 +76,8 @@ public class Computer {
   }
 
   public void setId(Long id) {
-    this.id = id;
+    if(id != null)
+        this.id = id;
   }
 
   public String getName() {

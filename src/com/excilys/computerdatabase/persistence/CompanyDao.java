@@ -1,11 +1,11 @@
-package com.excilys.computerdatabase.dao;
+package com.excilys.computerdatabase.persistence;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.excilys.computerdatabase.bean.Company;
+import com.excilys.computerdatabase.model.Company;
 
 public class CompanyDao {
   private MySQLConnector mySQLConnector;
@@ -22,13 +22,15 @@ public class CompanyDao {
   public Company getCompany(Long id) {
     if(id == null) {
       return null;
+    } else if (id < 1 || id > 43) {
+      return null;
     }
     
     Company company = new Company();
 
     if (connect()) {
-      String SQLRequest = "SELECT * FROM `computer-database-db`.company WHERE id=" + id + ";";
-      ResultSet rs1 = mySQLConnector.selectRequest(SQLRequest);
+      String sqlRequest = "SELECT * FROM `computer-database-db`.company WHERE id=" + id + ";";
+      ResultSet rs1 = mySQLConnector.selectRequest(sqlRequest);
 
       try {
         while (rs1.next()) {
@@ -52,8 +54,8 @@ public class CompanyDao {
     List<Company> companies = new ArrayList<Company>();
 
     if (connect()) {
-      String SQLRequest = "SELECT * FROM `computer-database-db`.company;";
-      ResultSet rs1 = mySQLConnector.selectRequest(SQLRequest);
+      String sqlRequest = "SELECT * FROM `computer-database-db`.company;";
+      ResultSet rs1 = mySQLConnector.selectRequest(sqlRequest);
 
       try {
         while (rs1.next()) {

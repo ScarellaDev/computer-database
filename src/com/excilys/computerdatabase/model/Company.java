@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.bean;
+package com.excilys.computerdatabase.model;
 
 public final class Company {
   private Long   id;

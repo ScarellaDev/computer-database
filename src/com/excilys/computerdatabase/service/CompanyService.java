@@ -3,8 +3,8 @@ package com.excilys.computerdatabase.service;
 import java.io.Serializable;
 import java.util.List;
 
-import com.excilys.computerdatabase.bean.Company;
-import com.excilys.computerdatabase.dao.CompanyDao;
+import com.excilys.computerdatabase.model.Company;
+import com.excilys.computerdatabase.persistence.CompanyDao;
 
 public class CompanyService implements Serializable {
   /**
