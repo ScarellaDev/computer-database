@@ -1,23 +1,28 @@
 package com.excilys.computerdatabase.service;
 
-import java.io.Serializable;
 import java.util.List;
 
-import com.excilys.computerdatabase.model.Company;
-import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.domain.Company;
 
-public class CompanyService implements Serializable {
+/**
+* Interface implemented by services to manage companies.
+*
+* @author Jeremy SCARELLA
+*/
+public interface CompanyService {
   /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  private CompanyDao        companyDao       = new CompanyDao();
+  * Retrieve a company from the database thanks to the given id.
+  *
+  * @param id
+  * The id of the company to retrieve.
+  * @return The {@link Company}, or null if no matching company was found.
+  */
+  Company getById(Long id);
 
-  public Company getCompany(Long id) {
-    return companyDao.getCompany(id);
-  }
-
-  public List<Company> getAllCompanies() {
-    return companyDao.getAllCompanies();
-  }
+  /**
+  * Retrieve all the companies from the database.
+  *
+  * @return A list containing all the companies.
+  */
+  List<Company> getAll();
 }

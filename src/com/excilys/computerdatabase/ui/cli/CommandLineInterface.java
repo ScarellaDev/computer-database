@@ -1,20 +1,48 @@
 package com.excilys.computerdatabase.ui.cli;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.excilys.computerdatabase.exception.InvalidArgsNumberException;
-import com.excilys.computerdatabase.exception.InvalidCompanyIdException;
-import com.excilys.computerdatabase.model.Company;
-import com.excilys.computerdatabase.model.Computer;
+import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.service.ManagerService;
 
 public class CommandLineInterface {
   private static String          userInput;
-  private static ComputerService computerService = new ComputerService();
-  private static CompanyService  companyService  = new CompanyService();
+  private static ComputerService computerService = ManagerService.getInstance()
+                                                     .getComputerService();
+  private static CompanyService  companyService  = ManagerService.getInstance().getCompanyService();
+  private static Scanner         sc;
+  
+    //  REGEX_DATE_EN : yyyy-MM-dd (separator = . || - || /)
+    //  REGEX_DATE_FR : dd-MM-yyyy (separator = . || - || /)
+    private static final String REGEX_DELIMITER = "(\\.|-|\\/)";
+    private static final String REGEX_DATE_EN = "("
+        + "((\\d{4})" + REGEX_DELIMITER + "(0[13578]|10|12)" + REGEX_DELIMITER + "(0[1-9]|[12][0-9]|3[01]))"
+        + "|((\\d{4})" + REGEX_DELIMITER + "(0[469]|11)" + REGEX_DELIMITER + "([0][1-9]|[12][0-9]|30))"
+        + "|((\\d{4})" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER  + "(0[1-9]|1[0-9]|2[0-8]))"
+        + "|(([02468][048]00)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
+        + "|(([13579][26]00)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
+        + "|(([0-9][0-9][0][48])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
+        + "|(([0-9][0-9][2468][048])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
+        + "|(([0-9][0-9][13579][26])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
+        + ")";
+    private static final String REGEX_DATE_FR = "("
+        + "((0[1-9]|[12][0-9]|3[01])" + REGEX_DELIMITER + "(0[13578]|10|12)" + REGEX_DELIMITER + "(\\d{4}))"
+        + "|(([0][1-9]|[12][0-9]|30)" + REGEX_DELIMITER + "(0[469]|11)" + REGEX_DELIMITER + "(\\d{4}))"
+        + "|((0[1-9]|1[0-9]|2[0-8])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(\\d{4}))"
+        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([02468][048]00))"
+        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([13579][26]00))"
+        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][0][48]))"
+        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][2468][048]))"
+        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][13579][26]))"
+        + ")";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   public void displayMenu() {
     StringBuffer menu = new StringBuffer("* * * * * MENU * * * * *\r\n");
@@ -30,15 +58,15 @@ public class CommandLineInterface {
     System.out.println(menu);
   }
 
-  public void newCommand() {
+  public void start() {
     while (true) {
       userInput = null;
-      Scanner in = new Scanner(System.in);
-      userInput = in.nextLine().trim();
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
 
       if (userInput.toLowerCase().startsWith("ls ")) {
         userInput = userInput.substring(3);
-        if(userInput.equals("computers")) {
+        if (userInput.equals("computers")) {
           showComputerList();
         } else if (userInput.equals("companies")) {
           showCompanyList();
@@ -77,55 +105,97 @@ public class CommandLineInterface {
         }
         switch (userInput) {
           case "0":
-            if(help) {
+            if (help) {
               showHelp(0);
             } else {
               displayMenu();
             }
             break;
           case "1":
-            if(help) {
+            if (help) {
               showHelp(1);
             } else {
               showComputerList();
             }
             break;
           case "2":
-            if(help) {
+            if (help) {
               showHelp(2);
             } else {
               showCompanyList();
             }
             break;
           case "3":
-            showHelp(3);
+            if (help) {
+              showHelp(3);
+            } else {
+              askParamsShow();
+            }
             break;
           case "4":
-            showHelp(4);
+            if (help) {
+              showHelp(4);
+            } else {
+              askParamsAdd();
+            }
             break;
           case "5":
-            showHelp(5);
+            if (help) {
+              showHelp(5);
+            } else {
+              askParamsUpdate();
+            }
             break;
           case "6":
-            showHelp(6);
+            if (help) {
+              showHelp(6);
+            } else {
+              askParamsRemove();
+            }
             break;
           case "menu":
             showHelp(7);
             break;
           case "ls":
-            showHelp(8);
+            if (help) {
+              showHelp(8);
+            } else {
+              askParamsLs();
+            }
+            break;
+          case "computers":
+            System.out.println("Did you mean 'ls computers'? See 'help ls' for more info.");
+            break;
+          case "companies":
+            System.out.println("Did you mean 'ls companies'? See 'help ls' for more info.");
             break;
           case "show":
-            showHelp(9);
+            if (help) {
+              showHelp(9);
+            } else {
+              askParamsShow();
+            }
             break;
           case "add":
-            showHelp(10);
+            if (help) {
+              showHelp(10);
+            } else {
+              askParamsAdd();
+            }
             break;
           case "update":
-            showHelp(11);
+            if (help) {
+              showHelp(11);
+            } else {
+              askParamsUpdate();
+            }
             break;
           case "remove":
-            showHelp(12);
+            if (help) {
+              showHelp(12);
+            } else {
+              askParamsRemove();
+            }
             break;
           case "q":
             System.out.println("Thank you for using our CLI. Goodbye!");
@@ -144,10 +214,314 @@ public class CommandLineInterface {
     }
   }
 
+  public Boolean isComputerId(String idS) {
+    Long id;
+    Long max = computerService.getLastId();
+    if (idS.matches("[0-9]+")) {
+      id = new Long(idS);
+      if (id < 1 || id > max) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+  
+  public Boolean isCompanyId(String idS) {
+    Long id;
+    if (idS.matches("[0-9]+")) {
+      id = new Long(idS);
+      if (id < 1 || id > 43) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+  
+  public Boolean isDate(String dateS) {
+    if (dateS.matches(REGEX_DATE_EN)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void askParamsLs() {
+    userInput = null;
+    System.out
+        .println("-> You entered the ls command, please enter the option you want to display:\r\n- 'computers'\r\n- 'companies'");
+    sc = new Scanner(System.in);
+    userInput = sc.nextLine().trim().toLowerCase();
+    switch (userInput) {
+      case "computers":
+        showComputerList();
+        break;
+      case "ls computers":
+        showComputerList();
+        break;
+      case "1":
+        showComputerList();
+        break;
+      case "companies":
+        showCompanyList();
+        break;
+      case "ls companies":
+        showCompanyList();
+        break;
+      case "2":
+        showCompanyList();
+        break;
+      default:
+        System.out.println("Non valid command.\r\n-> ls command aborted");
+        break;
+    }
+  }
+
+  public void askParamsShow() {
+    System.out
+        .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");
+    ;
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+        System.out.println("-> show command aborted");
+        return;
+      } else {
+        if (isComputerId(userInput)) {
+          showComputer(userInput);
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id:");
+          continue;
+        }
+      }
+    }
+  }
+
+  public void askParamsAdd() {
+    Computer.Builder builder = Computer.builder();
+    
+  //Get name
+    System.out
+    .println("-> You entered the add command:\r\n- please enter the name of the computer you want to add (or press enter to quit command):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        System.out.println("-> add command aborted");
+        return;
+      } else {
+        builder.name(userInput);
+        break;
+      }
+    }
+    
+  //Get introduced date
+    System.out
+    .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isDate(userInput)) {
+          StringBuffer introducedS = new StringBuffer(userInput);
+          introducedS.append(" 00:00:00");
+          builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
+          continue;
+        }
+      }
+    }
+    
+  //Get discontinued date
+    System.out
+    .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isDate(userInput)) {
+          StringBuffer discontinuedS = new StringBuffer(userInput);
+          discontinuedS.append(" 00:00:00");
+          builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
+          continue;
+        }
+      }
+    }
+    
+  //Get company_id
+    System.out
+    .println("- please enter the id (between [1, 43]) of the company of the computer you want to add (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isCompanyId(userInput)) {
+          builder.company(companyService.getById(new Long(userInput)));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id (between [1, 43]):");
+          continue;
+        }
+      }
+    }
+    showAddResult(builder.build());
+  }
+  
+  public void askParamsUpdate() {
+    Computer.Builder builder = Computer.builder();
+  
+  //Get id
+    System.out
+    .println("-> You entered the update command:\r\n- please enter the id of the computer you want to update (or press enter to quit command):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        System.out.println("-> update command aborted");
+        return;
+      } else {
+        if(isComputerId(userInput)) {
+          builder.id(new Long(userInput));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id (between [1, " + computerService.getLastId() + "]):");
+          continue;
+        }
+      }
+    }  
+    
+  //Get name
+    System.out
+    .println("- please enter the name of the computer if you want to update it (press enter or type 'null' to skip value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        builder.name(userInput);
+        break;
+      }
+    }
+    
+  //Get introduced date
+    System.out
+    .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer if you want to update it (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isDate(userInput)) {
+          StringBuffer introducedS = new StringBuffer(userInput);
+          introducedS.append(" 00:00:00");
+          builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
+          continue;
+        }
+      }
+    }
+    
+  //Get discontinued date
+    System.out
+    .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer if you want to update (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isDate(userInput)) {
+          StringBuffer discontinuedS = new StringBuffer(userInput);
+          discontinuedS.append(" 00:00:00");
+          builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
+          continue;
+        }
+      }
+    }
+    
+  //Get company_id
+    System.out
+    .println("- please enter the id (between [1, 43]) of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+        break;
+      } else {
+        if(isCompanyId(userInput)) {
+          builder.company(companyService.getById(new Long(userInput)));
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id (between [1, 43]):");
+          continue;
+        }
+      }
+    }
+    showUpdateResult(builder.build());
+  }
+  
+  public void askParamsRemove() {
+    System.out
+        .println("-> You entered the remove command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");
+    ;
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+        System.out.println("-> remove command aborted");
+        return;
+      } else {
+        if (isComputerId(userInput)) {
+          showRemoveResult(userInput);
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id:");
+          continue;
+        }
+      }
+    }
+  }
+
   public void showComputerList() {
     //Print computer list from DB
     List<Computer> computers = new ArrayList<Computer>();
-    computers = computerService.getAllComputers();
+    computers = computerService.getAll();
     if (computers != null) {
       System.out.println("Here is a list of all the computers in the DB:\r\n");
       for (Computer computer : computers) {
@@ -161,7 +535,7 @@ public class CommandLineInterface {
   public void showCompanyList() {
     //Print company list from DB
     List<Company> companies = new ArrayList<Company>();
-    companies = companyService.getAllCompanies();
+    companies = companyService.getAll();
     if (companies != null) {
       System.out.println("Here is a list of all the companies in the DB:\r\n");
       for (Company company : companies) {
@@ -171,86 +545,97 @@ public class CommandLineInterface {
       System.out.println("No company found");
     }
   }
-  
+
   public void showComputer(String idS) {
     //Print the details of the computer with id=idS
     Long max = computerService.getLastId();
-    
+
     if (idS.matches("[0-9]+")) {
       Long id = new Long(idS);
-      
+
       if (id < 1 || id > max) {
-        System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString() + "].\r\n");
+        System.out.println("The id you entered is incorrect, it must be within [1, "
+            + max.toString() + "].\r\n");
       } else {
-        Computer computer = computerService.getComputer(new Long(idS));
-        if(computer == null) {
+        Computer computer = computerService.getById(new Long(idS));
+        if (computer == null) {
           System.out.println("MySQL Error: computer not found.\r\n");
         } else {
-          System.out.println("Here are the details of the computer you requested:\r\n");
+          System.out.println("Here are the details of the computer you requested:");
           System.out.println(computer.toString());
         }
       }
     } else {
-      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString() + "].\r\n");
+      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString()
+          + "].\r\n");
     }
   }
-  
+
   public void showAddResult(String[] params) {
-    try {
-      if(computerService.addComputer(params)) {
-        System.out.println("Your computer was added to the DB :\r\n");
-        System.out.println(computerService.getComputer(computerService.getLastId()).toString());
-      } else {
-        System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
-      }
-    } catch (InvalidArgsNumberException e) {
-      // TODO Auto-generated catch block
-      System.out.println(e.getMessage());
-      return;
-    } catch (InvalidCompanyIdException e) {
-      // TODO Auto-generated catch block
-      System.out.println(e.getMessage());
-      return;
+    Computer computer = null;
+    computer = computerService.addByString(params);
+    if (computer == null) {
+      System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+    } else {
+      System.out.println("Your computer was successfully added to the DB :");
+      System.out.println(computer.toString());
     }
   }
   
+  public void showAddResult(Computer computer) {
+    computer = computerService.addByComputer(computer);
+    if (computer == null) {
+      System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+    } else {
+      System.out.println("Your computer was successfully added to the DB :");
+      System.out.println(computer.toString());
+    }
+  }
+
   public void showUpdateResult(String[] params) {
-    try {
-      if(computerService.setComputer(params)) {
-        System.out.println("Your computer was updated in the DB :\r\n");
-        System.out.println(computerService.getComputer(new Long(params[0])).toString());
-      } else {
-        System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
-      }
-    } catch (InvalidArgsNumberException e) {
-      // TODO Auto-generated catch block
-      System.out.println(e.getMessage());
-      return;
-    } catch (InvalidCompanyIdException e) {
-      // TODO Auto-generated catch block
-      System.out.println(e.getMessage());
-      return;
+    Computer computer = null;
+    computer = computerService.updateByString(params);
+    if (computer == null) {
+      System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+    } else {
+      System.out.println("Your computer was updated successfully in the DB :");
+      System.out.println(computer.toString());
     }
   }
   
+  public void showUpdateResult(Computer computer) {
+    computer = computerService.updateByComputer(computer);
+    if (computer == null) {
+      System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+    } else {
+      System.out.println("Your computer was updated successfully in the DB :");
+      System.out.println(computer.toString());
+    }
+  }
+
   public void showRemoveResult(String idS) {
-  //Print the details of the computer with id=idS
+    //Print the details of the computer with id=idS
     Long max = computerService.getLastId();
-    
+
     if (idS.matches("[0-9]+")) {
       Long id = new Long(idS);
-      
+
       if (id < 1 || id > max) {
-        System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString() + "].\r\n");
+        System.out.println("The id you entered is incorrect, it must be within [1, "
+            + max.toString() + "].\r\n");
       } else {
-        if (computerService.removeComputer(new Long(idS))) {
-          System.out.println("The specified computer was removed from the DB");
+        Computer computer = null;
+        computer = computerService.removeById(new Long(idS));
+        if (computer == null) {
+          System.out.println("MySQL Error: computer could not be removed from DB.\r\n");
         } else {
-          System.out.println("MySQL Error: computer coul not be removed from DB.\r\n");
+          System.out.println("Your computer was successfully removed from the DB :");
+          System.out.println(computer.toString());
         }
       }
     } else {
-      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString() + "].\r\n");
+      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString()
+          + "].\r\n");
     }
   }
 
@@ -351,13 +736,5 @@ public class CommandLineInterface {
         System.out.println("Non valid command. Please, try again.\r\n");
         break;
     }
-  }
-
-  public static void main(String[] args) {
-    // TODO Auto-generated method stub
-    CommandLineInterface cli = new CommandLineInterface();
-
-    cli.displayMenu();
-    cli.newCommand();
   }
 }

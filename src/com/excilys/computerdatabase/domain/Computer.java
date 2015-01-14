@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.model;
+package com.excilys.computerdatabase.domain;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +25,18 @@ public class Computer {
   public String toString() {
     return "Computer [id=" + id + ", name=" + name + ", introduced=" + introduced
         + ", discontinued=" + discontinued + ", company=" + company + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((company == null) ? 0 : company.hashCode());
+    result = prime * result + ((discontinued == null) ? 0 : discontinued.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((introduced == null) ? 0 : introduced.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    return result;
   }
 
   @Override
@@ -71,13 +83,55 @@ public class Computer {
     return true;
   }
 
+  public static class Builder {
+    Computer computer;
+
+    private Builder() {
+      computer = new Computer();
+    }
+
+    public Builder id(Long id) {
+      if (id != null)
+        this.computer.id = id;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.computer.name = name;
+      return this;
+    }
+
+    public Builder introduced(LocalDateTime introduced) {
+      this.computer.introduced = introduced;
+      return this;
+    }
+
+    public Builder discontinued(LocalDateTime discontinued) {
+      this.computer.discontinued = discontinued;
+      return this;
+    }
+
+    public Builder company(Company company) {
+      this.computer.company = company;
+      return this;
+    }
+
+    public Computer build() {
+      return this.computer;
+    }
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
   public Long getId() {
     return id;
   }
 
   public void setId(Long id) {
-    if(id != null)
-        this.id = id;
+    if (id != null)
+      this.id = id;
   }
 
   public String getName() {
