@@ -21,23 +21,24 @@ public class UtilDaoSQL {
   /**
   * URL to the database server.
   */
-  private static final String DB_URL = "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull";
+  private static final String DB_URL       = "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull";
   /**
   * User name for the database.
   */
-  private static final String DB_USR = "admincdb";
+  private static final String DB_USR       = "admincdb";
   /**
   * User password for the database.
   */
-  private static final String DB_PW  = "qwerty1234";
+  private static final String DB_PW        = "qwerty1234";
 
   /**
   * Base Query for all the Select queries
   */
-  public static final String SELECT_QUERY = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company FROM computer c LEFT JOIN company ON company.id=c.company_id";
-  
-  private static Logger logger = LoggerFactory.getLogger("com.excilys.computerdatabase.persistence.impl.UtilDaoSQL");
-  
+  public static final String  SELECT_QUERY = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company FROM computer c LEFT JOIN company ON company.id=c.company_id";
+
+  private static Logger       logger       = LoggerFactory
+                                               .getLogger("com.excilys.computerdatabase.persistence.impl.UtilDaoSQL");
+
   /**
    * Static block that loads the JDBC driver once
    */

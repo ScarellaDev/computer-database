@@ -12,37 +12,71 @@ import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.service.ManagerService;
 
+/**
+* CLI that allows the user to consult and modify his computer database
+*
+* @author Jeremy SCARELLA
+*/
 public class CommandLineInterface {
-  private static String          userInput;
-  private static ComputerService computerService = ManagerService.getInstance()
-                                                     .getComputerService();
-  private static CompanyService  companyService  = ManagerService.getInstance().getCompanyService();
-  private static Scanner         sc;
-  
-    //  REGEX_DATE_EN : yyyy-MM-dd (separator = . || - || /)
-    //  REGEX_DATE_FR : dd-MM-yyyy (separator = . || - || /)
-    private static final String REGEX_DELIMITER = "(\\.|-|\\/)";
-    private static final String REGEX_DATE_EN = "("
-        + "((\\d{4})" + REGEX_DELIMITER + "(0[13578]|10|12)" + REGEX_DELIMITER + "(0[1-9]|[12][0-9]|3[01]))"
-        + "|((\\d{4})" + REGEX_DELIMITER + "(0[469]|11)" + REGEX_DELIMITER + "([0][1-9]|[12][0-9]|30))"
-        + "|((\\d{4})" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER  + "(0[1-9]|1[0-9]|2[0-8]))"
-        + "|(([02468][048]00)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
-        + "|(([13579][26]00)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
-        + "|(([0-9][0-9][0][48])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
-        + "|(([0-9][0-9][2468][048])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
-        + "|(([0-9][0-9][13579][26])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(29))"
-        + ")";
-    private static final String REGEX_DATE_FR = "("
-        + "((0[1-9]|[12][0-9]|3[01])" + REGEX_DELIMITER + "(0[13578]|10|12)" + REGEX_DELIMITER + "(\\d{4}))"
-        + "|(([0][1-9]|[12][0-9]|30)" + REGEX_DELIMITER + "(0[469]|11)" + REGEX_DELIMITER + "(\\d{4}))"
-        + "|((0[1-9]|1[0-9]|2[0-8])" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "(\\d{4}))"
-        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([02468][048]00))"
-        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([13579][26]00))"
-        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][0][48]))"
-        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][2468][048]))"
-        + "|((29)" + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER + "([0-9][0-9][13579][26]))"
-        + ")";
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static String                  userInput;
+  private static ComputerService         computerService = ManagerService.getInstance()
+                                                             .getComputerService();
+  private static CompanyService          companyService  = ManagerService.getInstance()
+                                                             .getCompanyService();
+  private static Scanner                 sc;
+
+  //  REGEX_DATE_EN : yyyy-MM-dd (separator = . || - || /)
+  //  REGEX_DATE_FR : dd-MM-yyyy (separator = . || - || /)
+  private static final String            REGEX_DELIMITER = "(\\.|-|\\/)";
+  private static final String            REGEX_DATE_EN   = "(" + "((\\d{4})" + REGEX_DELIMITER
+                                                             + "(0[13578]|10|12)" + REGEX_DELIMITER
+                                                             + "(0[1-9]|[12][0-9]|3[01]))"
+                                                             + "|((\\d{4})" + REGEX_DELIMITER
+                                                             + "(0[469]|11)" + REGEX_DELIMITER
+                                                             + "([0][1-9]|[12][0-9]|30))"
+                                                             + "|((\\d{4})" + REGEX_DELIMITER
+                                                             + "(02)" + REGEX_DELIMITER
+                                                             + "(0[1-9]|1[0-9]|2[0-8]))"
+                                                             + "|(([02468][048]00)"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(29))"
+                                                             + "|(([13579][26]00)"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(29))"
+                                                             + "|(([0-9][0-9][0][48])"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(29))"
+                                                             + "|(([0-9][0-9][2468][048])"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(29))"
+                                                             + "|(([0-9][0-9][13579][26])"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(29))" + ")";
+  private static final String            REGEX_DATE_FR   = "(" + "((0[1-9]|[12][0-9]|3[01])"
+                                                             + REGEX_DELIMITER + "(0[13578]|10|12)"
+                                                             + REGEX_DELIMITER + "(\\d{4}))"
+                                                             + "|(([0][1-9]|[12][0-9]|30)"
+                                                             + REGEX_DELIMITER + "(0[469]|11)"
+                                                             + REGEX_DELIMITER + "(\\d{4}))"
+                                                             + "|((0[1-9]|1[0-9]|2[0-8])"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "(\\d{4}))"
+                                                             + "|((29)" + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER
+                                                             + "([02468][048]00))" + "|((29)"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER + "([13579][26]00))"
+                                                             + "|((29)" + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER
+                                                             + "([0-9][0-9][0][48]))" + "|((29)"
+                                                             + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER
+                                                             + "([0-9][0-9][2468][048]))"
+                                                             + "|((29)" + REGEX_DELIMITER + "(02)"
+                                                             + REGEX_DELIMITER
+                                                             + "([0-9][0-9][13579][26]))" + ")";
+  private static final DateTimeFormatter FORMATTER       = DateTimeFormatter
+                                                             .ofPattern("yyyy-MM-dd HH:mm:ss");
 
   public void displayMenu() {
     StringBuffer menu = new StringBuffer("* * * * * MENU * * * * *\r\n");
@@ -228,7 +262,7 @@ public class CommandLineInterface {
       return false;
     }
   }
-  
+
   public Boolean isCompanyId(String idS) {
     Long id;
     if (idS.matches("[0-9]+")) {
@@ -242,7 +276,7 @@ public class CommandLineInterface {
       return false;
     }
   }
-  
+
   public Boolean isDate(String dateS) {
     if (dateS.matches(REGEX_DATE_EN)) {
       return true;
@@ -284,8 +318,7 @@ public class CommandLineInterface {
 
   public void askParamsShow() {
     System.out
-        .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");
-    ;
+        .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");;
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -307,15 +340,16 @@ public class CommandLineInterface {
 
   public void askParamsAdd() {
     Computer.Builder builder = Computer.builder();
-    
-  //Get name
+
+    //Get name
     System.out
-    .println("-> You entered the add command:\r\n- please enter the name of the computer you want to add (or press enter to quit command):");
+        .println("-> You entered the add command:\r\n- please enter the name of the computer you want to add (or press enter to quit command):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         System.out.println("-> add command aborted");
         return;
       } else {
@@ -323,18 +357,19 @@ public class CommandLineInterface {
         break;
       }
     }
-    
-  //Get introduced date
+
+    //Get introduced date
     System.out
-    .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
+        .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isDate(userInput)) {
+        if (isDate(userInput)) {
           StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -345,18 +380,19 @@ public class CommandLineInterface {
         }
       }
     }
-    
-  //Get discontinued date
+
+    //Get discontinued date
     System.out
-    .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
+        .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isDate(userInput)) {
+        if (isDate(userInput)) {
           StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -367,18 +403,19 @@ public class CommandLineInterface {
         }
       }
     }
-    
-  //Get company_id
+
+    //Get company_id
     System.out
-    .println("- please enter the id (between [1, 43]) of the company of the computer you want to add (press enter or type 'null' to skip this value):");
+        .println("- please enter the id (between [1, 43]) of the company of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isCompanyId(userInput)) {
+        if (isCompanyId(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -389,57 +426,61 @@ public class CommandLineInterface {
     }
     showAddResult(builder.build());
   }
-  
+
   public void askParamsUpdate() {
     Computer.Builder builder = Computer.builder();
-  
-  //Get id
+
+    //Get id
     System.out
-    .println("-> You entered the update command:\r\n- please enter the id of the computer you want to update (or press enter to quit command):");
+        .println("-> You entered the update command:\r\n- please enter the id of the computer you want to update (or press enter to quit command):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         System.out.println("-> update command aborted");
         return;
       } else {
-        if(isComputerId(userInput)) {
+        if (isComputerId(userInput)) {
           builder.id(new Long(userInput));
           break;
         } else {
-          System.out.println("Please, enter a new valid id (between [1, " + computerService.getLastId() + "]):");
+          System.out.println("Please, enter a new valid id (between [1, "
+              + computerService.getLastId() + "]):");
           continue;
         }
       }
-    }  
-    
-  //Get name
+    }
+
+    //Get name
     System.out
-    .println("- please enter the name of the computer if you want to update it (press enter or type 'null' to skip value):");
+        .println("- please enter the name of the computer if you want to update it (press enter or type 'null' to skip value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
         builder.name(userInput);
         break;
       }
     }
-    
-  //Get introduced date
+
+    //Get introduced date
     System.out
-    .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer if you want to update it (press enter or type 'null' to skip this value):");
+        .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer if you want to update it (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isDate(userInput)) {
+        if (isDate(userInput)) {
           StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -450,18 +491,19 @@ public class CommandLineInterface {
         }
       }
     }
-    
-  //Get discontinued date
+
+    //Get discontinued date
     System.out
-    .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer if you want to update (press enter or type 'null' to skip this value):");
+        .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer if you want to update (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isDate(userInput)) {
+        if (isDate(userInput)) {
           StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -472,18 +514,19 @@ public class CommandLineInterface {
         }
       }
     }
-    
-  //Get company_id
+
+    //Get company_id
     System.out
-    .println("- please enter the id (between [1, 43]) of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
+        .println("- please enter the id (between [1, 43]) of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput) || "null".equals(userInput)) {
+      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
+          || "null".equals(userInput)) {
         break;
       } else {
-        if(isCompanyId(userInput)) {
+        if (isCompanyId(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -494,11 +537,10 @@ public class CommandLineInterface {
     }
     showUpdateResult(builder.build());
   }
-  
+
   public void askParamsRemove() {
     System.out
-        .println("-> You entered the remove command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");
-    ;
+        .println("-> You entered the remove command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");;
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -581,7 +623,7 @@ public class CommandLineInterface {
       System.out.println(computer.toString());
     }
   }
-  
+
   public void showAddResult(Computer computer) {
     computer = computerService.addByComputer(computer);
     if (computer == null) {
@@ -602,7 +644,7 @@ public class CommandLineInterface {
       System.out.println(computer.toString());
     }
   }
-  
+
   public void showUpdateResult(Computer computer) {
     computer = computerService.updateByComputer(computer);
     if (computer == null) {

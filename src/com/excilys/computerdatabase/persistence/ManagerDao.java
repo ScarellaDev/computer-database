@@ -6,7 +6,7 @@ import com.excilys.computerdatabase.persistence.impl.ComputerDaoImplSQL;
 /**
 * Singleton managing DAOs instances.
 *
-* @author Jeremy Scarella
+* @author Jeremy SCARELLA
 */
 public enum ManagerDao {
 
@@ -21,7 +21,7 @@ public enum ManagerDao {
    * Instance of the CompanyDao
    */
   private CompanyDao  companyDao;
-  
+
   public static ManagerDao getInstance() {
     return INSTANCE;
   }

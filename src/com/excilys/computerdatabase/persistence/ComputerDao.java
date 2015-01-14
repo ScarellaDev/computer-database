@@ -26,6 +26,6 @@ public interface ComputerDao {
   Computer removeById(Long id);
 
   Computer removeByComputer(Computer computer);
-  
+
   Long getLastId();
 }

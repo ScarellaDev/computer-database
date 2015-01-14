@@ -1,7 +1,6 @@
 package com.excilys.computerdatabase.persistence.impl;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,8 +26,9 @@ public enum CompanyDaoImplSQL implements CompanyDao {
   */
   INSTANCE;
 
-  private Logger logger = LoggerFactory.getLogger("com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL");
-  
+  private Logger logger = LoggerFactory
+                            .getLogger("com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL");
+
   /**
   * Return the instance of the CompanyDaoImplSQL
   * @return Instance of the CompanyDaoImplSQL
@@ -36,7 +36,7 @@ public enum CompanyDaoImplSQL implements CompanyDao {
   public static CompanyDaoImplSQL getInstance() {
     return INSTANCE;
   }
-  
+
   /**
   * Get the company in the database corresponding to the id in parameter
   * @param id : id of the company in the database
@@ -47,11 +47,11 @@ public enum CompanyDaoImplSQL implements CompanyDao {
     Statement statement = null;
     ResultSet results = null;
     Company company = null;
-    
+
     try {
       //Get a connectionection to the database
       connection = UtilDaoSQL.getConnection();
-      
+
       //Create the query
       String query = "SELECT * FROM company WHERE company.id=" + id + ";";
       statement = connection.createStatement();
@@ -83,7 +83,7 @@ public enum CompanyDaoImplSQL implements CompanyDao {
     Company company;
     try {
       connection = UtilDaoSQL.getConnection();
-      
+
       //Create the query
       String query = "SELECT * FROM company;";
       statement = connection.createStatement();

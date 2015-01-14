@@ -2,6 +2,11 @@ package com.excilys.computerdatabase.domain;
 
 import java.time.LocalDateTime;
 
+/**
+* Computer class
+*
+* @author Jeremy SCARELLA
+*/
 public class Computer {
   private Long          id;
   private String        name;

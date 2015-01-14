@@ -37,8 +37,8 @@ public enum ComputerDaoImplSQL implements ComputerDao {
   }
 
   private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
-  private Logger logger = LoggerFactory
-                            .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
+  private Logger                     logger    = LoggerFactory
+                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
 
   public Computer getById(Long id) {
     Computer computer = null;
@@ -161,12 +161,12 @@ public enum ComputerDaoImplSQL implements ComputerDao {
           String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
           statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
           statement.setString(1, name);
-          if(introducedL == null) {
+          if (introducedL == null) {
             statement.setNull(2, java.sql.Types.TIMESTAMP);
           } else {
             statement.setTimestamp(2, Timestamp.valueOf(introducedL));
           }
-          if(discontinuedL == null) {
+          if (discontinuedL == null) {
             statement.setNull(3, java.sql.Types.TIMESTAMP);
           } else {
             statement.setTimestamp(3, Timestamp.valueOf(discontinuedL));
@@ -178,7 +178,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
           }
 
           //Execute the query
-          if(statement.executeUpdate() == 0) {
+          if (statement.executeUpdate() == 0) {
             return null;
           } else {
             results = statement.getGeneratedKeys();
@@ -189,8 +189,8 @@ public enum ComputerDaoImplSQL implements ComputerDao {
               builder.name(name);
               builder.introduced(introducedL);
               builder.discontinued(discontinuedL);
-              if(companyId != null) {
-                builder.company(COMPANIES.get(companyId.intValue()-1));
+              if (companyId != null) {
+                builder.company(COMPANIES.get(companyId.intValue() - 1));
               }
               return builder.build();
             } else {
@@ -225,12 +225,12 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
       statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, computer.getName());
-      if(computer.getIntroduced() == null) {
+      if (computer.getIntroduced() == null) {
         statement.setNull(2, java.sql.Types.TIMESTAMP);
       } else {
         statement.setTimestamp(2, Timestamp.valueOf(computer.getIntroduced()));
       }
-      if(computer.getDiscontinued() == null) {
+      if (computer.getDiscontinued() == null) {
         statement.setNull(3, java.sql.Types.TIMESTAMP);
       } else {
         statement.setTimestamp(3, Timestamp.valueOf(computer.getDiscontinued()));
@@ -240,9 +240,9 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       } else {
         statement.setLong(4, computer.getCompany().getId());
       }
-      
-    //Execute the query
-      if(statement.executeUpdate() == 0) {
+
+      //Execute the query
+      if (statement.executeUpdate() == 0) {
         return null;
       } else {
         results = statement.getGeneratedKeys();
@@ -326,7 +326,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
               throw new PersistenceException(
                   "The fourth argument must be a positive integer between [1, 43]");
             } else {
-              company = COMPANIES.get(companyId.intValue()-1);
+              company = COMPANIES.get(companyId.intValue() - 1);
             }
           } else {
             throw new PersistenceException(
@@ -355,18 +355,20 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       connection.setAutoCommit(false);
       //Create the query
       statement = connection
-          .prepareStatement("UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
-      if(computer.getName() == null) {
+          .prepareStatement(
+              "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?",
+              Statement.RETURN_GENERATED_KEYS);
+      if (computer.getName() == null) {
         statement.setNull(1, java.sql.Types.VARCHAR);
       } else {
         statement.setString(1, computer.getName());
       }
-      if(computer.getIntroduced() == null) {
+      if (computer.getIntroduced() == null) {
         statement.setNull(2, java.sql.Types.TIMESTAMP);
       } else {
         statement.setTimestamp(2, Timestamp.valueOf(computer.getIntroduced()));
       }
-      if(computer.getDiscontinued() == null) {
+      if (computer.getDiscontinued() == null) {
         statement.setNull(3, java.sql.Types.TIMESTAMP);
       } else {
         statement.setTimestamp(3, Timestamp.valueOf(computer.getDiscontinued()));
@@ -377,9 +379,9 @@ public enum ComputerDaoImplSQL implements ComputerDao {
         statement.setNull(4, java.sql.Types.BIGINT);
       }
       statement.setLong(5, computer.getId());
-      
-    //Execute the query
-      if(statement.executeUpdate() == 0) {
+
+      //Execute the query
+      if (statement.executeUpdate() == 0) {
         return null;
       } else {
         connection.commit();
@@ -397,7 +399,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
   public Computer removeById(Long id) {
     Computer computer = getById(id);
-    if(computer == null) {
+    if (computer == null) {
       return null;
     } else {
       return removeByComputer(computer);
@@ -409,20 +411,21 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     PreparedStatement statement = null;
     ResultSet results = null;
 
-    if(computer == null) {
+    if (computer == null) {
       return null;
     }
-    
+
     try {
       //Get a connection
       connection = UtilDaoSQL.getConnection();
       connection.setAutoCommit(false);
       //Create the query
-      statement = connection.prepareStatement("DELETE computer FROM computer WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+      statement = connection.prepareStatement("DELETE computer FROM computer WHERE id = ?",
+          Statement.RETURN_GENERATED_KEYS);
       statement.setLong(1, computer.getId());
-      
-    //Execute the query
-      if(statement.executeUpdate() == 0) {
+
+      //Execute the query
+      if (statement.executeUpdate() == 0) {
         return null;
       } else {
         connection.commit();

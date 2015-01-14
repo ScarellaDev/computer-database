@@ -1,5 +1,10 @@
 package com.excilys.computerdatabase.domain;
 
+/**
+* Company class
+*
+* @author Jeremy SCARELLA
+*/
 public final class Company {
   private Long   id;
   private String name;
