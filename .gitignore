@@ -26,7 +26,6 @@ tmp/**/*
 *~.nib
 local.properties
 .loadpath
-WebContent/**
 
 # IntelliJ IDEA Files
 *.iml
