@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.persistence.impl;
+package com.excilys.computerdatabase.test.persistence.mock;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,19 +26,19 @@ import com.excilys.computerdatabase.persistence.ComputerDao;
 * @author Jeremy SCARELLA
 */
 
-public enum ComputerDaoImplSQL implements ComputerDao {
+public enum ComputerDaoImplSQLMock implements ComputerDao {
   /**
   * Instance of ComputerDAO
   */
   INSTANCE;
 
-  public static ComputerDaoImplSQL getInstance() {
+  public static ComputerDaoImplSQLMock getInstance() {
     return INSTANCE;
   }
 
-  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
+  private static final List<Company> COMPANIES = CompanyDaoImplSQLMock.getInstance().getAll();
   private Logger                     logger    = LoggerFactory
-                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
+                                                   .getLogger("com.excilys.computerdatabase.test.persistence.mock.computerDaoImplSQLMock");
 
   public Computer getById(Long id) {
     Computer computer = null;
@@ -47,10 +47,10 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     ResultSet results = null;
 
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
 
       //Query the database
-      String query = UtilDaoSQL.SELECT_QUERY + " WHERE c.id=" + id;
+      String query = UtilDaoSQLMock.SELECT_QUERY + " WHERE c.id=" + id;
       statement = connection.createStatement();
       results = statement.executeQuery(query);
 
@@ -64,7 +64,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
+        UtilDaoSQLMock.close(connection, statement, results);
       }
     }
   }
@@ -77,10 +77,10 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQL.SELECT_QUERY);
+      results = statement.executeQuery(UtilDaoSQLMock.SELECT_QUERY);
       //Create computers and put them in the computers list with the result
       while (results.next()) {
         computers.add(getComputerFromRS(results));
@@ -91,7 +91,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
+        UtilDaoSQLMock.close(connection, statement, results);
       }
     }
   }
@@ -156,7 +156,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
         try {
           //Get a connection to the database
-          connection = UtilDaoSQL.getConnection();
+          connection = UtilDaoSQLMock.getConnection();
           //Create the query
           String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
           statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
@@ -202,7 +202,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
           throw new PersistenceException(e);
         } finally {
           if (connection != null) {
-            UtilDaoSQL.close(connection, statement);
+            UtilDaoSQLMock.close(connection, statement);
           }
         }
       } else {
@@ -220,7 +220,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
       //Create the query
       String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
       statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
@@ -259,7 +259,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
+        UtilDaoSQLMock.close(connection, statement);
       }
     }
   }
@@ -351,7 +351,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
       connection.setAutoCommit(false);
       //Create the query
       statement = connection
@@ -392,7 +392,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
+        UtilDaoSQLMock.close(connection, statement);
       }
     }
   }
@@ -417,7 +417,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
     try {
       //Get a connection
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
       connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement("DELETE computer FROM computer WHERE id = ?",
@@ -436,7 +436,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
+        UtilDaoSQLMock.close(connection, statement);
       }
     }
   }
@@ -487,7 +487,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = UtilDaoSQLMock.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
       results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
@@ -500,7 +500,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     } finally {
       if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
+        UtilDaoSQLMock.close(connection, statement, results);
       }
     }
     return lastId;
