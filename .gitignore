@@ -35,3 +35,4 @@ WebContent/**/*
 *.iws
 *.idea
 *.html
+/target/
