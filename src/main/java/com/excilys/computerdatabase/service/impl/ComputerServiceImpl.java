@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.service.impl;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ComputerDao;
 import com.excilys.computerdatabase.persistence.ManagerDao;
 import com.excilys.computerdatabase.service.ComputerService;
@@ -104,5 +105,15 @@ public class ComputerServiceImpl implements ComputerService {
    */
   public Long getLastId() {
     return computerDao.getLastId();
+  }
+
+  /**
+   * Get a Page of computers in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of computers
+   */
+  @Override
+  public Page<Computer> getPagedList(final Page<Computer> page) {
+    return computerDao.getPagedList(page);
   }
 }

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ComputerDao;
-import com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL;
 import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
@@ -36,7 +36,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
+  private static final List<Company> COMPANIES = CompanyDaoImplSQLMock.getInstance().getAll();
 
   /*
    * Logger
@@ -66,10 +66,8 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     try {
       connection = UtilDaoSQLMock.getConnection();
 
-      //Query the database
-      String query = UtilDaoSQLMock.SELECT_QUERY + " WHERE c.id=" + id;
       statement = connection.createStatement();
-      results = statement.executeQuery(query);
+      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id);
 
       //Create a computer if there is a result
       if (results.next()) {
@@ -101,7 +99,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       connection = UtilDaoSQLMock.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQLMock.SELECT_QUERY);
+      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_SELECT_QUERY);
       //Create computers and put them in the computers list with the result
       while (results.next()) {
         computers.add(getComputerFromRS(results));
@@ -182,11 +180,10 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
         }
 
         try {
-          //Get a connection to the database
           connection = UtilDaoSQLMock.getConnection();
-          //Create the query
-          String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
-          statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+
+          statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_INSERT_QUERY,
+              Statement.RETURN_GENERATED_KEYS);
           statement.setString(1, name);
           if (introducedL == null) {
             statement.setNull(2, java.sql.Types.TIMESTAMP);
@@ -251,11 +248,10 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     ResultSet results = null;
 
     try {
-      //Get a connection to the database
       connection = UtilDaoSQLMock.getConnection();
-      //Create the query
-      String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
-      statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+
+      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_INSERT_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, computer.getName());
       if (computer.getIntroduced() == null) {
         statement.setNull(2, java.sql.Types.TIMESTAMP);
@@ -390,17 +386,13 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
   public Computer updateByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
-    ResultSet results = null;
 
     try {
-      //Get a connection to the database
       connection = UtilDaoSQLMock.getConnection();
       connection.setAutoCommit(false);
-      //Create the query
-      statement = connection
-          .prepareStatement(
-              "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?",
-              Statement.RETURN_GENERATED_KEYS);
+
+      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_UPDATE_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
       if (computer.getName() == null) {
         statement.setNull(1, java.sql.Types.VARCHAR);
       } else {
@@ -462,7 +454,6 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
   public Computer removeByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
-    ResultSet results = null;
 
     if (computer == null) {
       return null;
@@ -473,7 +464,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       connection = UtilDaoSQLMock.getConnection();
       connection.setAutoCommit(false);
       //Create the query
-      statement = connection.prepareStatement("DELETE computer FROM computer WHERE id = ?",
+      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
       statement.setLong(1, computer.getId());
 
@@ -509,7 +500,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       connection = UtilDaoSQLMock.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
+      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_MAX_QUERY);
       //Create computers and put them in the computers list with the result
       if (results.next()) {
         lastId = results.getLong("id");
@@ -523,6 +514,60 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       }
     }
     return lastId;
+  }
+
+  /**
+   * Get a Page of computers in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of computers
+   */
+  @Override
+  public Page<Computer> getPagedList(final Page<Computer> page) {
+    Connection connection = null;
+    Statement countStatement = null;
+    PreparedStatement selectStatement = null;
+    ResultSet countResults = null;
+    ResultSet selectResults = null;
+    final List<Computer> computers = new ArrayList<Computer>();
+
+    try {
+      connection = UtilDaoSQLMock.getConnection();
+
+      //Create & execute the counting query
+      countStatement = connection.createStatement();
+      final ResultSet countResult = countStatement
+          .executeQuery(UtilDaoSQLMock.COMPUTER_COUNT_QUERY);
+
+      //Set the number of results of the page with the result
+      countResult.next();
+      page.setTotalNbElements(countResult.getInt("total"));
+      page.refreshNbPages();
+
+      //Create the SELECT query
+      selectStatement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_SELECT_QUERY
+          + " LIMIT ? OFFSET ?;");
+      selectStatement.setInt(1, page.getNbElementsPerPage());
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+
+      //Execute the SELECT query
+      selectResults = selectStatement.executeQuery();
+
+      //Create the computers with the results
+      while (selectResults.next()) {
+        computers.add(getComputerFromRS(selectResults));
+      }
+      page.setList(computers);
+      return page;
+    } catch (SQLException e) {
+      logger.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceExceptionTest(e);
+    } finally {
+      UtilDaoSQLMock.close(countResults);
+      UtilDaoSQLMock.close(selectResults);
+      UtilDaoSQLMock.close(countStatement);
+      UtilDaoSQLMock.close(selectStatement);
+      UtilDaoSQLMock.close(connection);
+    }
   }
 
   /**

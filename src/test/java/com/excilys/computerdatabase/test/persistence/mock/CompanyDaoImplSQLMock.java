@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.test.persistence.mock;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.CompanyDao;
 import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
@@ -52,14 +54,12 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
     Company company = null;
 
     try {
-      //Get a connectionection to the database
       connection = UtilDaoSQLMock.getConnection();
 
-      //Create the query
-      String query = "SELECT * FROM company WHERE company.id=" + id + ";";
       statement = connection.createStatement();
       //Execute the query
-      results = statement.executeQuery(query);
+      results = statement.executeQuery(UtilDaoSQLMock.COMPANY_SELECT_QUERY + " WHERE company.id="
+          + id + ";");
       //Create a company if there is a result
       if (results.next()) {
         company = getCompanyFromRS(results);
@@ -87,11 +87,9 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
     try {
       connection = UtilDaoSQLMock.getConnection();
 
-      //Create the query
-      String query = "SELECT * FROM company;";
       statement = connection.createStatement();
       //Execute the query
-      ResultSet results = statement.executeQuery(query);
+      ResultSet results = statement.executeQuery(UtilDaoSQLMock.COMPANY_SELECT_QUERY);
       //Create companies with the results
       while (results.next()) {
         company = new Company();
@@ -107,6 +105,59 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement);
       }
+    }
+  }
+
+  /**
+   * Get a Page of companies in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of companies
+   */
+  @Override
+  public Page<Company> getPagedList(final Page<Company> page) {
+    Connection connection = null;
+    Statement countStatement = null;
+    PreparedStatement selectStatement = null;
+    ResultSet countResults = null;
+    ResultSet selectResults = null;
+    final List<Company> companies = new ArrayList<Company>();
+
+    try {
+      connection = UtilDaoSQLMock.getConnection();
+
+      //Create & execute the counting query
+      countStatement = connection.createStatement();
+      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQLMock.COMPANY_COUNT_QUERY);
+
+      //Set the number of results of the page with the result
+      countResult.next();
+      page.setTotalNbElements(countResult.getInt("total"));
+      page.refreshNbPages();
+
+      //Create the SELECT query
+      selectStatement = connection.prepareStatement(UtilDaoSQLMock.COMPANY_SELECT_QUERY
+          + " LIMIT ? OFFSET ?;");
+      selectStatement.setInt(1, page.getNbElementsPerPage());
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+
+      //Execute the SELECT query
+      selectResults = selectStatement.executeQuery();
+
+      //Create the computers with the results
+      while (selectResults.next()) {
+        companies.add(getCompanyFromRS(selectResults));
+      }
+      page.setList(companies);
+      return page;
+    } catch (SQLException e) {
+      logger.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceExceptionTest(e);
+    } finally {
+      UtilDaoSQLMock.close(countResults);
+      UtilDaoSQLMock.close(selectResults);
+      UtilDaoSQLMock.close(countStatement);
+      UtilDaoSQLMock.close(selectStatement);
+      UtilDaoSQLMock.close(connection);
     }
   }
 

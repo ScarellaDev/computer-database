@@ -72,6 +72,19 @@ public class StringInputValidation {
                                                      + ")";
 
   /**
+   * Validation of a String to see if it matches a Long id.
+   * @param idS : the String input entered by the user as Long id.
+   * @return true if the input matches a Long, false otherwise.
+   */
+  public static Boolean isId(String idS) {
+    if (idS.matches("[0-9]+")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Validation of a String to see if it matches a Long computer id.
    * @param idS : the String input entered by the user as Long id.
    * @return true if the input matches a Long, false otherwise.

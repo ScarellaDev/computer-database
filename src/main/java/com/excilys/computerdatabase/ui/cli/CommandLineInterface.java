@@ -28,16 +28,16 @@ public class CommandLineInterface {
       if (mainUserInput.toLowerCase().startsWith("ls ")) {
         mainUserInput = mainUserInput.substring(3);
         if (mainUserInput.equals("computers")) {
-          OutputManagerCLI.showComputerList();
+          OutputManagerCLI.showComputerPage();
         } else if (mainUserInput.equals("companies")) {
-          OutputManagerCLI.showCompanyList();
+          OutputManagerCLI.showCompanyPage();
         } else {
           System.out.println("Non valid command. Please, try again.\r\n");
         }
       } else if (mainUserInput.toLowerCase().startsWith("3 ")) {
         mainUserInput = mainUserInput.substring(2);
         OutputManagerCLI.showComputer(mainUserInput);
-      } else if (mainUserInput.toLowerCase().startsWith("CLIOutput.show ")) {
+      } else if (mainUserInput.toLowerCase().startsWith("show ")) {
         mainUserInput = mainUserInput.substring(5);
         OutputManagerCLI.showComputer(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("4 ")) {
@@ -76,14 +76,14 @@ public class CommandLineInterface {
             if (help) {
               OutputManagerCLI.showHelp(1);
             } else {
-              OutputManagerCLI.showComputerList();
+              OutputManagerCLI.showComputerPage();
             }
             break;
           case "2":
             if (help) {
               OutputManagerCLI.showHelp(2);
             } else {
-              OutputManagerCLI.showCompanyList();
+              OutputManagerCLI.showCompanyPage();
             }
             break;
           case "3":
@@ -130,7 +130,7 @@ public class CommandLineInterface {
           case "companies":
             System.out.println("Did you mean 'ls companies'? See 'help ls' for more info.");
             break;
-          case "CLIOutput.show":
+          case "show":
             if (help) {
               OutputManagerCLI.showHelp(9);
             } else {

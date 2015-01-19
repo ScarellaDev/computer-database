@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.persistence;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 
 /**
 * Interface implemented by Daos to manage computers.
@@ -73,4 +74,11 @@ public interface ComputerDao {
    * @return The Long id that was found or null if the database is empty.
    */
   Long getLastId();
+
+  /**
+   * Get a Page of computers in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of computers
+   */
+  Page<Computer> getPagedList(Page<Computer> page);
 }

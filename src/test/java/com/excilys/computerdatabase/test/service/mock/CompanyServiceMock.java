@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.test.service.mock;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.CompanyDao;
 import com.excilys.computerdatabase.service.CompanyService;
 
@@ -42,5 +43,15 @@ public class CompanyServiceMock implements CompanyService {
   @Override
   public List<Company> getAll() {
     return companyDao.getAll();
+  }
+
+  /**
+   * Get a Page of companies in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of companies
+   */
+  @Override
+  public Page<Company> getPagedList(final Page<Company> page) {
+    return companyDao.getPagedList(page);
   }
 }

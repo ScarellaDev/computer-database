@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.CompanyDao;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.test.service.mock.CompanyServiceMock;
@@ -28,6 +29,8 @@ public class CompanyServiceTest {
    * Attributes
    */
   private CompanyService companyService;
+  Page<Company>          page;
+  Page<Company>          pageReturned;
 
   /**
    * Test initialisation using Mockito, creates a mock CompanyDao.
@@ -35,8 +38,18 @@ public class CompanyServiceTest {
   @Before
   public void init() {
     CompanyDao companyDao = mock(CompanyDao.class);
+    page = new Page<Company>();
+    page.setNbElementsPerPage(2);
+    page.setPageIndex(1);
+    pageReturned = new Page<Company>();
+    page.setNbElementsPerPage(2);
+    page.setPageIndex(1);
+    page.setTotalNbElements(20);
+    page.setList(new ArrayList<Company>());
+
     when(companyDao.getAll()).thenReturn(new ArrayList<Company>());
     when(companyDao.getById(1L)).thenReturn(Company.builder().id(1L).build());
+    when(companyDao.getPagedList(page)).thenReturn(pageReturned);
     companyService = new CompanyServiceMock(companyDao);
   }
 
@@ -57,5 +70,14 @@ public class CompanyServiceTest {
   @Test
   public void getAll() {
     assertEquals(new ArrayList<Company>(), companyService.getAll());
+  }
+
+  /**
+   * Test the getPagedList method. 
+   * @result Check if the page retrieved from database is correct.
+   */
+  @Test
+  public void getPagedList() {
+    assertEquals(pageReturned, companyService.getPagedList(page));
   }
 }

@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ComputerDao;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.test.service.mock.ComputerServiceMock;
@@ -34,6 +35,8 @@ public class ComputerServiceTest {
   private Computer        computer;
   private Computer        computer2;
   private ComputerDao     computerDao;
+  Page<Computer>          page;
+  Page<Computer>          pageReturned;
 
   /**
    * Test initialisation using Mockito, creates a mock ComputerDao and two instances of Computer.
@@ -45,8 +48,19 @@ public class ComputerServiceTest {
     computerId = computer.getId();
     computer2 = Computer.builder().id(2L).name("CM-6").build();
     computerId2 = computer2.getId();
+
+    page = new Page<Computer>();
+    page.setNbElementsPerPage(5);
+    page.setPageIndex(1);
+    pageReturned = new Page<Computer>();
+    page.setNbElementsPerPage(5);
+    page.setPageIndex(1);
+    page.setTotalNbElements(20);
+    page.setList(new ArrayList<Computer>());
+
     when(computerDao.getAll()).thenReturn(new ArrayList<Computer>());
     when(computerDao.getById(anyLong())).thenReturn(Computer.builder().id(1L).build());
+    when(computerDao.getPagedList(page)).thenReturn(pageReturned);
     computerService = new ComputerServiceMock(computerDao);
   }
 
@@ -130,5 +144,14 @@ public class ComputerServiceTest {
   public void removeByComputer() {
     computerService.removeByComputer(Computer.builder().id(computerId2).build());
     verify(computerDao).removeByComputer(Computer.builder().id(computerId2).build());
+  }
+
+  /**
+   * Test the getPagedList method. 
+   * @result Check if the page retrieved from database is correct.
+   */
+  @Test
+  public void getPagedList() {
+    assertEquals(pageReturned, computerService.getPagedList(page));
   }
 }

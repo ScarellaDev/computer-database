@@ -2,12 +2,15 @@ package com.excilys.computerdatabase.ui.cli;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.service.ManagerService;
+import com.excilys.computerdatabase.validator.StringInputValidation;
 
 /**
 * Class managing the outputs of the CLI.
@@ -26,6 +29,141 @@ public class OutputManagerCLI {
    */
   private static CompanyService  companyService  = ManagerService.getInstance().getCompanyService();
 
+  /*
+   * Scanner sc : get the user input
+   * String userInput : save the user input
+   */
+  private static Scanner         sc;
+  private static String          userInput;
+
+  /**
+   * Display the main menu
+   */
+  public static void showMenu() {
+    StringBuffer menu = new StringBuffer("* * * * * MENU * * * * *\r\n");
+    menu.append("0. Show menu (cmd: 'menu')\r\n");
+    menu.append("1. Show list of all computers (cmd: 'ls computers')\r\n");
+    menu.append("2. Show list of all companies (cmd: 'ls companies')\r\n");
+    menu.append("3. Show the details of one computer (cmd: 'show id')\r\n");
+    menu.append("4. Add a computer (cmd: 'add name introduced discontinued companyId')\r\n");
+    menu.append("5. Update a computer (cmd: 'update id name introduced discontinued companyId')\r\n");
+    menu.append("6. Remove a computer (cmd: 'remove id')\r\n");
+    menu.append("\r\nINFO: to display the help concerning a command, just type 'help commandNumber' or 'help commandName'\r\n");
+    menu.append("INFO2: in order to quit the program, just type 'q' or 'quit' or 'exit'\r\n");
+    System.out.println(menu);
+  }
+
+  /**
+   * Display a page of twenty computers and allow navigation through pages.
+   */
+  public static void showComputerPage() {
+    System.out.println("-> You entered the computer list navigation:");
+    //Create a Page
+    Page<Computer> page = new Page<Computer>();
+    //Get the first Page of computers from the database
+    page = computerService.getPagedList(page);
+    //Show the content of the page
+    System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+        + " / Total number of computers : " + page.getTotalNbElements());
+    page.getList().forEach(System.out::println);
+
+    while (true) {
+      if (page.getPageIndex() == 1) {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+      } else if (page.getPageIndex() == page.getTotalNbPages()) {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page\r\nor the number of the page you want to display");
+      } else {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+      }
+
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || "".equals(userInput)) {
+        if (page.next()) {
+          page = computerService.getPagedList(page);
+          System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+              + " / Total number of computers : " + page.getTotalNbElements());
+          page.getList().forEach(System.out::println);
+        } else {
+          System.out.println("Warning: last page reached!");
+          System.out
+              .println("Type 'return' or 'r' to exit, 'previous' or 'p' to show the previous page");
+        }
+      } else if (StringInputValidation.isId(userInput)) {
+        Integer index = new Integer(userInput);
+        if (index < 1 || index > page.getTotalNbPages()) {
+          System.out.println("Non valid page number.");
+        } else {
+          page.setPageIndex(index);
+          page = computerService.getPagedList(page);
+          System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+              + " / Total number of computers : " + page.getTotalNbElements());
+          page.getList().forEach(System.out::println);
+        }
+      } else {
+        switch (userInput) {
+          case "r":
+            System.out.println("-> back to main menu");
+            return;
+          case "return":
+            System.out.println("-> back to main menu");
+            return;
+          case "n":
+            if (page.next()) {
+              page = computerService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of computers : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: last page reached!");
+            }
+            break;
+          case "next":
+            if (page.next()) {
+              page = computerService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of computers : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: last page reached!");
+            }
+            break;
+          case "p":
+            if (page.previous()) {
+              page = computerService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of computers : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: first page reached!");
+            }
+            break;
+          case "previous":
+            if (page.previous()) {
+              page = computerService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of computers : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: first page reached!");
+            }
+            break;
+          default:
+            System.out.println("Non valid command, please try again.");
+            break;
+        }
+      }
+    }
+  }
+
   /**
    * Display a list of all the computers in database.
    */
@@ -40,6 +178,115 @@ public class OutputManagerCLI {
       }
     } else {
       System.out.println("No computers found.");
+    }
+  }
+
+  /**
+   * Display a page of twenty computers and allow navigation through pages.
+   */
+  public static void showCompanyPage() {
+    System.out.println("-> You entered the company list navigation:");
+
+    //Create a Page
+    Page<Company> page = new Page<Company>();
+    //Get the first Page of computers from the database
+    page = companyService.getPagedList(page);
+    //Show the content of the page
+    System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+        + " / Total number of companies : " + page.getTotalNbElements());
+    page.getList().forEach(System.out::println);
+    while (true) {
+      if (page.getPageIndex() == 1) {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+      } else if (page.getPageIndex() == page.getTotalNbPages()) {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page\r\nor the number of the page you want to display");
+      } else {
+        System.out
+            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+      }
+
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || "".equals(userInput)) {
+        if (page.next()) {
+          page = companyService.getPagedList(page);
+          System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+              + " / Total number of companies : " + page.getTotalNbElements());
+          page.getList().forEach(System.out::println);
+        } else {
+          System.out.println("Warning: last page reached!");
+        }
+      } else if (StringInputValidation.isId(userInput)) {
+        Integer index = new Integer(userInput);
+        if (index < 1 || index > page.getTotalNbPages()) {
+          System.out.println("Non valid page number.");
+        } else {
+          page.setPageIndex(index);
+          page = companyService.getPagedList(page);
+          System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+              + " / Total number of companies : " + page.getTotalNbElements());
+          page.getList().forEach(System.out::println);
+        }
+      } else {
+        switch (userInput) {
+          case "r":
+            System.out.println("-> back to main menu");
+            return;
+          case "return":
+            System.out.println("-> back to main menu");
+            return;
+          case "n":
+            if (page.next()) {
+              page = companyService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of companies : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: last page reached!");
+            }
+            break;
+          case "next":
+            if (page.next()) {
+              page = companyService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of companies : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: last page reached!");
+            }
+            break;
+          case "p":
+            if (page.previous()) {
+              page = companyService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of companies : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: first page reached!");
+            }
+            break;
+          case "previous":
+            if (page.previous()) {
+              page = companyService.getPagedList(page);
+              System.out.println("Page " + page.getPageIndex() + " out of "
+                  + page.getTotalNbPages() + " / Total number of companies : "
+                  + page.getTotalNbElements());
+              page.getList().forEach(System.out::println);
+            } else {
+              System.out.println("Warning: first page reached!");
+            }
+            break;
+          default:
+            System.out.println("Non valid command, please try again.");
+            break;
+        }
+      }
     }
   }
 
@@ -177,23 +424,6 @@ public class OutputManagerCLI {
       System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString()
           + "].\r\n");
     }
-  }
-
-  /**
-   * Display the main menu
-   */
-  public static void showMenu() {
-    StringBuffer menu = new StringBuffer("* * * * * MENU * * * * *\r\n");
-    menu.append("0. Show menu (cmd: 'menu')\r\n");
-    menu.append("1. Show list of all computers (cmd: 'ls computers')\r\n");
-    menu.append("2. Show list of all companies (cmd: 'ls companies')\r\n");
-    menu.append("3. Show the details of one computer (cmd: 'show id')\r\n");
-    menu.append("4. Add a computer (cmd: 'add name introduced discontinued companyId')\r\n");
-    menu.append("5. Update a computer (cmd: 'update id name introduced discontinued companyId')\r\n");
-    menu.append("6. Remove a computer (cmd: 'remove id')\r\n");
-    menu.append("\r\nINFO: to display the help concerning a command, just type 'help commandNumber' or 'help commandName'\r\n");
-    menu.append("INFO2: in order to quit the program, just type 'q' or 'quit' or 'exit'\r\n");
-    System.out.println(menu);
   }
 
   /**

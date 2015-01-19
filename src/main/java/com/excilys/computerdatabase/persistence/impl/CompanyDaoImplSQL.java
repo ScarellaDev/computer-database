@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.persistence.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.CompanyDao;
 
@@ -52,14 +54,13 @@ public enum CompanyDaoImplSQL implements CompanyDao {
     Company company = null;
 
     try {
-      //Get a connectionection to the database
       connection = UtilDaoSQL.getConnection();
 
       //Create the query
-      String query = "SELECT * FROM company WHERE company.id=" + id + ";";
       statement = connection.createStatement();
       //Execute the query
-      results = statement.executeQuery(query);
+      results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY + " WHERE company.id=" + id
+          + ";");
       //Create a company if there is a result
       if (results.next()) {
         company = getCompanyFromRS(results);
@@ -82,16 +83,16 @@ public enum CompanyDaoImplSQL implements CompanyDao {
   public List<Company> getAll() {
     Connection connection = null;
     Statement statement = null;
+    ResultSet results = null;
     List<Company> companies = new ArrayList<Company>();
     Company company;
     try {
       connection = UtilDaoSQL.getConnection();
 
       //Create the query
-      String query = "SELECT * FROM company;";
       statement = connection.createStatement();
       //Execute the query
-      ResultSet results = statement.executeQuery(query);
+      results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY);
       //Create companies with the results
       while (results.next()) {
         company = new Company();
@@ -107,6 +108,67 @@ public enum CompanyDaoImplSQL implements CompanyDao {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement);
       }
+    }
+  }
+
+  /**
+   * Get a Page of companies in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of companies
+   */
+  @Override
+  public Page<Company> getPagedList(Page<Company> page) {
+    Connection connection = null;
+    Statement countStatement = null;
+    PreparedStatement selectStatement = null;
+    ResultSet countResults = null;
+    ResultSet selectResults = null;
+    final List<Company> companies = new ArrayList<Company>();
+
+    try {
+      connection = UtilDaoSQL.getConnection();
+
+      //Create & execute the counting query
+      countStatement = connection.createStatement();
+      countResults = countStatement.executeQuery(UtilDaoSQL.COMPANY_COUNT_QUERY);
+
+      //Set the number of results of the page with the result
+      countResults.next();
+      page.setTotalNbElements(countResults.getInt("total"));
+
+      int itemsDisplayedPerPage;
+      if (page.getPageIndex() == page.getTotalNbPages()) {
+        itemsDisplayedPerPage = page.getNbElementsPerPage();
+        page.refreshNbPages();
+      } else {
+        page.refreshNbPages();
+        itemsDisplayedPerPage = page.getNbElementsPerPage();
+      }
+
+      //Create the SELECT query
+      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPANY_SELECT_QUERY
+          + " LIMIT ? OFFSET ?;");
+      selectStatement.setInt(1, page.getNbElementsPerPage());
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * itemsDisplayedPerPage);
+
+      //Execute the SELECT query
+      selectResults = selectStatement.executeQuery();
+
+      //Create the computers with the results
+      while (selectResults.next()) {
+        companies.add(getCompanyFromRS(selectResults));
+      }
+      page.setList(companies);
+      return page;
+    } catch (SQLException e) {
+      logger.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e);
+    } finally {
+      UtilDaoSQL.close(countResults);
+      UtilDaoSQL.close(selectResults);
+      UtilDaoSQL.close(countStatement);
+      UtilDaoSQL.close(selectStatement);
+      UtilDaoSQL.close(connection);
     }
   }
 

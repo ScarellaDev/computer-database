@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ComputerDao;
 import com.excilys.computerdatabase.test.persistence.mock.ComputerDaoImplSQLMock;
 import com.excilys.computerdatabase.test.persistence.mock.UtilDaoSQLMock;
@@ -57,15 +58,29 @@ public class ComputerDaoTest {
     Statement statement = null;
     connection = UtilDaoSQLMock.getConnection();
     statement = connection.createStatement();
-    statement.execute("TRUNCATE computer");
+    statement.execute("drop table if exists computer;");
+    statement.execute("drop table if exists company;");
     statement
-        .execute("INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES ( 1,'MacBook Pro 15.4 inch',null,null,1);");
+        .execute("create table company (id bigint not null auto_increment, name varchar(255), "
+            + "constraint pk_company primary key (id));");
     statement
-        .execute("INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES ( 2,'MacBook Pro','2006-01-10',null,1);");
+        .execute("create table computer (id bigint not null auto_increment,name varchar(255), "
+            + "introduced timestamp NULL, discontinued timestamp NULL,"
+            + "company_id bigint default NULL," + "constraint pk_computer primary key (id));");
     statement
-        .execute("INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES ( 3,'CM-2a',null,null,2);");
+        .execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
+            + " references company (id) on delete restrict on update restrict;");
+    statement.execute("create index ix_computer_company_1 on computer (company_id);");
+    statement.execute("insert into company (id,name) values ( 1,'Apple Inc.');");
+    statement.execute("insert into company (id,name) values ( 2,'Thinking Machines');");
     statement
-        .execute("INSERT INTO computer (id,name,introduced,discontinued,company_id) VALUES ( 4,'CM-5','1991-01-01',null,2);");
+        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 1,'MacBook Pro 15.4 inch',null,null,1);");
+    statement
+        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 2,'MacBook Pro','2006-01-10',null,1);");
+    statement
+        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 3,'CM-2a',null,null,2);");
+    statement
+        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
     UtilDaoSQLMock.close(connection, statement);
   }
 
@@ -92,8 +107,8 @@ public class ComputerDaoTest {
   }
 
   /**
-   * Test the addByString , updateByString and removeByString methods.
-   * @result Check if the SQL statements are executed properly using a String table as parameter
+   * Test the addByString method.
+   * @result Check if the INSERT SQL statement is executed properly using a String table as parameter
    */
   @Test
   public void testAddByString() {
@@ -103,15 +118,13 @@ public class ComputerDaoTest {
 
     String[] params = "CM-6 1992-01-01 null 2".split("\\s+");
     computerDao.addByString(params);
-    Long addId = computerDao.getLastId();
-    computer.setId(addId);
-    assertEquals(computer, computerDao.getById(addId));
-    updateByString(addId);
+    computer.setId(5L);
+    assertEquals(computer, computerDao.getById(5L));
   }
 
   /**
-   * Test the addByComputer , updateByComputer and removeByComputer methods.
-   * @result Check if the SQL statements are executed properly using a Computer instance as parameter
+   * Test the addByComputer method.
+   * @result Check if the INSERT SQL statements are executed properly using a Computer instance as parameter
    */
   @Test
   public void testAddByComputer() {
@@ -119,41 +132,74 @@ public class ComputerDaoTest {
         .introduced(LocalDateTime.parse("1992-01-01T00:00:00")).company(listCompanies.get(1))
         .build();
     computerDao.addByComputer(computer);
-    Long addId = computerDao.getLastId();
-    computer.setId(addId);
-    assertEquals(computer, computerDao.getById(addId));
-    updateByComputer(addId);
+    computer.setId(5L);
+    assertEquals(computer, computerDao.getById(5L));
   }
 
-  public void updateByString(Long addId) {
-    Computer computer = Computer.builder().id(addId).name("CM-6")
+  /**
+   * Test the updateByString method.
+   * @result Check if the UPDATE SQL statement is executed properly using a String table as parameter
+   */
+  @Test
+  public void updateByString() {
+    Computer computer = Computer.builder().id(4L).name("CM-6")
         .introduced(LocalDateTime.parse("1993-01-01T00:00:00")).build();
 
-    String[] params = (addId.toString() + " CM-6 1993-01-01 null null").split("\\s+");
+    String[] params = ("4 CM-6 1993-01-01 null null").split("\\s+");
     computerDao.updateByString(params);
-    assertEquals(computer, computerDao.getById(addId));
-    removeByComputer(addId);
+    assertEquals(computer, computerDao.getById(4L));
   }
 
-  public void updateByComputer(Long addId) {
-    Computer computer = Computer.builder().id(addId).name("CM-6")
+  /**
+   * Test the updateByComputer method.
+   * @result Check if the UPDATE SQL statements are executed properly using a Computer instance as parameter
+   */
+  @Test
+  public void updateByComputer() {
+    Computer computer = Computer.builder().id(4L).name("CM-6")
         .introduced(LocalDateTime.parse("1993-01-01T00:00:00")).build();
     computerDao.updateByComputer(computer);
-    assertEquals(computer, computerDao.getById(addId));
-    removeByComputer(addId);
+    assertEquals(computer, computerDao.getById(4L));
   }
 
-  public void removeById(Long addId) {
-    assertNotNull(computerDao.getById(addId));
-    computerDao.removeById(addId);
-    assertNull(computerDao.getById(addId));
+  /**
+   * Test the removeById method.
+   * @result Check if the DELETE SQL statement is executed properly using a Long id as parameter
+   */
+  @Test
+  public void removeById() {
+    assertNotNull(computerDao.getById(4L));
+    computerDao.removeById(4L);
+    assertNull(computerDao.getById(4L));
   }
 
-  public void removeByComputer(Long addId) {
-    Computer computer = Computer.builder().id(addId).name("CM-6")
-        .introduced(LocalDateTime.parse("1993-01-01T00:00:00")).build();
-    assertNotNull(computerDao.getById(addId));
+  /**
+   * Test the removeByComputer method.
+   * @result Check if the DELETE SQL statements are executed properly using a Computer instance as parameter
+   */
+  @Test
+  public void removeByComputer() {
+    Computer computer = Computer.builder().id(4L).build();
+    assertNotNull(computerDao.getById(4L));
     computerDao.removeByComputer(computer);
-    assertNull(computerDao.getById(addId));
+    assertNull(computerDao.getById(4L));
+  }
+
+  /**
+   * Test the getPagedList method. 
+   * @result Check if the page retrieved from database is correct.
+   */
+  @Test
+  public void getPagedList() {
+    final Page<Computer> page = new Page<Computer>();
+    page.setNbElementsPerPage(20);
+    page.setPageIndex(1);
+    final Page<Computer> pageReturned = new Page<Computer>();
+    pageReturned.setNbElementsPerPage(4);
+    pageReturned.setPageIndex(1);
+    pageReturned.setTotalNbElements(4);
+    pageReturned.setTotalNbPages(1);
+    pageReturned.setList(listComputers);
+    assertEquals(pageReturned, computerDao.getPagedList(page));
   }
 }

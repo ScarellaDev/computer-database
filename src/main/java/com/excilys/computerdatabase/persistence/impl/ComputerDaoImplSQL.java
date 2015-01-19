@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ComputerDao;
 
@@ -66,7 +67,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       connection = UtilDaoSQL.getConnection();
 
       //Query the database
-      String query = UtilDaoSQL.SELECT_QUERY + " WHERE c.id=" + id;
+      String query = UtilDaoSQL.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id;
       statement = connection.createStatement();
       results = statement.executeQuery(query);
 
@@ -100,7 +101,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       connection = UtilDaoSQL.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQL.SELECT_QUERY);
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY);
       //Create computers and put them in the computers list with the result
       while (results.next()) {
         computers.add(getComputerFromRS(results));
@@ -184,8 +185,8 @@ public enum ComputerDaoImplSQL implements ComputerDao {
           //Get a connection to the database
           connection = UtilDaoSQL.getConnection();
           //Create the query
-          String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
-          statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+          statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
+              Statement.RETURN_GENERATED_KEYS);
           statement.setString(1, name);
           if (introducedL == null) {
             statement.setNull(2, java.sql.Types.TIMESTAMP);
@@ -253,8 +254,8 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       //Get a connection to the database
       connection = UtilDaoSQL.getConnection();
       //Create the query
-      String insertSQL = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
-      statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, computer.getName());
       if (computer.getIntroduced() == null) {
         statement.setNull(2, java.sql.Types.TIMESTAMP);
@@ -389,17 +390,14 @@ public enum ComputerDaoImplSQL implements ComputerDao {
   public Computer updateByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
-    ResultSet results = null;
 
     try {
       //Get a connection to the database
       connection = UtilDaoSQL.getConnection();
       connection.setAutoCommit(false);
       //Create the query
-      statement = connection
-          .prepareStatement(
-              "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?",
-              Statement.RETURN_GENERATED_KEYS);
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_UPDATE_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
       if (computer.getName() == null) {
         statement.setNull(1, java.sql.Types.VARCHAR);
       } else {
@@ -461,7 +459,6 @@ public enum ComputerDaoImplSQL implements ComputerDao {
   public Computer removeByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
-    ResultSet results = null;
 
     if (computer == null) {
       return null;
@@ -472,7 +469,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       connection = UtilDaoSQL.getConnection();
       connection.setAutoCommit(false);
       //Create the query
-      statement = connection.prepareStatement("DELETE computer FROM computer WHERE id = ?",
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
       statement.setLong(1, computer.getId());
 
@@ -508,7 +505,7 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       connection = UtilDaoSQL.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_MAX_QUERY);
       //Create computers and put them in the computers list with the result
       if (results.next()) {
         lastId = results.getLong("id");
@@ -522,6 +519,67 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       }
     }
     return lastId;
+  }
+
+  /**
+   * Get a Page of computers in the database.
+   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * @return A Page instance containing a sublist of computers
+   */
+  @Override
+  public Page<Computer> getPagedList(final Page<Computer> page) {
+    Connection connection = null;
+    Statement countStatement = null;
+    PreparedStatement selectStatement = null;
+    ResultSet countResults = null;
+    ResultSet selectResults = null;
+    final List<Computer> computers = new ArrayList<Computer>();
+
+    try {
+      connection = UtilDaoSQL.getConnection();
+
+      //Create & execute the counting query
+      countStatement = connection.createStatement();
+      countResults = countStatement.executeQuery(UtilDaoSQL.COMPUTER_COUNT_QUERY);
+
+      //Set the number of results of the page with the result
+      countResults.next();
+      page.setTotalNbElements(countResults.getInt("total"));
+
+      int itemsDisplayedPerPage;
+      if (page.getPageIndex() == page.getTotalNbPages()) {
+        itemsDisplayedPerPage = page.getNbElementsPerPage();
+        page.refreshNbPages();
+      } else {
+        page.refreshNbPages();
+        itemsDisplayedPerPage = page.getNbElementsPerPage();
+      }
+
+      //Create the SELECT query
+      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
+          + " LIMIT ? OFFSET ?;");
+      selectStatement.setInt(1, page.getNbElementsPerPage());
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * itemsDisplayedPerPage);
+
+      //Execute the SELECT query
+      selectResults = selectStatement.executeQuery();
+
+      //Create the computers with the results
+      while (selectResults.next()) {
+        computers.add(getComputerFromRS(selectResults));
+      }
+      page.setList(computers);
+      return page;
+    } catch (SQLException e) {
+      logger.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e);
+    } finally {
+      UtilDaoSQL.close(countResults);
+      UtilDaoSQL.close(selectResults);
+      UtilDaoSQL.close(countStatement);
+      UtilDaoSQL.close(selectStatement);
+      UtilDaoSQL.close(connection);
+    }
   }
 
   /**

@@ -52,22 +52,22 @@ public class InputManagerCLI {
     userInput = sc.nextLine().trim().toLowerCase();
     switch (userInput) {
       case "computers":
-        OutputManagerCLI.showComputerList();
+        OutputManagerCLI.showComputerPage();
         break;
       case "ls computers":
-        OutputManagerCLI.showComputerList();
+        OutputManagerCLI.showComputerPage();
         break;
       case "1":
-        OutputManagerCLI.showComputerList();
+        OutputManagerCLI.showComputerPage();
         break;
       case "companies":
-        OutputManagerCLI.showCompanyList();
+        OutputManagerCLI.showCompanyPage();
         break;
       case "ls companies":
-        OutputManagerCLI.showCompanyList();
+        OutputManagerCLI.showCompanyPage();
         break;
       case "2":
-        OutputManagerCLI.showCompanyList();
+        OutputManagerCLI.showCompanyPage();
         break;
       default:
         System.out.println("Non valid command.\r\n-> ls command aborted");
