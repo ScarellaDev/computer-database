@@ -3,19 +3,34 @@ package com.excilys.computerdatabase.domain;
 import java.time.LocalDateTime;
 
 /**
-* Computer class
+* Computer class.
 *
 * @author Jeremy SCARELLA
 */
 public class Computer {
+
+  /*
+   * Attributes
+   */
   private Long          id;
   private String        name;
   private LocalDateTime introduced;
   private LocalDateTime discontinued;
   private Company       company;
 
+  /*
+   * Constructors
+   * 
+   */
   public Computer() {}
 
+  /**
+  * @param id
+  * @param name
+  * @param introduced
+  * @param discontinued
+  * @param company
+  */
   public Computer(Long id, String name, LocalDateTime introduced, LocalDateTime discontinued,
       Company company) {
     super();
@@ -26,6 +41,9 @@ public class Computer {
     this.company = company;
   }
 
+  /*
+   * toString/hashCode/equals overrides
+   */
   @Override
   public String toString() {
     return "Computer [id=" + id + ", name=" + name + ", introduced=" + introduced
@@ -88,6 +106,9 @@ public class Computer {
     return true;
   }
 
+  /*
+   * Builder static class
+   */
   public static class Builder {
     Computer computer;
 
@@ -130,6 +151,9 @@ public class Computer {
     return new Builder();
   }
 
+  /*
+   * Getter/Setter
+   */
   public Long getId() {
     return id;
   }

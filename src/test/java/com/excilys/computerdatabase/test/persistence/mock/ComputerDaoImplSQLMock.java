@@ -17,29 +17,46 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ComputerDao;
+import com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL;
+import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
-* DAO implementation to manage computers in a SQL database.
-*
+* Data Access Object for Computer, SQL implementation.
+* Singleton
+* 
 * @author Jeremy SCARELLA
 */
-
 public enum ComputerDaoImplSQLMock implements ComputerDao {
-  /**
-  * Instance of ComputerDAO
+  /*
+  * Instance of ComputerDaoImplSQLMock
   */
   INSTANCE;
 
+  /*
+   * CONSTANT List of the companies that are in the database (cache)
+   */
+  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
+
+  /*
+   * Logger
+   */
+  private Logger                     logger    = LoggerFactory
+                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQLMock");
+
+  /**
+   * Return the instance of ComputerDaoImplSQLMock.
+   * @return Instance of ComputerDaoImplSQLMock.
+   */
   public static ComputerDaoImplSQLMock getInstance() {
     return INSTANCE;
   }
 
-  private static final List<Company> COMPANIES = CompanyDaoImplSQLMock.getInstance().getAll();
-  private Logger                     logger    = LoggerFactory
-                                                   .getLogger("com.excilys.computerdatabase.test.persistence.mock.computerDaoImplSQLMock");
-
+  /**
+   * Get the computer in the database corresponding to the id in parameter.
+   * @param id : id of the computer in the database.
+   * @return The computer that was found or null if there is no computer for this id.
+   */
   public Computer getById(Long id) {
     Computer computer = null;
     Connection connection = null;
@@ -61,7 +78,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       return computer;
     } catch (SQLException e) {
       logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement, results);
@@ -69,6 +86,10 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Get the List of all the computers in the database.
+   * @return List of all the computers in the database.
+   */
   public List<Computer> getAll() {
     List<Computer> computers = new ArrayList<Computer>();
     Connection connection = null;
@@ -88,7 +109,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       return computers;
     } catch (SQLException e) {
       logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement, results);
@@ -96,6 +117,12 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Add a computer in the database using a table of Strings as parameters.
+   * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
+   * Use the String "null" to skip a value.
+   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
+   */
   public Computer addByString(String[] params) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -143,11 +170,11 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
           if (params[3].matches("[0-9]+")) {
             companyId = new Long(params[3]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException(
+              throw new PersistenceExceptionTest(
                   "The fourth argument must be a positive integer between [1, 43]");
             }
           } else {
-            throw new PersistenceException(
+            throw new PersistenceExceptionTest(
                 "The fourth argument must contains digits only and be a positive integer");
           }
         } else {
@@ -199,20 +226,25 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
           }
         } catch (SQLException e) {
           logger.error("SQLError in addByString() with params = " + params);
-          throw new PersistenceException(e);
+          throw new PersistenceExceptionTest(e);
         } finally {
           if (connection != null) {
             UtilDaoSQLMock.close(connection, statement);
           }
         }
       } else {
-        throw new PersistenceException("Too many arguments passed (max = 4)");
+        throw new PersistenceExceptionTest("Too many arguments passed (max = 4)");
       }
     } else {
-      throw new PersistenceException("Not enough arguments passed (min = 1)");
+      throw new PersistenceExceptionTest("Not enough arguments passed (min = 1)");
     }
   }
 
+  /**
+   * Add a computer in the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
+   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
+   */
   public Computer addByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -256,7 +288,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       }
     } catch (SQLException e) {
       logger.error("SQLError in addByComputer() with computer = " + computer);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement);
@@ -264,6 +296,12 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Update a computer in the database using a table of Strings as parameters.
+   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
+   * All the attributes of the updated computer are changed.
+   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
+   */
   public Computer updateByString(String[] params) {
     if (params.length > 1) {
       if (params.length < 6) {
@@ -273,12 +311,12 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
         if (params[0].matches("[0-9]+")) {
           id = new Long(params[0]);
           if (id < 1 || id > max) {
-            throw new PersistenceException("The first argument must be a positive integer.");
+            throw new PersistenceExceptionTest("The first argument must be a positive integer.");
           } else {
             id = new Long(params[0]);
           }
         } else {
-          throw new PersistenceException(
+          throw new PersistenceExceptionTest(
               "The first argument must contains digits only and be a positive integer.");
         }
 
@@ -323,13 +361,13 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
           if (params[4].matches("[0-9]+")) {
             companyId = new Long(params[4]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException(
+              throw new PersistenceExceptionTest(
                   "The fourth argument must be a positive integer between [1, 43]");
             } else {
               company = COMPANIES.get(companyId.intValue() - 1);
             }
           } else {
-            throw new PersistenceException(
+            throw new PersistenceExceptionTest(
                 "The fourth argument must contains digits only and be a positive integer");
           }
         } else {
@@ -337,13 +375,18 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
         }
         return updateByComputer(new Computer(id, name, introduced, discontinued, company));
       } else {
-        throw new PersistenceException("Too many arguments passed (max = 5)");
+        throw new PersistenceExceptionTest("Too many arguments passed (max = 5)");
       }
     } else {
-      throw new PersistenceException("Not enough arguments passed (min = 2)");
+      throw new PersistenceExceptionTest("Not enough arguments passed (min = 2)");
     }
   }
 
+  /**
+   * Update a computer in the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
+   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
+   */
   public Computer updateByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -389,7 +432,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       }
     } catch (SQLException e) {
       logger.error("SQLError in updateByComputer() with computer = " + computer);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement);
@@ -397,6 +440,11 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Remove a computer from the database using its id.
+   * @param id : id of the computer to remove.
+   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   */
   public Computer removeById(Long id) {
     Computer computer = getById(id);
     if (computer == null) {
@@ -406,6 +454,11 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Remove a computer from the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be removed from the database. Must have an id at least. 
+   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   */
   public Computer removeByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -433,7 +486,7 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       }
     } catch (SQLException e) {
       logger.error("SQLError in removeByComputer() with id = " + computer.getId());
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement);
@@ -441,6 +494,42 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
     }
   }
 
+  /**
+   * Get the maximum id in the computer database.
+   * @return The Long id that was found or null if the database is empty.
+   */
+  public Long getLastId() {
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet results = null;
+    Long lastId = null;
+
+    try {
+      //Get a connection to the database
+      connection = UtilDaoSQLMock.getConnection();
+      //Query the database to get all the computers
+      statement = connection.createStatement();
+      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
+      //Create computers and put them in the computers list with the result
+      if (results.next()) {
+        lastId = results.getLong("id");
+      }
+    } catch (SQLException e) {
+      logger.error("SQLError in getAll()");
+      throw new PersistenceExceptionTest(e);
+    } finally {
+      if (connection != null) {
+        UtilDaoSQLMock.close(connection, statement, results);
+      }
+    }
+    return lastId;
+  }
+
+  /**
+   * Get a Computer instance based on the columns of a row of a ResultSet.
+   * @param rs : ResultSet on a row containing a computer.
+   * @return The computer instance extracted from the ResulSet.
+   */
   private Computer getComputerFromRS(final ResultSet rs) {
     Long id = null;
     String name = null;
@@ -474,35 +563,8 @@ public enum ComputerDaoImplSQLMock implements ComputerDao {
       }
     } catch (SQLException e) {
       logger.error("SQLError in getComputerFromRS() with rs = " + rs);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     }
     return new Computer(id, name, introduced, discontinued, company);
-  }
-
-  public Long getLastId() {
-    Connection connection = null;
-    Statement statement = null;
-    ResultSet results = null;
-    Long lastId = null;
-
-    try {
-      //Get a connection to the database
-      connection = UtilDaoSQLMock.getConnection();
-      //Query the database to get all the computers
-      statement = connection.createStatement();
-      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
-      //Create computers and put them in the computers list with the result
-      if (results.next()) {
-        lastId = results.getLong("id");
-      }
-    } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
-    } finally {
-      if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement, results);
-      }
-    }
-    return lastId;
   }
 }

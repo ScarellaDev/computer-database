@@ -14,10 +14,22 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.persistence.CompanyDao;
 import com.excilys.computerdatabase.test.persistence.mock.CompanyDaoImplSQLMock;
 
+/**
+ * Test class for the CompanyDao
+ * 
+ * @author Jeremy SCARELLA
+ */
 public class CompanyDaoTest {
-  CompanyDao    companyDao;
-  List<Company> list;
+  /*
+   * Attributes
+   */
+  private CompanyDao    companyDao;
+  private List<Company> list;
 
+  /**
+   * Test initialisation, creates two companies for testing and get a CompanyDaoImplSQLMock instance.
+   * @throws SQLException
+   */
   @Before
   public void init() throws SQLException {
     companyDao = CompanyDaoImplSQLMock.getInstance();
@@ -26,6 +38,10 @@ public class CompanyDaoTest {
     list.add(new Company(2L, "Thinking Machines"));
   }
 
+  /**
+   * Test the getById method. 
+   * @result Check if the companies retrieved from database are correct and that method returns null if no company found.
+   */
   @Test
   public void testGetById() {
     assertEquals(new Company(1L, "Apple Inc."), companyDao.getById(1L));
@@ -34,6 +50,10 @@ public class CompanyDaoTest {
     assertNull(companyDao.getById(3L));
   }
 
+  /**
+   * Test the getAll method. 
+   * @result Check if the companies retrieved from database are correct.
+   */
   @Test
   public void testGetAll() {
     assertEquals(list, companyDao.getAll());

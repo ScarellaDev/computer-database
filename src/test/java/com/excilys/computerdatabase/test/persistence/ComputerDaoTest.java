@@ -20,11 +20,24 @@ import com.excilys.computerdatabase.persistence.ComputerDao;
 import com.excilys.computerdatabase.test.persistence.mock.ComputerDaoImplSQLMock;
 import com.excilys.computerdatabase.test.persistence.mock.UtilDaoSQLMock;
 
+/**
+ * Test class for the ComputerDao
+ * 
+ * @author Jeremy SCARELLA
+ */
 public class ComputerDaoTest {
-  ComputerDao    computerDao;
-  List<Computer> listComputers;
-  List<Company>  listCompanies;
+  /*
+   * Attributes
+   */
+  private ComputerDao    computerDao;
+  private List<Computer> listComputers;
+  private List<Company>  listCompanies;
 
+  /**
+   * Test initialisation, creates two companies and four computers for testing, get a ComputerDaoImplSQLMock instance.
+   * It also clears a mock DB and inserts the newly created computers in it. 
+   * @throws SQLException
+   */
   @Before
   public void init() throws SQLException {
     listCompanies = new ArrayList<Company>();
@@ -56,6 +69,10 @@ public class ComputerDaoTest {
     UtilDaoSQLMock.close(connection, statement);
   }
 
+  /**
+   * Test the getById method. 
+   * @result Check if the computers retrieved from database are correct and that method returns null if no computer found.
+   */
   @Test
   public void testGetById() {
     assertEquals(listComputers.get(0), computerDao.getById(1L));
@@ -65,11 +82,19 @@ public class ComputerDaoTest {
     assertNull(computerDao.getById(5L));
   }
 
+  /**
+   * Test the getAll method. 
+   * @result Check if the companies retrieved from database are correct.
+   */
   @Test
   public void testGetAll() {
     assertEquals(listComputers, computerDao.getAll());
   }
 
+  /**
+   * Test the addByString , updateByString and removeByString methods.
+   * @result Check if the SQL statements are executed properly using a String table as parameter
+   */
   @Test
   public void testAddByString() {
     Computer computer = Computer.builder().name("CM-6")
@@ -84,6 +109,10 @@ public class ComputerDaoTest {
     updateByString(addId);
   }
 
+  /**
+   * Test the addByComputer , updateByComputer and removeByComputer methods.
+   * @result Check if the SQL statements are executed properly using a Computer instance as parameter
+   */
   @Test
   public void testAddByComputer() {
     Computer computer = Computer.builder().name("CM-6")

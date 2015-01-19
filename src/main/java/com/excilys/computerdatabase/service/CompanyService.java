@@ -5,24 +5,21 @@ import java.util.List;
 import com.excilys.computerdatabase.domain.Company;
 
 /**
-* Interface implemented by services to manage companies.
+* Interface implemented by services to manage Company objects.
 *
 * @author Jeremy SCARELLA
 */
 public interface CompanyService {
   /**
-  * Retrieve a company from the database thanks to the given id.
-  *
-  * @param id
-  * The id of the company to retrieve.
-  * @return The {@link Company}, or null if no matching company was found.
-  */
+   * Get the company in the database corresponding to the id in parameter.
+   * @param id : id of the company in the database.
+   * @return The company that was found or null if there is no company for this id.
+   */
   Company getById(Long id);
 
   /**
-  * Retrieve all the companies from the database.
-  *
-  * @return A list containing all the companies.
-  */
+   * Get the List of all the companies in the database.
+   * @return List of all the companies in the database.
+   */
   List<Company> getAll();
 }

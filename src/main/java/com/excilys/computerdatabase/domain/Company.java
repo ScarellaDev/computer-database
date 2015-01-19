@@ -1,22 +1,37 @@
 package com.excilys.computerdatabase.domain;
 
 /**
-* Company class
+* Company class.
 *
 * @author Jeremy SCARELLA
 */
 public final class Company {
+
+  /*
+   * Attributes
+   */
   private Long   id;
   private String name;
 
+  /*
+   * Constructors
+   * 
+   */
   public Company() {}
 
+  /**
+  * @param id
+  * @param name
+  */
   public Company(Long id, String name) {
     super();
     this.id = id;
     this.name = name;
   }
 
+  /*
+   * toString/hashCode/equals overrides
+   */
   @Override
   public String toString() {
     return "Company [id=" + id + ", name=" + name + "]";
@@ -57,6 +72,9 @@ public final class Company {
     return true;
   }
 
+  /*
+   * Builder static class
+   */
   public static class Builder {
     Company company;
 
@@ -84,6 +102,9 @@ public final class Company {
     return new Builder();
   }
 
+  /*
+   * Getter/Setter
+   */
   public Long getId() {
     return id;
   }

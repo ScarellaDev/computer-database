@@ -21,25 +21,41 @@ import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ComputerDao;
 
 /**
-* DAO implementation to manage computers in a SQL database.
-*
+* Data Access Object for Computer, SQL implementation.
+* Singleton
+* 
 * @author Jeremy SCARELLA
 */
-
 public enum ComputerDaoImplSQL implements ComputerDao {
-  /**
-  * Instance of ComputerDAO
+  /*
+  * Instance of ComputerDaoImplSQL
   */
   INSTANCE;
 
+  /*
+   * CONSTANT List of the companies that are in the database (cache)
+   */
+  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
+
+  /*
+   * Logger
+   */
+  private Logger                     logger    = LoggerFactory
+                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
+
+  /**
+   * Return the instance of ComputerDaoImplSQL.
+   * @return Instance of ComputerDaoImplSQL.
+   */
   public static ComputerDaoImplSQL getInstance() {
     return INSTANCE;
   }
 
-  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
-  private Logger                     logger    = LoggerFactory
-                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
-
+  /**
+   * Get the computer in the database corresponding to the id in parameter.
+   * @param id : id of the computer in the database.
+   * @return The computer that was found or null if there is no computer for this id.
+   */
   public Computer getById(Long id) {
     Computer computer = null;
     Connection connection = null;
@@ -69,6 +85,10 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Get the List of all the computers in the database.
+   * @return List of all the computers in the database.
+   */
   public List<Computer> getAll() {
     List<Computer> computers = new ArrayList<Computer>();
     Connection connection = null;
@@ -96,6 +116,12 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Add a computer in the database using a table of Strings as parameters.
+   * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
+   * Use the String "null" to skip a value.
+   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
+   */
   public Computer addByString(String[] params) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -213,6 +239,11 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Add a computer in the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
+   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
+   */
   public Computer addByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -264,6 +295,12 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Update a computer in the database using a table of Strings as parameters.
+   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
+   * All the attributes of the updated computer are changed.
+   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
+   */
   public Computer updateByString(String[] params) {
     if (params.length > 1) {
       if (params.length < 6) {
@@ -344,6 +381,11 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Update a computer in the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
+   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
+   */
   public Computer updateByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -397,6 +439,11 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Remove a computer from the database using its id.
+   * @param id : id of the computer to remove.
+   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   */
   public Computer removeById(Long id) {
     Computer computer = getById(id);
     if (computer == null) {
@@ -406,6 +453,11 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Remove a computer from the database using a Computer instance.
+   * @param computer : instance of the computer that needs to be removed from the database. Must have an id at least. 
+   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   */
   public Computer removeByComputer(Computer computer) {
     Connection connection = null;
     PreparedStatement statement = null;
@@ -441,6 +493,42 @@ public enum ComputerDaoImplSQL implements ComputerDao {
     }
   }
 
+  /**
+   * Get the maximum id in the computer database.
+   * @return The Long id that was found or null if the database is empty.
+   */
+  public Long getLastId() {
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet results = null;
+    Long lastId = null;
+
+    try {
+      //Get a connection to the database
+      connection = UtilDaoSQL.getConnection();
+      //Query the database to get all the computers
+      statement = connection.createStatement();
+      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
+      //Create computers and put them in the computers list with the result
+      if (results.next()) {
+        lastId = results.getLong("id");
+      }
+    } catch (SQLException e) {
+      logger.error("SQLError in getAll()");
+      throw new PersistenceException(e);
+    } finally {
+      if (connection != null) {
+        UtilDaoSQL.close(connection, statement, results);
+      }
+    }
+    return lastId;
+  }
+
+  /**
+   * Get a Computer instance based on the columns of a row of a ResultSet.
+   * @param rs : ResultSet on a row containing a computer.
+   * @return The computer instance extracted from the ResulSet.
+   */
   private Computer getComputerFromRS(final ResultSet rs) {
     Long id = null;
     String name = null;
@@ -477,32 +565,5 @@ public enum ComputerDaoImplSQL implements ComputerDao {
       throw new PersistenceException(e);
     }
     return new Computer(id, name, introduced, discontinued, company);
-  }
-
-  public Long getLastId() {
-    Connection connection = null;
-    Statement statement = null;
-    ResultSet results = null;
-    Long lastId = null;
-
-    try {
-      //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
-      //Query the database to get all the computers
-      statement = connection.createStatement();
-      results = statement.executeQuery("SELECT MAX(id) AS id FROM computer;");
-      //Create computers and put them in the computers list with the result
-      if (results.next()) {
-        lastId = results.getLong("id");
-      }
-    } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
-    } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
-      }
-    }
-    return lastId;
   }
 }

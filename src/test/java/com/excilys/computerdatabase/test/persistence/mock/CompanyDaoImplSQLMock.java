@@ -11,37 +11,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
-* Data Access Object for the Computer
+* Mock Data Access Object for Company, SQL implementation.
 * Singleton
+* 
 * @author Jeremy SCARELLA
-*
 */
 public enum CompanyDaoImplSQLMock implements CompanyDao {
-  /**
-  * Instance of CompanyDaoImplSQL
+  /*
+  * Instance of CompanyDaoImplSQLMock
   */
   INSTANCE;
 
+  /*
+   * Logger
+   */
   private Logger logger = LoggerFactory
-                            .getLogger("com.excilys.computerdatabase.test.persistence.mock.CompanyDaoImplSQLMock");
+                            .getLogger("com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQLMock");
 
   /**
-  * Return the instance of the CompanyDaoImplSQL
-  * @return Instance of the CompanyDaoImplSQL
+  * Return the instance of CompanyDaoImplSQLMock.
+  * @return Instance of CompanyDaoImplSQLMock.
   */
   public static CompanyDaoImplSQLMock getInstance() {
     return INSTANCE;
   }
 
   /**
-  * Get the company in the database corresponding to the id in parameter
-  * @param id : id of the company in the database
-  * @return the company that was found or null if there is no company for this id
-  */
+   * Get the company in the database corresponding to the id in parameter.
+   * @param id : id of the company in the database.
+   * @return The company that was found or null if there is no company for this id.
+   */
   public Company getById(Long id) {
     Connection connection = null;
     Statement statement = null;
@@ -49,7 +52,7 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
     Company company = null;
 
     try {
-      //Get a connection to the database
+      //Get a connectionection to the database
       connection = UtilDaoSQLMock.getConnection();
 
       //Create the query
@@ -64,7 +67,7 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
       return company;
     } catch (SQLException e) {
       logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement, results);
@@ -73,9 +76,9 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
   }
 
   /**
-  * Get the List of all the companies in the database
-  * @return List of all the companies in the database
-  */
+   * Get the List of all the companies in the database.
+   * @return List of all the companies in the database.
+   */
   public List<Company> getAll() {
     Connection connection = null;
     Statement statement = null;
@@ -99,7 +102,7 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
       return companies;
     } catch (SQLException e) {
       logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     } finally {
       if (connection != null) {
         UtilDaoSQLMock.close(connection, statement);
@@ -108,17 +111,16 @@ public enum CompanyDaoImplSQLMock implements CompanyDao {
   }
 
   /**
-  * Create a computer based on the columns of a row of a ResultSet
-  * @param rs : ResultSet on a row containing a computer
-  * @return the computer contained in the row
-  * @throws SQLException
+  * Get a Company instance based on the columns of a row of a ResultSet.
+  * @param rs : ResultSet on a row containing a company.
+  * @return The company instance extracted from the ResulSet.
   */
   private Company getCompanyFromRS(final ResultSet rs) {
     try {
       return Company.builder().id(rs.getLong("id")).name(rs.getString("name")).build();
     } catch (SQLException e) {
       logger.error("SQLError in getCompanyFromRS() with rs = " + rs);
-      throw new PersistenceException(e);
+      throw new PersistenceExceptionTest(e);
     }
   }
 }

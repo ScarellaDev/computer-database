@@ -17,11 +17,21 @@ import com.excilys.computerdatabase.persistence.CompanyDao;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.test.service.mock.CompanyServiceMock;
 
+/**
+ * Test class for the CompanyService
+ * 
+ * @author Jeremy SCARELLA
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class CompanyServiceTest {
+  /*
+   * Attributes
+   */
+  private CompanyService companyService;
 
-  CompanyService companyService;
-
+  /**
+   * Test initialisation using Mockito, creates a mock CompanyDao.
+   */
   @Before
   public void init() {
     CompanyDao companyDao = mock(CompanyDao.class);
@@ -30,12 +40,20 @@ public class CompanyServiceTest {
     companyService = new CompanyServiceMock(companyDao);
   }
 
+  /**
+   * Test the getById method. 
+   * @result Check if the companies retrieved from database are correct and that method returns null if no company found.
+   */
   @Test
   public void getById() {
     assertNull(companyService.getById(0L));
     assertEquals(Company.builder().id(1L).build(), companyService.getById(1L));
   }
 
+  /**
+   * Test the getAll method. 
+   * @result Check if the companies retrieved from database are correct.
+   */
   @Test
   public void getAll() {
     assertEquals(new ArrayList<Company>(), companyService.getAll());
