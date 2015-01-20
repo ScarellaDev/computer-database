@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.persistence.ICompanyDao;
 
 /**
 * Data Access Object for Company, SQL implementation.
@@ -22,7 +22,7 @@ import com.excilys.computerdatabase.persistence.CompanyDao;
 * 
 * @author Jeremy SCARELLA
 */
-public enum CompanyDaoImplSQL implements CompanyDao {
+public enum CompanyDaoImplSQL implements ICompanyDao {
   /*
   * Instance of CompanyDaoImplSQL
   */

@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.test.persistence.mock.CompanyDaoImplSQLMock;
 import com.excilys.computerdatabase.test.persistence.mock.UtilDaoSQLMock;
 
@@ -27,7 +27,7 @@ public class CompanyDaoTest {
   /*
    * Attributes
    */
-  private CompanyDao    companyDao;
+  private ICompanyDao    companyDao;
   private List<Company> list;
 
   /**

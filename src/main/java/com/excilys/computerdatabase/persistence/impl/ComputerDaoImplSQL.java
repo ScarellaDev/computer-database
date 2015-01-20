@@ -19,7 +19,7 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.ComputerDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -27,7 +27,7 @@ import com.excilys.computerdatabase.persistence.ComputerDao;
 * 
 * @author Jeremy SCARELLA
 */
-public enum ComputerDaoImplSQL implements ComputerDao {
+public enum ComputerDaoImplSQL implements IComputerDao {
   /*
   * Instance of ComputerDaoImplSQL
   */

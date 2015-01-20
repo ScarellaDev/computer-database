@@ -4,20 +4,20 @@ import java.util.List;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.ManagerDao;
-import com.excilys.computerdatabase.service.CompanyService;
+import com.excilys.computerdatabase.service.ICompanyService;
 
 /**
 * Standard Service implementation to manage Company objects.
 *
 * @author Jeremy SCARELLA
 */
-public class CompanyServiceImpl implements CompanyService {
+public class CompanyServiceImpl implements ICompanyService {
   /*
    * Instance of companyDao
    */
-  private CompanyDao companyDao;
+  private ICompanyDao companyDao;
 
   /*
    * Constructor

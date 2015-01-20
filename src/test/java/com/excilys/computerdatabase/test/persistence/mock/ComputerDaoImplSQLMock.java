@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ComputerDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
@@ -27,7 +27,7 @@ import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 * 
 * @author Jeremy SCARELLA
 */
-public enum ComputerDaoImplSQLMock implements ComputerDao {
+public enum ComputerDaoImplSQLMock implements IComputerDao {
   /*
   * Instance of ComputerDaoImplSQLMock
   */

@@ -17,7 +17,7 @@ import org.junit.Test;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ComputerDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.test.persistence.mock.ComputerDaoImplSQLMock;
 import com.excilys.computerdatabase.test.persistence.mock.UtilDaoSQLMock;
 
@@ -30,7 +30,7 @@ public class ComputerDaoTest {
   /*
    * Attributes
    */
-  private ComputerDao    computerDao;
+  private IComputerDao    computerDao;
   private List<Computer> listComputers;
   private List<Company>  listCompanies;
 

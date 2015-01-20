@@ -4,25 +4,25 @@ import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ComputerDao;
-import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.service.IComputerService;
 
 /**
 * Mock standard Service implementation to manage Computer objects.
 *
 * @author Jeremy SCARELLA
 */
-public class ComputerServiceMock implements ComputerService {
+public class ComputerServiceMock implements IComputerService {
   /*
    * Attributes
    */
-  private ComputerDao computerDao;
+  private IComputerDao computerDao;
 
   /**
    * Constructor
    * @param computerDao
    */
-  public ComputerServiceMock(ComputerDao computerDao) {
+  public ComputerServiceMock(IComputerDao computerDao) {
     this.computerDao = computerDao;
   }
 

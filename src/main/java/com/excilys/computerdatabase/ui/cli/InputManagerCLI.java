@@ -5,10 +5,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.service.CompanyService;
-import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.service.ManagerService;
-import com.excilys.computerdatabase.validator.StringInputValidation;
+import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Class managing the inputs of the CLI.
@@ -19,13 +19,13 @@ public class InputManagerCLI {
   /*
    * Instance of computerService
    */
-  private static ComputerService         computerService = ManagerService.getInstance()
+  private static IComputerService        computerService = ManagerService.getInstance()
                                                              .getComputerService();
 
   /*
    * Instance of companyService
    */
-  private static CompanyService          companyService  = ManagerService.getInstance()
+  private static ICompanyService         companyService  = ManagerService.getInstance()
                                                              .getCompanyService();
 
   /*
@@ -89,7 +89,7 @@ public class InputManagerCLI {
         System.out.println("-> show command aborted");
         return;
       } else {
-        if (StringInputValidation.isComputerId(userInput)) {
+        if (StringValidation.isComputerId(userInput)) {
           OutputManagerCLI.showComputer(userInput);
           break;
         } else {
@@ -113,8 +113,7 @@ public class InputManagerCLI {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidation.isEmpty(userInput)) {
         System.out.println("-> add command aborted");
         return;
       } else {
@@ -134,7 +133,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isDate(userInput)) {
+        if (StringValidation.isDate(userInput)) {
           StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -157,7 +156,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isDate(userInput)) {
+        if (StringValidation.isDate(userInput)) {
           StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -180,7 +179,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isCompanyId(userInput)) {
+        if (StringValidation.isCompanyId(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -210,7 +209,7 @@ public class InputManagerCLI {
         System.out.println("-> update command aborted");
         return;
       } else {
-        if (StringInputValidation.isComputerId(userInput)) {
+        if (StringValidation.isComputerId(userInput)) {
           builder.id(new Long(userInput));
           break;
         } else {
@@ -228,8 +227,7 @@ public class InputManagerCLI {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidation.isEmpty(userInput)) {
         break;
       } else {
         builder.name(userInput);
@@ -248,7 +246,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isDate(userInput)) {
+        if (StringValidation.isDate(userInput)) {
           StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -271,7 +269,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isDate(userInput)) {
+        if (StringValidation.isDate(userInput)) {
           StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -294,7 +292,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringInputValidation.isCompanyId(userInput)) {
+        if (StringValidation.isCompanyId(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -320,7 +318,7 @@ public class InputManagerCLI {
         System.out.println("-> remove command aborted");
         return;
       } else {
-        if (StringInputValidation.isComputerId(userInput)) {
+        if (StringValidation.isComputerId(userInput)) {
           OutputManagerCLI.showRemoveResult(userInput);
           break;
         } else {

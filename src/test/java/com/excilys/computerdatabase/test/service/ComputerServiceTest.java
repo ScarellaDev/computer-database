@@ -15,8 +15,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ComputerDao;
-import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.test.service.mock.ComputerServiceMock;
 
 /**
@@ -29,12 +29,12 @@ public class ComputerServiceTest {
   /*
    * Attributes
    */
-  private ComputerService computerService;
+  private IComputerService computerService;
   private Long            computerId;
   private Long            computerId2;
   private Computer        computer;
   private Computer        computer2;
-  private ComputerDao     computerDao;
+  private IComputerDao     computerDao;
   Page<Computer>          page;
   Page<Computer>          pageReturned;
 
@@ -43,7 +43,7 @@ public class ComputerServiceTest {
    */
   @Before
   public void init() {
-    computerDao = mock(ComputerDao.class);
+    computerDao = mock(IComputerDao.class);
     computer = Computer.builder().id(1L).name("CM-5").build();
     computerId = computer.getId();
     computer2 = Computer.builder().id(2L).name("CM-6").build();

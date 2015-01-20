@@ -18,12 +18,12 @@ public enum ManagerDao {
   /*
   * Instance of ComputerDao
   */
-  private ComputerDao computerDao;
+  private IComputerDao computerDao;
 
   /*
    * Instance of CompanyDao
    */
-  private CompanyDao  companyDao;
+  private ICompanyDao  companyDao;
 
   /**
    * Return the instance of ManagerDao.
@@ -44,11 +44,11 @@ public enum ManagerDao {
   /*
    * Getter
    */
-  public ComputerDao getComputerDao() {
+  public IComputerDao getComputerDao() {
     return computerDao;
   }
 
-  public CompanyDao getCompanyDao() {
+  public ICompanyDao getCompanyDao() {
     return companyDao;
   }
 }

@@ -4,20 +4,20 @@ import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ComputerDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.ManagerDao;
-import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.service.IComputerService;
 
 /**
 * Standard Service implementation to manage Computer objects.
 *
 * @author Jeremy SCARELLA
 */
-public class ComputerServiceImpl implements ComputerService {
+public class ComputerServiceImpl implements IComputerService {
   /*
    * Instance of computerDao
    */
-  private ComputerDao computerDao;
+  private IComputerDao computerDao;
 
   /*
    * Constructor

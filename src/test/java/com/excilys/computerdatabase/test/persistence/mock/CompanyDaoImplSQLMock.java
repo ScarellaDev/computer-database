@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.CompanyDao;
+import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
@@ -22,7 +22,7 @@ import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 * 
 * @author Jeremy SCARELLA
 */
-public enum CompanyDaoImplSQLMock implements CompanyDao {
+public enum CompanyDaoImplSQLMock implements ICompanyDao {
   /*
   * Instance of CompanyDaoImplSQLMock
   */

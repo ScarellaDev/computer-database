@@ -7,10 +7,10 @@ import java.util.Scanner;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.service.CompanyService;
-import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.service.ManagerService;
-import com.excilys.computerdatabase.validator.StringInputValidation;
+import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Class managing the outputs of the CLI.
@@ -21,20 +21,21 @@ public class OutputManagerCLI {
   /*
    * Instance of computerService
    */
-  private static ComputerService computerService = ManagerService.getInstance()
-                                                     .getComputerService();
+  private static IComputerService computerService = ManagerService.getInstance()
+                                                      .getComputerService();
 
   /*
    * Instance of companyService
    */
-  private static CompanyService  companyService  = ManagerService.getInstance().getCompanyService();
+  private static ICompanyService  companyService  = ManagerService.getInstance()
+                                                      .getCompanyService();
 
   /*
    * Scanner sc : get the user input
    * String userInput : save the user input
    */
-  private static Scanner         sc;
-  private static String          userInput;
+  private static Scanner          sc;
+  private static String           userInput;
 
   /**
    * Display the main menu
@@ -93,7 +94,7 @@ public class OutputManagerCLI {
           System.out
               .println("Type 'return' or 'r' to exit, 'previous' or 'p' to show the previous page");
         }
-      } else if (StringInputValidation.isId(userInput)) {
+      } else if (StringValidation.isPositiveLong(userInput)) {
         Integer index = new Integer(userInput);
         if (index < 1 || index > page.getTotalNbPages()) {
           System.out.println("Non valid page number.");
@@ -219,7 +220,7 @@ public class OutputManagerCLI {
         } else {
           System.out.println("Warning: last page reached!");
         }
-      } else if (StringInputValidation.isId(userInput)) {
+      } else if (StringValidation.isPositiveLong(userInput)) {
         Integer index = new Integer(userInput);
         if (index < 1 || index > page.getTotalNbPages()) {
           System.out.println("Non valid page number.");

@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.persistence;
+package com.excilys.computerdatabase.service;
 
 import java.util.List;
 
@@ -6,12 +6,11 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 
 /**
-* Interface implemented by Daos to manage computers.
+* Interface implemented by services to manage Computer objects.
 *
 * @author Jeremy SCARELLA
 */
-public interface ComputerDao {
-
+public interface IComputerService {
   /**
    * Get the computer in the database corresponding to the id in parameter.
    * @param id : id of the computer in the database.

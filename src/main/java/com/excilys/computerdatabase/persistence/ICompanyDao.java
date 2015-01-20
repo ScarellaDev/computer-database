@@ -10,7 +10,7 @@ import com.excilys.computerdatabase.domain.Page;
 *
 * @author Jeremy SCARELLA
 */
-public interface CompanyDao {
+public interface ICompanyDao {
 
   /**
    * Get the company in the database corresponding to the id in parameter.
