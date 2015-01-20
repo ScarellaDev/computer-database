@@ -17,16 +17,16 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 public class InputManagerCLI {
   /*
-   * Instance of computerService
+   * Instance of computerDBService
    */
-  private static IComputerDBService        computerService = ManagerService.getInstance()
-                                                             .getComputerService();
+  private static IComputerDBService      computerDBService = ManagerService.getInstance()
+                                                               .getComputerDBService();
 
   /*
-   * Instance of companyService
+   * Instance of companyDBService
    */
-  private static ICompanyDBService         companyService  = ManagerService.getInstance()
-                                                             .getCompanyService();
+  private static ICompanyDBService       companyDBService  = ManagerService.getInstance()
+                                                               .getCompanyDBService();
 
   /*
    * Scanner sc : get the user input
@@ -38,8 +38,8 @@ public class InputManagerCLI {
   /*
    * Date FORMATTER : yyyy-MM-dd HH:mm:ss
    */
-  private static final DateTimeFormatter FORMATTER       = DateTimeFormatter
-                                                             .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final DateTimeFormatter FORMATTER         = DateTimeFormatter
+                                                               .ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /**
    * Step by step input for the "ls" command.
@@ -180,7 +180,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isCompanyId(userInput)) {
-          builder.company(companyService.getById(new Long(userInput)));
+          builder.company(companyDBService.getById(new Long(userInput)));
           break;
         } else {
           System.out.println("Please, enter a new valid id (between [1, 43]):");
@@ -214,7 +214,7 @@ public class InputManagerCLI {
           break;
         } else {
           System.out.println("Please, enter a new valid id (between [1, "
-              + computerService.getLastId() + "]):");
+              + computerDBService.getLastId() + "]):");
           continue;
         }
       }
@@ -293,7 +293,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isCompanyId(userInput)) {
-          builder.company(companyService.getById(new Long(userInput)));
+          builder.company(companyDBService.getById(new Long(userInput)));
           break;
         } else {
           System.out.println("Please, enter a new valid id (between [1, 43]):");

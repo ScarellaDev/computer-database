@@ -201,15 +201,5 @@ public class Page<T> {
     } else {
       totalNbPages = 0;
     }
-
-    if (pageIndex == totalNbPages) {
-      if (totalNbElements % nbElementsPerPage == 0) {
-        nbElementsPerPage = 0;
-      } else {
-        nbElementsPerPage = totalNbElements % nbElementsPerPage;
-      }
-    } else {
-      nbElementsPerPage = 20;
-    }
   }
 }

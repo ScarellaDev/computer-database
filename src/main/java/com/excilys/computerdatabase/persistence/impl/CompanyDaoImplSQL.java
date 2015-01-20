@@ -136,20 +136,13 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
       countResults.next();
       page.setTotalNbElements(countResults.getInt("total"));
 
-      int itemsDisplayedPerPage;
-      if (page.getPageIndex() == page.getTotalNbPages()) {
-        itemsDisplayedPerPage = page.getNbElementsPerPage();
-        page.refreshNbPages();
-      } else {
-        page.refreshNbPages();
-        itemsDisplayedPerPage = page.getNbElementsPerPage();
-      }
+      page.refreshNbPages();
 
       //Create the SELECT query
       selectStatement = connection.prepareStatement(UtilDaoSQL.COMPANY_SELECT_QUERY
           + " LIMIT ? OFFSET ?;");
       selectStatement.setInt(1, page.getNbElementsPerPage());
-      selectStatement.setInt(2, (page.getPageIndex() - 1) * itemsDisplayedPerPage);
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();

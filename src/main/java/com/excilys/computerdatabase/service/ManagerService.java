@@ -15,14 +15,14 @@ public enum ManagerService {
   INSTANCE;
 
   /*
-   * Instance of computerService
+   * Instance of computerDBService
    */
-  private IComputerDBService computerService;
+  private IComputerDBService computerDBService;
 
   /*
-   * Instance of companyService
+   * Instance of companyDBService
    */
-  private ICompanyDBService  companyService;
+  private ICompanyDBService  companyDBService;
 
   /**
    * Return the instance of ManagerService.
@@ -36,18 +36,18 @@ public enum ManagerService {
    * Constructor
    */
   private ManagerService() {
-    computerService = new ComputerServiceImpl();
-    companyService = new CompanyServiceImpl();
+    computerDBService = new ComputerServiceImpl();
+    companyDBService = new CompanyServiceImpl();
   }
 
   /*
    * Getter
    */
-  public IComputerDBService getComputerService() {
-    return computerService;
+  public IComputerDBService getComputerDBService() {
+    return computerDBService;
   }
 
-  public ICompanyDBService getCompanyService() {
-    return companyService;
+  public ICompanyDBService getCompanyDBService() {
+    return companyDBService;
   }
 }

@@ -36,13 +36,20 @@ public enum ComputerDaoImplSQL implements IComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company> COMPANIES = CompanyDaoImplSQL.getInstance().getAll();
+  private static final List<Company>     COMPANIES           = CompanyDaoImplSQL.getInstance()
+                                                                 .getAll();
+
+  /*
+   * DATE TIME FORMATTER
+   */
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+                                                                 .ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /*
    * Logger
    */
-  private Logger                     logger    = LoggerFactory
-                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
+  private Logger                         logger              = LoggerFactory
+                                                                 .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
 
   /**
    * Return the instance of ComputerDaoImplSQL.
@@ -141,9 +148,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         if (params.length > 1 && !params[1].toLowerCase().equals("null")) {
           StringBuffer introducedS = new StringBuffer(params[1]);
           introducedS.append(" 00:00:00");
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
           try {
-            introducedL = LocalDateTime.parse(introducedS, formatter);
+            introducedL = LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER);
           } catch (DateTimeParseException e) {
             return null;
           }
@@ -155,9 +161,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         if (params.length > 2 && !params[2].toLowerCase().equals("null")) {
           StringBuffer discontinuedS = new StringBuffer(params[2]);
           discontinuedS.append(" 00:00:00");
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
           try {
-            discontinuedL = LocalDateTime.parse(discontinuedS, formatter);
+            discontinuedL = LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER);
           } catch (DateTimeParseException e) {
             return null;
           }
@@ -331,9 +336,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         if (params.length > 2 && !params[2].toLowerCase().equals("null")) {
           StringBuffer introducedS = new StringBuffer(params[2]);
           introducedS.append(" 00:00:00");
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
           try {
-            introduced = LocalDateTime.parse(introducedS, formatter);
+            introduced = LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER);
           } catch (DateTimeParseException e) {
             return null;
           }
@@ -345,9 +349,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         if (params.length > 3 && !params[3].toLowerCase().equals("null")) {
           StringBuffer discontinuedS = new StringBuffer(params[3]);
           discontinuedS.append(" 00:00:00");
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
           try {
-            discontinued = LocalDateTime.parse(discontinuedS, formatter);
+            discontinued = LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER);
           } catch (DateTimeParseException e) {
             return null;
           }
@@ -546,20 +549,13 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       countResults.next();
       page.setTotalNbElements(countResults.getInt("total"));
 
-      int itemsDisplayedPerPage;
-      if (page.getPageIndex() == page.getTotalNbPages()) {
-        itemsDisplayedPerPage = page.getNbElementsPerPage();
-        page.refreshNbPages();
-      } else {
-        page.refreshNbPages();
-        itemsDisplayedPerPage = page.getNbElementsPerPage();
-      }
+      page.refreshNbPages();
 
       //Create the SELECT query
       selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
           + " LIMIT ? OFFSET ?;");
       selectStatement.setInt(1, page.getNbElementsPerPage());
-      selectStatement.setInt(2, (page.getPageIndex() - 1) * itemsDisplayedPerPage);
+      selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
