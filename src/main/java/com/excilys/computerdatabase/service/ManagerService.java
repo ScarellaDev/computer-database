@@ -17,12 +17,12 @@ public enum ManagerService {
   /*
    * Instance of computerService
    */
-  private IComputerService computerService;
+  private IComputerDBService computerService;
 
   /*
    * Instance of companyService
    */
-  private ICompanyService  companyService;
+  private ICompanyDBService  companyService;
 
   /**
    * Return the instance of ManagerService.
@@ -43,11 +43,11 @@ public enum ManagerService {
   /*
    * Getter
    */
-  public IComputerService getComputerService() {
+  public IComputerDBService getComputerService() {
     return computerService;
   }
 
-  public ICompanyService getCompanyService() {
+  public ICompanyDBService getCompanyService() {
     return companyService;
   }
 }

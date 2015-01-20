@@ -6,14 +6,14 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.ManagerDao;
-import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
 * Standard Service implementation to manage Company objects.
 *
 * @author Jeremy SCARELLA
 */
-public class CompanyServiceImpl implements ICompanyService {
+public class CompanyServiceImpl implements ICompanyDBService {
   /*
    * Instance of companyDao
    */

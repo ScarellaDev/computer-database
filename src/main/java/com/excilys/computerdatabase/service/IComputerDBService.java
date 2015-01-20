@@ -10,7 +10,7 @@ import com.excilys.computerdatabase.domain.Page;
 *
 * @author Jeremy SCARELLA
 */
-public interface IComputerService {
+public interface IComputerDBService {
   /**
    * Get the computer in the database corresponding to the id in parameter.
    * @param id : id of the computer in the database.

@@ -16,7 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.test.service.mock.ComputerServiceMock;
 
 /**
@@ -29,7 +29,7 @@ public class ComputerServiceTest {
   /*
    * Attributes
    */
-  private IComputerService computerService;
+  private IComputerDBService computerService;
   private Long            computerId;
   private Long            computerId2;
   private Computer        computer;

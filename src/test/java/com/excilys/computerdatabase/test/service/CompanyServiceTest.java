@@ -15,7 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
-import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.test.service.mock.CompanyServiceMock;
 
 /**
@@ -28,7 +28,7 @@ public class CompanyServiceTest {
   /*
    * Attributes
    */
-  private ICompanyService companyService;
+  private ICompanyDBService companyService;
   Page<Company>          page;
   Page<Company>          pageReturned;
 

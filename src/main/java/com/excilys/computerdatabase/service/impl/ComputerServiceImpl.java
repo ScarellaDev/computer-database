@@ -6,14 +6,14 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.ManagerDao;
-import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.IComputerDBService;
 
 /**
 * Standard Service implementation to manage Computer objects.
 *
 * @author Jeremy SCARELLA
 */
-public class ComputerServiceImpl implements IComputerService {
+public class ComputerServiceImpl implements IComputerDBService {
   /*
    * Instance of computerDao
    */

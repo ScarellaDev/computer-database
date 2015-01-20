@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.service.ICompanyService;
-import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.ICompanyDBService;
+import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.ManagerService;
 import com.excilys.computerdatabase.validator.StringValidation;
 
@@ -19,13 +19,13 @@ public class InputManagerCLI {
   /*
    * Instance of computerService
    */
-  private static IComputerService        computerService = ManagerService.getInstance()
+  private static IComputerDBService        computerService = ManagerService.getInstance()
                                                              .getComputerService();
 
   /*
    * Instance of companyService
    */
-  private static ICompanyService         companyService  = ManagerService.getInstance()
+  private static ICompanyDBService         companyService  = ManagerService.getInstance()
                                                              .getCompanyService();
 
   /*

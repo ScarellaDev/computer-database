@@ -10,7 +10,7 @@ import com.excilys.computerdatabase.domain.Page;
 *
 * @author Jeremy SCARELLA
 */
-public interface ICompanyService {
+public interface ICompanyDBService {
   /**
    * Get the company in the database corresponding to the id in parameter.
    * @param id : id of the company in the database.

@@ -5,14 +5,14 @@ import java.util.List;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
-import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
 * Mock standard Service implementation to manage Company objects.
 *
 * @author Jeremy SCARELLA
 */
-public class CompanyServiceMock implements ICompanyService {
+public class CompanyServiceMock implements ICompanyDBService {
   /*
    * Instance of companyDao
    */

@@ -1,7 +1,7 @@
 package com.excilys.computerdatabase.validator;
 
-import com.excilys.computerdatabase.service.ICompanyService;
-import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.ICompanyDBService;
+import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.ManagerService;
 
 /**
@@ -13,13 +13,13 @@ public class StringValidation {
   /*
    * Instance of computerService
    */
-  private static IComputerService computerService       = ManagerService.getInstance()
+  private static IComputerDBService computerService       = ManagerService.getInstance()
                                                             .getComputerService();
 
   /*
    * Instance of companyService
    */
-  private static ICompanyService  companyService        = ManagerService.getInstance()
+  private static ICompanyDBService  companyService        = ManagerService.getInstance()
                                                             .getCompanyService();
 
   /*
