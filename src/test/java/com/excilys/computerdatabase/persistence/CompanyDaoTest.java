@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.test.persistence;
+package com.excilys.computerdatabase.persistence;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -15,8 +15,8 @@ import org.junit.Test;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
-import com.excilys.computerdatabase.test.persistence.mock.CompanyDaoImplSQLMock;
-import com.excilys.computerdatabase.test.persistence.mock.UtilDaoSQLMock;
+import com.excilys.computerdatabase.persistence.mock.CompanyDaoImplSQLMock;
+import com.excilys.computerdatabase.persistence.mock.UtilDaoSQLMock;
 
 /**
  * Test class for the CompanyDao

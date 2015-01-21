@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.test.exception;
+package com.excilys.computerdatabase.exception;
 
 /**
 * Generic wrapper for all exceptions thrown while using a test database.

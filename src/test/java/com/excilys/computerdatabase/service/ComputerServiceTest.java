@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.test.service;
+package com.excilys.computerdatabase.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyLong;
@@ -17,7 +17,7 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.test.service.mock.ComputerServiceMock;
+import com.excilys.computerdatabase.service.mock.ComputerServiceMock;
 
 /**
  * Test class for the ComputerService

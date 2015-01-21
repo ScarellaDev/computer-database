@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.test.persistence.mock;
+package com.excilys.computerdatabase.persistence.mock;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.exception.PersistenceExceptionTest;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
-import com.excilys.computerdatabase.test.exception.PersistenceExceptionTest;
 
 /**
 * Mock Data Access Object for Company, SQL implementation.

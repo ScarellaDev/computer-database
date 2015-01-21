@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.test.service;
+package com.excilys.computerdatabase.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -16,7 +16,7 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.service.ICompanyDBService;
-import com.excilys.computerdatabase.test.service.mock.CompanyServiceMock;
+import com.excilys.computerdatabase.service.mock.CompanyServiceMock;
 
 /**
  * Test class for the CompanyService

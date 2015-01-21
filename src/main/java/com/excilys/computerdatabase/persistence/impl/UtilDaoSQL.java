@@ -1,11 +1,14 @@
 package com.excilys.computerdatabase.persistence.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +21,26 @@ import com.excilys.computerdatabase.exception.PersistenceException;
 * @author Jeremy SCARELLA
 */
 public class UtilDaoSQL {
+
+  /*
+   * DRIVER to use for mysql database.
+   */
+  private static final String DB_DRIVER;
+
   /*
   * URL to the database server.
   */
-  private static final String DB_URL                = "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull";
+  private static final String DB_URL;
 
   /*
-  * User name for the database.
+  * USERNAME for the database.
   */
-  private static final String DB_USR                = "admincdb";
+  private static final String DB_USERNAME;
 
   /*
-  * User password for the database.
+  * PASSWORD for the database.
   */
-  private static final String DB_PW                 = "qwerty1234";
+  private static final String DB_PASSWORD;
 
   /*
    * SELECT query for computer table
@@ -83,9 +92,32 @@ public class UtilDaoSQL {
    * Static instruction block that loads the JDBC driver once
    */
   static {
+    // Load db.properties
+    Properties properties = new Properties();
+    InputStream input = UtilDaoSQL.class.getClassLoader().getResourceAsStream("db.properties");
     try {
-      // Load the driver for mysql database
-      Class.forName("com.mysql.jdbc.Driver");
+      properties.load(input);
+    } catch (IOException e) {
+      logger.error("SQLError during properties loading");
+      throw new PersistenceException(e);
+    } finally {
+      try {
+        if (input != null) {
+          input.close();
+        }
+      } catch (IOException e) {
+        logger.error("SQLError during properties loading");
+        throw new PersistenceException(e);
+      }
+    }
+    DB_DRIVER = properties.getProperty("db.driver");
+    DB_URL = properties.getProperty("db.url");
+    DB_USERNAME = properties.getProperty("db.username");
+    DB_PASSWORD = properties.getProperty("db.password");
+
+    // Load the driver for mysql database
+    try {
+      Class.forName(DB_DRIVER);
     } catch (ClassNotFoundException e) {
       logger.error("SQLError during jdbc.Driver loading");
       throw new PersistenceException(e);
@@ -98,7 +130,7 @@ public class UtilDaoSQL {
   * @throws SQLException : if a database access error occurs.
   */
   public static Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(DB_URL, DB_USR, DB_PW);
+    return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
   }
 
   /**
