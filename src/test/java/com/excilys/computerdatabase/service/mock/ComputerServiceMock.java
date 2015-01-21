@@ -13,14 +13,14 @@ import com.excilys.computerdatabase.service.IComputerDBService;
 * @author Jeremy SCARELLA
 */
 public class ComputerServiceMock implements IComputerDBService {
+
   /*
-   * Attributes
-   */
+  * Instance of IComputerDao
+  */
   private IComputerDao computerDao;
 
-  /**
-   * Constructor
-   * @param computerDao
+  /*
+   * Instance of ComputerServiceMock
    */
   public ComputerServiceMock(IComputerDao computerDao) {
     this.computerDao = computerDao;

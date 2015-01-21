@@ -5,7 +5,7 @@ import java.util.List;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.persistence.ManagerDao;
+import com.excilys.computerdatabase.persistence.impl.ComputerDaoImplSQL;
 import com.excilys.computerdatabase.service.IComputerDBService;
 
 /**
@@ -13,18 +13,17 @@ import com.excilys.computerdatabase.service.IComputerDBService;
 *
 * @author Jeremy SCARELLA
 */
-public class ComputerServiceImpl implements IComputerDBService {
-  /*
-   * Instance of computerDao
-   */
-  private IComputerDao computerDao;
+public enum ComputerServiceImpl implements IComputerDBService {
 
   /*
-   * Constructor
-   */
-  public ComputerServiceImpl() {
-    computerDao = ManagerDao.getInstance().getComputerDao();
-  }
+  * Instance of ComputerServiceImpl
+  */
+  INSTANCE;
+
+  /*
+  * Instance of the IComputerDao
+  */
+  private IComputerDao computerDao = ComputerDaoImplSQL.INSTANCE;
 
   /**
    * Get the computer in the database corresponding to the id in parameter.

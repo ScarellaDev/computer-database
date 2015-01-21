@@ -13,14 +13,14 @@ import com.excilys.computerdatabase.service.ICompanyDBService;
 * @author Jeremy SCARELLA
 */
 public class CompanyServiceMock implements ICompanyDBService {
+
   /*
-   * Instance of companyDao
-   */
+  * Instance of ICompanyDao
+  */
   private ICompanyDao companyDao;
 
-  /**
-   * Constructor
-   * @param companyDao
+  /*
+   * Instance of CompanyServiceMock
    */
   public CompanyServiceMock(ICompanyDao companyDao) {
     this.companyDao = companyDao;

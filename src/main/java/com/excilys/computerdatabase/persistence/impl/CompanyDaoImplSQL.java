@@ -29,17 +29,9 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
   INSTANCE;
 
   /*
-   * Logger
+   * LOGGER
    */
-  private Logger logger = LoggerFactory.getLogger(CompanyDaoImplSQL.class);
-
-  /**
-  * Return the instance of CompanyDaoImplSQL.
-  * @return Instance of CompanyDaoImplSQL.
-  */
-  public static CompanyDaoImplSQL getInstance() {
-    return INSTANCE;
-  }
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImplSQL.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -66,8 +58,8 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
       }
       return company;
     } catch (SQLException e) {
-      logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement, results);
@@ -101,8 +93,8 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
       }
       return companies;
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement);
@@ -153,8 +145,8 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
       page.setList(companies);
       return page;
     } catch (SQLException e) {
-      logger.error("SQLError in getPagedList() with page = " + page);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       UtilDaoSQL.close(countResults);
       UtilDaoSQL.close(selectResults);
@@ -173,8 +165,8 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
     try {
       return Company.builder().id(rs.getLong("id")).name(rs.getString("name")).build();
     } catch (SQLException e) {
-      logger.error("SQLError in getCompanyFromRS() with rs = " + rs);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getCompanyFromRS() with rs = " + rs);
+      throw new PersistenceException(e.getMessage(), e);
     }
   }
 }

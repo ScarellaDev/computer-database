@@ -20,7 +20,12 @@ import com.excilys.computerdatabase.exception.PersistenceException;
 *
 * @author Jeremy SCARELLA
 */
-public class UtilDaoSQL {
+public enum UtilDaoSQL {
+
+  /*
+   * Instance of UtilDaoSQL
+   */
+  INSTANCE;
 
   /*
    * DRIVER to use for mysql database.
@@ -83,9 +88,9 @@ public class UtilDaoSQL {
   public static final String  COMPANY_COUNT_QUERY   = "SELECT COUNT(id) AS total FROM company";
 
   /*
-   * Logger
+   * LOGGER
    */
-  private static Logger       logger                = LoggerFactory.getLogger(UtilDaoSQL.class);
+  private static final Logger LOGGER                = LoggerFactory.getLogger(UtilDaoSQL.class);
 
   /**
    * Static instruction block that loads the JDBC driver once
@@ -97,16 +102,16 @@ public class UtilDaoSQL {
     try {
       properties.load(input);
     } catch (IOException e) {
-      logger.error("SQLError during properties loading");
-      throw new PersistenceException(e);
+      LOGGER.error("IOException: couldn't load db.properties file");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       try {
         if (input != null) {
           input.close();
         }
       } catch (IOException e) {
-        logger.error("SQLError during properties loading");
-        throw new PersistenceException(e);
+        LOGGER.error("IOException: couldn't close InputStream during db.properties file loading");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
     DB_DRIVER = properties.getProperty("db.driver");
@@ -118,8 +123,8 @@ public class UtilDaoSQL {
     try {
       Class.forName(DB_DRIVER);
     } catch (ClassNotFoundException e) {
-      logger.error("SQLError during jdbc.Driver loading");
-      throw new PersistenceException(e);
+      LOGGER.error("ClassNotFoundException: MySQL JDBC driver not found");
+      throw new PersistenceException(e.getMessage(), e);
     }
   }
 
@@ -128,8 +133,13 @@ public class UtilDaoSQL {
   * @return The {@link Connection} instance.
   * @throws SQLException : if a database access error occurs.
   */
-  public static Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+  public static Connection getConnection() {
+    try {
+      return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+    } catch (SQLException e) {
+      LOGGER.error("SQLException: couldn't connect to the database");
+      throw new PersistenceException(e.getMessage(), e);
+    }
   }
 
   /**
@@ -141,8 +151,8 @@ public class UtilDaoSQL {
       try {
         connection.close();
       } catch (SQLException e) {
-        logger.error("SQLError during connection.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close Connection");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
   }
@@ -156,8 +166,8 @@ public class UtilDaoSQL {
       try {
         statement.close();
       } catch (SQLException e) {
-        logger.error("SQLError during statement.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close Statement");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
   }
@@ -171,8 +181,8 @@ public class UtilDaoSQL {
       try {
         pStatement.close();
       } catch (SQLException e) {
-        logger.error("SQLError during PreparedStatement.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close PreparedStatement");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
   }
@@ -186,8 +196,8 @@ public class UtilDaoSQL {
       try {
         results.close();
       } catch (SQLException e) {
-        logger.error("SQLError for results.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close ResultSet");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
   }
@@ -202,16 +212,16 @@ public class UtilDaoSQL {
       try {
         statement.close();
       } catch (SQLException e) {
-        logger.error("SQLError during statement.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close Statement");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
     if (connection != null) {
       try {
         connection.close();
       } catch (SQLException e) {
-        logger.error("SQLError during connection.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close Connection");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
   }
@@ -227,8 +237,8 @@ public class UtilDaoSQL {
       try {
         results.close();
       } catch (SQLException e) {
-        logger.error("SQLError for results.close() in UtilDaoSQL.java");
-        throw new PersistenceException(e);
+        LOGGER.warn("SQLException: couldn't close ResultSet");
+        throw new PersistenceException(e.getMessage(), e);
       }
     }
     close(connection, statement);

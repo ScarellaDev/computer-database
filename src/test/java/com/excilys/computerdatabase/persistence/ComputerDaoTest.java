@@ -17,8 +17,8 @@ import org.junit.Test;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.persistence.mock.ComputerDaoImplSQLMock;
-import com.excilys.computerdatabase.persistence.mock.UtilDaoSQLMock;
 
 /**
  * Test class for the ComputerDao
@@ -44,7 +44,7 @@ public class ComputerDaoTest {
     listCompanies.add(new Company(1L, "Apple Inc."));
     listCompanies.add(new Company(2L, "Thinking Machines"));
 
-    computerDao = ComputerDaoImplSQLMock.getInstance();
+    computerDao = ComputerDaoImplSQLMock.INSTANCE;
     listComputers = new ArrayList<Computer>();
     listComputers.add(new Computer(1L, "MacBook Pro 15.4 inch", null, null, listCompanies.get(0)));
     listComputers.add(new Computer(2L, "MacBook Pro", LocalDateTime.parse("2006-01-10T00:00:00"),
@@ -55,7 +55,7 @@ public class ComputerDaoTest {
 
     Connection connection = null;
     Statement statement = null;
-    connection = UtilDaoSQLMock.getConnection();
+    connection = UtilDaoSQL.getConnection();
     statement = connection.createStatement();
     statement.execute("drop table if exists computer;");
     statement.execute("drop table if exists company;");
@@ -80,7 +80,7 @@ public class ComputerDaoTest {
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 3,'CM-2a',null,null,2);");
     statement
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
-    UtilDaoSQLMock.close(connection, statement);
+    UtilDaoSQL.close(connection, statement);
   }
 
   /**

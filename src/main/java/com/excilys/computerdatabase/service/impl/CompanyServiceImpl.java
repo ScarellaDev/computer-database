@@ -5,7 +5,7 @@ import java.util.List;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
-import com.excilys.computerdatabase.persistence.ManagerDao;
+import com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
@@ -13,18 +13,17 @@ import com.excilys.computerdatabase.service.ICompanyDBService;
 *
 * @author Jeremy SCARELLA
 */
-public class CompanyServiceImpl implements ICompanyDBService {
-  /*
-   * Instance of companyDao
-   */
-  private ICompanyDao companyDao;
+public enum CompanyServiceImpl implements ICompanyDBService {
 
   /*
-   * Constructor
-   */
-  public CompanyServiceImpl() {
-    companyDao = ManagerDao.getInstance().getCompanyDao();
-  }
+  * Instance of CompanyServiceImpl
+  */
+  INSTANCE;
+
+  /*
+  * Instance of the ICompanyDao
+  */
+  private ICompanyDao companyDao = CompanyDaoImplSQL.INSTANCE;
 
   /**
    * Get the company in the database corresponding to the id in parameter.

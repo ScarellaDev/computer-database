@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.persistence.mock.CompanyDaoImplSQLMock;
-import com.excilys.computerdatabase.persistence.mock.UtilDaoSQLMock;
 
 /**
  * Test class for the CompanyDao
@@ -35,14 +35,14 @@ public class CompanyDaoTest {
    */
   @Before
   public void init() throws SQLException {
-    companyDao = CompanyDaoImplSQLMock.getInstance();
+    companyDao = CompanyDaoImplSQLMock.INSTANCE;
     list = new ArrayList<Company>();
     list.add(new Company(1L, "Apple Inc."));
     list.add(new Company(2L, "Thinking Machines"));
 
     Connection connection = null;
     Statement statement = null;
-    connection = UtilDaoSQLMock.getConnection();
+    connection = UtilDaoSQL.getConnection();
     statement = connection.createStatement();
     statement.execute("drop table if exists computer;");
     statement.execute("drop table if exists company;");
@@ -71,7 +71,7 @@ public class CompanyDaoTest {
     statement
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
 
-    UtilDaoSQLMock.close(connection, statement);
+    UtilDaoSQL.close(connection, statement);
   }
 
   /**

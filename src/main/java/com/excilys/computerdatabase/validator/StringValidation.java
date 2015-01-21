@@ -2,7 +2,8 @@ package com.excilys.computerdatabase.validator;
 
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.ManagerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceImpl;
+import com.excilys.computerdatabase.service.impl.ComputerServiceImpl;
 
 /**
 * Validation class to check the String inputs entered by the user in the CLI.
@@ -11,16 +12,14 @@ import com.excilys.computerdatabase.service.ManagerService;
 */
 public class StringValidation {
   /*
-   * Instance of computerService
+   * Instance of computerDBService
    */
-  private static IComputerDBService computerDBService     = ManagerService.getInstance()
-                                                              .getComputerDBService();
+  private static IComputerDBService computerDBService     = ComputerServiceImpl.INSTANCE;
 
   /*
-   * Instance of companyService
+   * Instance of companyDBService
    */
-  private static ICompanyDBService  companyDBService      = ManagerService.getInstance()
-                                                              .getCompanyDBService();
+  private static ICompanyDBService  companyDBService      = CompanyServiceImpl.INSTANCE;
 
   /*
    * REGEX_DELIMITER

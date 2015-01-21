@@ -16,7 +16,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.mock.ComputerServiceMock;
 
 /**
@@ -29,14 +28,14 @@ public class ComputerServiceTest {
   /*
    * Attributes
    */
-  private IComputerDBService computerService;
-  private Long            computerId;
-  private Long            computerId2;
-  private Computer        computer;
-  private Computer        computer2;
-  private IComputerDao     computerDao;
-  Page<Computer>          page;
-  Page<Computer>          pageReturned;
+  IComputerDBService   computerDBService;
+  private Long         computerId;
+  private Long         computerId2;
+  private Computer     computer;
+  private Computer     computer2;
+  private IComputerDao computerDao;
+  Page<Computer>       page;
+  Page<Computer>       pageReturned;
 
   /**
    * Test initialisation using Mockito, creates a mock ComputerDao and two instances of Computer.
@@ -61,7 +60,8 @@ public class ComputerServiceTest {
     when(computerDao.getAll()).thenReturn(new ArrayList<Computer>());
     when(computerDao.getById(anyLong())).thenReturn(Computer.builder().id(1L).build());
     when(computerDao.getPagedList(page)).thenReturn(pageReturned);
-    computerService = new ComputerServiceMock(computerDao);
+
+    computerDBService = new ComputerServiceMock(computerDao);
   }
 
   /**
@@ -70,7 +70,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testGetById() {
-    assertEquals(Computer.builder().id(1L).build(), computerService.getById(1L));
+    assertEquals(Computer.builder().id(1L).build(), computerDBService.getById(1L));
   }
 
   /**
@@ -79,7 +79,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testGetAll() {
-    assertEquals(new ArrayList<Computer>(), computerService.getAll());
+    assertEquals(new ArrayList<Computer>(), computerDBService.getAll());
   }
 
   /**
@@ -90,7 +90,7 @@ public class ComputerServiceTest {
   public void testAddByString() {
     String[] params = "CM-4 1992-01-01 null null".split("\\s+");
 
-    computerService.addByString(params);
+    computerDBService.addByString(params);
     verify(computerDao).addByString(params);
   }
 
@@ -100,7 +100,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testAddByComputer() {
-    computerService.addByComputer(computer);
+    computerDBService.addByComputer(computer);
     verify(computerDao).addByComputer(computer);
   }
 
@@ -112,7 +112,7 @@ public class ComputerServiceTest {
   public void updateByString() {
     String[] params = (computerId.toString() + " CM-7 1994-01-01 null null").split("\\s+");
 
-    computerService.updateByString(params);
+    computerDBService.updateByString(params);
     verify(computerDao).updateByString(params);
   }
 
@@ -122,7 +122,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void updateByComputer() {
-    computerService.updateByComputer(computer);
+    computerDBService.updateByComputer(computer);
     verify(computerDao).updateByComputer(computer);
   }
 
@@ -132,7 +132,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void removeById() {
-    computerService.removeById(computerId);
+    computerDBService.removeById(computerId);
     verify(computerDao).removeById(computerId);
   }
 
@@ -142,7 +142,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void removeByComputer() {
-    computerService.removeByComputer(Computer.builder().id(computerId2).build());
+    computerDBService.removeByComputer(Computer.builder().id(computerId2).build());
     verify(computerDao).removeByComputer(Computer.builder().id(computerId2).build());
   }
 
@@ -152,6 +152,6 @@ public class ComputerServiceTest {
    */
   @Test
   public void getPagedList() {
-    assertEquals(pageReturned, computerService.getPagedList(page));
+    assertEquals(pageReturned, computerDBService.getPagedList(page));
   }
 }

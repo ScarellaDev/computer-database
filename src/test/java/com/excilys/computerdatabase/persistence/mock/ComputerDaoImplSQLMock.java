@@ -18,8 +18,9 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.exception.PersistenceExceptionTest;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -36,21 +37,13 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company> COMPANIES = CompanyDaoImplSQLMock.getInstance().getAll();
+  private static final List<Company> COMPANIES = CompanyDaoImplSQLMock.INSTANCE.getAll();
 
   /*
-   * Logger
+   * LOGGER
    */
-  private Logger                     logger    = LoggerFactory
+  private static final Logger        LOGGER    = LoggerFactory
                                                    .getLogger(ComputerDaoImplSQLMock.class);
-
-  /**
-   * Return the instance of ComputerDaoImplSQLMock.
-   * @return Instance of ComputerDaoImplSQLMock.
-   */
-  public static ComputerDaoImplSQLMock getInstance() {
-    return INSTANCE;
-  }
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -64,10 +57,10 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     ResultSet results = null;
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id);
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id);
 
       //Create a computer if there is a result
       if (results.next()) {
@@ -75,11 +68,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       }
       return computer;
     } catch (SQLException e) {
-      logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement, results);
+        UtilDaoSQL.close(connection, statement, results);
       }
     }
   }
@@ -96,21 +89,21 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_SELECT_QUERY);
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY);
       //Create computers and put them in the computers list with the result
       while (results.next()) {
         computers.add(getComputerFromRS(results));
       }
       return computers;
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement, results);
+        UtilDaoSQL.close(connection, statement, results);
       }
     }
   }
@@ -168,11 +161,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
           if (params[3].matches("[0-9]+")) {
             companyId = new Long(params[3]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceExceptionTest(
+              throw new PersistenceException(
                   "The fourth argument must be a positive integer between [1, 43]");
             }
           } else {
-            throw new PersistenceExceptionTest(
+            throw new PersistenceException(
                 "The fourth argument must contains digits only and be a positive integer");
           }
         } else {
@@ -180,9 +173,9 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         }
 
         try {
-          connection = UtilDaoSQLMock.getConnection();
+          connection = UtilDaoSQL.getConnection();
 
-          statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_INSERT_QUERY,
+          statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
               Statement.RETURN_GENERATED_KEYS);
           statement.setString(1, name);
           if (introducedL == null) {
@@ -222,18 +215,18 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
             }
           }
         } catch (SQLException e) {
-          logger.error("SQLError in addByString() with params = " + params);
-          throw new PersistenceExceptionTest(e);
+          LOGGER.error("SQLError in addByString() with params = " + params);
+          throw new PersistenceException(e.getMessage(), e);
         } finally {
           if (connection != null) {
-            UtilDaoSQLMock.close(connection, statement);
+            UtilDaoSQL.close(connection, statement);
           }
         }
       } else {
-        throw new PersistenceExceptionTest("Too many arguments passed (max = 4)");
+        throw new PersistenceException("Too many arguments passed (max = 4)");
       }
     } else {
-      throw new PersistenceExceptionTest("Not enough arguments passed (min = 1)");
+      throw new PersistenceException("Not enough arguments passed (min = 1)");
     }
   }
 
@@ -248,9 +241,9 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     ResultSet results = null;
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
-      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_INSERT_QUERY,
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
           Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, computer.getName());
       if (computer.getIntroduced() == null) {
@@ -283,11 +276,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         }
       }
     } catch (SQLException e) {
-      logger.error("SQLError in addByComputer() with computer = " + computer);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in addByComputer() with computer = " + computer);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement);
+        UtilDaoSQL.close(connection, statement);
       }
     }
   }
@@ -307,12 +300,12 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         if (params[0].matches("[0-9]+")) {
           id = new Long(params[0]);
           if (id < 1 || id > max) {
-            throw new PersistenceExceptionTest("The first argument must be a positive integer.");
+            throw new PersistenceException("The first argument must be a positive integer.");
           } else {
             id = new Long(params[0]);
           }
         } else {
-          throw new PersistenceExceptionTest(
+          throw new PersistenceException(
               "The first argument must contains digits only and be a positive integer.");
         }
 
@@ -357,13 +350,13 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
           if (params[4].matches("[0-9]+")) {
             companyId = new Long(params[4]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceExceptionTest(
+              throw new PersistenceException(
                   "The fourth argument must be a positive integer between [1, 43]");
             } else {
               company = COMPANIES.get(companyId.intValue() - 1);
             }
           } else {
-            throw new PersistenceExceptionTest(
+            throw new PersistenceException(
                 "The fourth argument must contains digits only and be a positive integer");
           }
         } else {
@@ -371,10 +364,10 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         }
         return updateByComputer(new Computer(id, name, introduced, discontinued, company));
       } else {
-        throw new PersistenceExceptionTest("Too many arguments passed (max = 5)");
+        throw new PersistenceException("Too many arguments passed (max = 5)");
       }
     } else {
-      throw new PersistenceExceptionTest("Not enough arguments passed (min = 2)");
+      throw new PersistenceException("Not enough arguments passed (min = 2)");
     }
   }
 
@@ -388,10 +381,10 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     PreparedStatement statement = null;
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
       connection.setAutoCommit(false);
 
-      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_UPDATE_QUERY,
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_UPDATE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
       if (computer.getName() == null) {
         statement.setNull(1, java.sql.Types.VARCHAR);
@@ -423,11 +416,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         return computer;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in updateByComputer() with computer = " + computer);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement);
+        UtilDaoSQL.close(connection, statement);
       }
     }
   }
@@ -461,10 +454,10 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
       connection.setAutoCommit(false);
       //Create the query
-      statement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_DELETE_QUERY,
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
       statement.setLong(1, computer.getId());
 
@@ -476,11 +469,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         return computer;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in removeByComputer() with id = " + computer.getId());
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement);
+        UtilDaoSQL.close(connection, statement);
       }
     }
   }
@@ -497,20 +490,20 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQLMock.COMPUTER_MAX_QUERY);
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_MAX_QUERY);
       //Create computers and put them in the computers list with the result
       if (results.next()) {
         lastId = results.getLong("id");
       }
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement, results);
+        UtilDaoSQL.close(connection, statement, results);
       }
     }
     return lastId;
@@ -531,12 +524,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     final List<Computer> computers = new ArrayList<Computer>();
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.createStatement();
-      final ResultSet countResult = countStatement
-          .executeQuery(UtilDaoSQLMock.COMPUTER_COUNT_QUERY);
+      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQL.COMPUTER_COUNT_QUERY);
 
       //Set the number of results of the page with the result
       countResult.next();
@@ -544,7 +536,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       page.refreshNbPages();
 
       //Create the SELECT query
-      selectStatement = connection.prepareStatement(UtilDaoSQLMock.COMPUTER_SELECT_QUERY
+      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
           + " LIMIT ? OFFSET ?;");
       selectStatement.setInt(1, page.getNbElementsPerPage());
       selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
@@ -559,14 +551,14 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       page.setList(computers);
       return page;
     } catch (SQLException e) {
-      logger.error("SQLError in getPagedList() with page = " + page);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQLMock.close(countResults);
-      UtilDaoSQLMock.close(selectResults);
-      UtilDaoSQLMock.close(countStatement);
-      UtilDaoSQLMock.close(selectStatement);
-      UtilDaoSQLMock.close(connection);
+      UtilDaoSQL.close(countResults);
+      UtilDaoSQL.close(selectResults);
+      UtilDaoSQL.close(countStatement);
+      UtilDaoSQL.close(selectStatement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -607,8 +599,8 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         company = null;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in getComputerFromRS() with rs = " + rs);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getComputerFromRS() with rs = " + rs);
+      throw new PersistenceException(e.getMessage(), e);
     }
     return new Computer(id, name, introduced, discontinued, company);
   }

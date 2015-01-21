@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.ManagerService;
+import com.excilys.computerdatabase.service.impl.ComputerServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -24,13 +24,12 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 @WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
-  private static final long  serialVersionUID  = 1L;
+  private static final long         serialVersionUID  = 1L;
 
   /*
    * Instance of computerDBService
    */
-  private IComputerDBService computerDBService = ManagerService.getInstance()
-                                                   .getComputerDBService();
+  private static IComputerDBService computerDBService = ComputerServiceImpl.INSTANCE;
 
   /**
    * Displays pages of computer lists from database using HttpServletRequest params {pageIndex, nbElementsPerPage}

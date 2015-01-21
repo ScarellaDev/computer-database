@@ -36,8 +36,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company>     COMPANIES           = CompanyDaoImplSQL.getInstance()
-                                                                 .getAll();
+  private static final List<Company>     COMPANIES           = CompanyDaoImplSQL.INSTANCE.getAll();
 
   /*
    * DATE TIME FORMATTER
@@ -46,18 +45,10 @@ public enum ComputerDaoImplSQL implements IComputerDao {
                                                                  .ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /*
-   * Logger
+   * LOGGER
    */
-  private Logger                         logger              = LoggerFactory
+  private static final Logger            LOGGER              = LoggerFactory
                                                                  .getLogger(ComputerDaoImplSQL.class);
-
-  /**
-   * Return the instance of ComputerDaoImplSQL.
-   * @return Instance of ComputerDaoImplSQL.
-   */
-  public static ComputerDaoImplSQL getInstance() {
-    return INSTANCE;
-  }
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -74,9 +65,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       connection = UtilDaoSQL.getConnection();
 
       //Query the database
-      String query = UtilDaoSQL.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id;
       statement = connection.createStatement();
-      results = statement.executeQuery(query);
+      results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY + " WHERE c.id=" + id);
 
       //Create a computer if there is a result
       if (results.next()) {
@@ -84,8 +74,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       }
       return computer;
     } catch (SQLException e) {
-      logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement, results);
@@ -115,8 +105,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       }
       return computers;
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement, results);
@@ -230,8 +220,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
             }
           }
         } catch (SQLException e) {
-          logger.error("SQLError in addByString() with params = " + params);
-          throw new PersistenceException(e);
+          LOGGER.error("SQLError in addByString() with params = " + params);
+          throw new PersistenceException(e.getMessage(), e);
         } finally {
           if (connection != null) {
             UtilDaoSQL.close(connection, statement);
@@ -292,8 +282,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         }
       }
     } catch (SQLException e) {
-      logger.error("SQLError in addByComputer() with computer = " + computer);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in addByComputer() with computer = " + computer);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement);
@@ -431,8 +421,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         return computer;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in updateByComputer() with computer = " + computer);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement);
@@ -484,8 +474,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         return computer;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in removeByComputer() with id = " + computer.getId());
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement);
@@ -514,8 +504,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         lastId = results.getLong("id");
       }
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
         UtilDaoSQL.close(connection, statement, results);
@@ -567,8 +557,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       page.setList(computers);
       return page;
     } catch (SQLException e) {
-      logger.error("SQLError in getPagedList() with page = " + page);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       UtilDaoSQL.close(countResults);
       UtilDaoSQL.close(selectResults);
@@ -615,8 +605,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         company = null;
       }
     } catch (SQLException e) {
-      logger.error("SQLError in getComputerFromRS() with rs = " + rs);
-      throw new PersistenceException(e);
+      LOGGER.error("SQLError in getComputerFromRS() with rs = " + rs);
+      throw new PersistenceException(e.getMessage(), e);
     }
     return new Computer(id, name, introduced, discontinued, company);
   }

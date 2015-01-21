@@ -7,7 +7,8 @@ import java.util.Scanner;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.ManagerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceImpl;
+import com.excilys.computerdatabase.service.impl.ComputerServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -19,14 +20,12 @@ public class InputManagerCLI {
   /*
    * Instance of computerDBService
    */
-  private static IComputerDBService      computerDBService = ManagerService.getInstance()
-                                                               .getComputerDBService();
+  private static IComputerDBService      computerDBService = ComputerServiceImpl.INSTANCE;
 
   /*
    * Instance of companyDBService
    */
-  private static ICompanyDBService       companyDBService  = ManagerService.getInstance()
-                                                               .getCompanyDBService();
+  private static ICompanyDBService       companyDBService  = CompanyServiceImpl.INSTANCE;
 
   /*
    * Scanner sc : get the user input

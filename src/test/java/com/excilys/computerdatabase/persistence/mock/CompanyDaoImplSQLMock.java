@@ -13,8 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.exception.PersistenceExceptionTest;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 
 /**
 * Mock Data Access Object for Company, SQL implementation.
@@ -29,17 +30,9 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
   INSTANCE;
 
   /*
-   * Logger
+   * LOGGER
    */
-  private Logger logger = LoggerFactory.getLogger(CompanyDaoImplSQLMock.class);
-
-  /**
-  * Return the instance of CompanyDaoImplSQLMock.
-  * @return Instance of CompanyDaoImplSQLMock.
-  */
-  public static CompanyDaoImplSQLMock getInstance() {
-    return INSTANCE;
-  }
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImplSQLMock.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -53,23 +46,23 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     Company company = null;
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
       statement = connection.createStatement();
       //Execute the query
-      results = statement.executeQuery(UtilDaoSQLMock.COMPANY_SELECT_QUERY + " WHERE company.id="
-          + id + ";");
+      results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY + " WHERE company.id=" + id
+          + ";");
       //Create a company if there is a result
       if (results.next()) {
         company = getCompanyFromRS(results);
       }
       return company;
     } catch (SQLException e) {
-      logger.error("SQLError in getById() with id = " + id);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement, results);
+        UtilDaoSQL.close(connection, statement, results);
       }
     }
   }
@@ -84,11 +77,11 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     List<Company> companies = new ArrayList<Company>();
     Company company;
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
       statement = connection.createStatement();
       //Execute the query
-      ResultSet results = statement.executeQuery(UtilDaoSQLMock.COMPANY_SELECT_QUERY);
+      ResultSet results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY);
       //Create companies with the results
       while (results.next()) {
         company = new Company();
@@ -98,11 +91,11 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       }
       return companies;
     } catch (SQLException e) {
-      logger.error("SQLError in getAll()");
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getAll()");
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
-        UtilDaoSQLMock.close(connection, statement);
+        UtilDaoSQL.close(connection, statement);
       }
     }
   }
@@ -122,11 +115,11 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     final List<Company> companies = new ArrayList<Company>();
 
     try {
-      connection = UtilDaoSQLMock.getConnection();
+      connection = UtilDaoSQL.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.createStatement();
-      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQLMock.COMPANY_COUNT_QUERY);
+      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQL.COMPANY_COUNT_QUERY);
 
       //Set the number of results of the page with the result
       countResult.next();
@@ -134,7 +127,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       page.refreshNbPages();
 
       //Create the SELECT query
-      selectStatement = connection.prepareStatement(UtilDaoSQLMock.COMPANY_SELECT_QUERY
+      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPANY_SELECT_QUERY
           + " LIMIT ? OFFSET ?;");
       selectStatement.setInt(1, page.getNbElementsPerPage());
       selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
@@ -149,14 +142,14 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       page.setList(companies);
       return page;
     } catch (SQLException e) {
-      logger.error("SQLError in getPagedList() with page = " + page);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getPagedList() with page = " + page);
+      throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQLMock.close(countResults);
-      UtilDaoSQLMock.close(selectResults);
-      UtilDaoSQLMock.close(countStatement);
-      UtilDaoSQLMock.close(selectStatement);
-      UtilDaoSQLMock.close(connection);
+      UtilDaoSQL.close(countResults);
+      UtilDaoSQL.close(selectResults);
+      UtilDaoSQL.close(countStatement);
+      UtilDaoSQL.close(selectStatement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -169,8 +162,8 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     try {
       return Company.builder().id(rs.getLong("id")).name(rs.getString("name")).build();
     } catch (SQLException e) {
-      logger.error("SQLError in getCompanyFromRS() with rs = " + rs);
-      throw new PersistenceExceptionTest(e);
+      LOGGER.error("SQLError in getCompanyFromRS() with rs = " + rs);
+      throw new PersistenceException(e.getMessage(), e);
     }
   }
 }

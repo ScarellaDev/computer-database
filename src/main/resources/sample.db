@@ -1,0 +1,5 @@
+#replace the file name "sample.db"  by "db.properties" and fill information below
+db.driver=
+db.url=
+db.username=
+db.password=
