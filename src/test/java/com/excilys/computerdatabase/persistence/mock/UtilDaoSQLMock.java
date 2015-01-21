@@ -85,8 +85,7 @@ public class UtilDaoSQLMock {
   /*
    * Logger
    */
-  private static Logger       logger                = LoggerFactory
-                                                        .getLogger("com.excilys.computerdatabase.test.persistence.UtilDaoSQLMock");
+  private static Logger       logger                = LoggerFactory.getLogger(UtilDaoSQLMock.class);
 
   /**
    * Static instruction block that loads the JDBC driver once

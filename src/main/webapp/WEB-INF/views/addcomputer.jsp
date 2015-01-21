@@ -18,7 +18,7 @@ pageEncoding="UTF-8"%>
                     <p class="text-warning">${error.get("eDateI")}</p>
                     <p class="text-warning">${error.get("eDateD")}</p>
                     <p class="text-warning">${error.get("eCompanyId")}</p>
-                    <form id="form" action="addComputer" method="POST">
+                    <form id="form" action="addcomputer" method="POST">
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>

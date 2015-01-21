@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.mock.CompanyDaoImplSQLMock;
 import com.excilys.computerdatabase.persistence.mock.UtilDaoSQLMock;
 
@@ -27,7 +26,7 @@ public class CompanyDaoTest {
   /*
    * Attributes
    */
-  private ICompanyDao    companyDao;
+  private ICompanyDao   companyDao;
   private List<Company> list;
 
   /**
@@ -47,6 +46,7 @@ public class CompanyDaoTest {
     statement = connection.createStatement();
     statement.execute("drop table if exists computer;");
     statement.execute("drop table if exists company;");
+
     statement
         .execute("create table company (id bigint not null auto_increment, name varchar(255), "
             + "constraint pk_company primary key (id));");
@@ -58,8 +58,10 @@ public class CompanyDaoTest {
         .execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
             + " references company (id) on delete restrict on update restrict;");
     statement.execute("create index ix_computer_company_1 on computer (company_id);");
+
     statement.execute("insert into company (id,name) values ( 1,'Apple Inc.');");
     statement.execute("insert into company (id,name) values ( 2,'Thinking Machines');");
+
     statement
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 1,'MacBook Pro 15.4 inch',null,null,1);");
     statement
@@ -103,7 +105,7 @@ public class CompanyDaoTest {
     page.setNbElementsPerPage(20);
     page.setPageIndex(1);
     final Page<Company> pageReturned = new Page<Company>();
-    pageReturned.setNbElementsPerPage(2);
+    pageReturned.setNbElementsPerPage(20);
     pageReturned.setPageIndex(1);
     pageReturned.setTotalNbElements(2);
     pageReturned.setTotalNbPages(1);

@@ -31,8 +31,7 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
   /*
    * Logger
    */
-  private Logger logger = LoggerFactory
-                            .getLogger("com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL");
+  private Logger logger = LoggerFactory.getLogger(CompanyDaoImplSQL.class);
 
   /**
   * Return the instance of CompanyDaoImplSQL.

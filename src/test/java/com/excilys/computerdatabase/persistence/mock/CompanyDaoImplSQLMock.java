@@ -31,8 +31,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
   /*
    * Logger
    */
-  private Logger logger = LoggerFactory
-                            .getLogger("com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQLMock");
+  private Logger logger = LoggerFactory.getLogger(CompanyDaoImplSQLMock.class);
 
   /**
   * Return the instance of CompanyDaoImplSQLMock.

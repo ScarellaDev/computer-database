@@ -30,7 +30,7 @@ import com.excilys.computerdatabase.validator.StringValidation;
 *
 * @author Jeremy SCARELLA
 */
-@WebServlet("/addComputer")
+@WebServlet("/addcomputer")
 public class AddComputerController extends HttpServlet {
 
   private static final long              serialVersionUID    = 1L;
@@ -40,19 +40,16 @@ public class AddComputerController extends HttpServlet {
    */
   private IComputerDBService             computerDBService   = ManagerService.getInstance()
                                                                  .getComputerDBService();
-
   /*
    * Instance of companyDBService
    */
   private ICompanyDBService              companyDBService    = ManagerService.getInstance()
                                                                  .getCompanyDBService();
-
   /*
    * Logger
    */
   private Logger                         logger              = LoggerFactory
                                                                  .getLogger(AddComputerController.class);
-
   /*
    * DATE TIME FORMATTER
    */
@@ -70,7 +67,7 @@ public class AddComputerController extends HttpServlet {
     req.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/addComputer.jsp");
+    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/addcomputer.jsp");
 
     // Forward the request
     dispatcher.forward(req, resp);

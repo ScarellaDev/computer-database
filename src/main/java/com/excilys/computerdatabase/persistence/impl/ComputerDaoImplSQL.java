@@ -49,7 +49,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
    * Logger
    */
   private Logger                         logger              = LoggerFactory
-                                                                 .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQL");
+                                                                 .getLogger(ComputerDaoImplSQL.class);
 
   /**
    * Return the instance of ComputerDaoImplSQL.

@@ -17,7 +17,6 @@ import org.junit.Test;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.mock.ComputerDaoImplSQLMock;
 import com.excilys.computerdatabase.persistence.mock.UtilDaoSQLMock;
 
@@ -30,7 +29,7 @@ public class ComputerDaoTest {
   /*
    * Attributes
    */
-  private IComputerDao    computerDao;
+  private IComputerDao   computerDao;
   private List<Computer> listComputers;
   private List<Company>  listCompanies;
 
@@ -195,7 +194,7 @@ public class ComputerDaoTest {
     page.setNbElementsPerPage(20);
     page.setPageIndex(1);
     final Page<Computer> pageReturned = new Page<Computer>();
-    pageReturned.setNbElementsPerPage(4);
+    pageReturned.setNbElementsPerPage(20);
     pageReturned.setPageIndex(1);
     pageReturned.setTotalNbElements(4);
     pageReturned.setTotalNbPages(1);

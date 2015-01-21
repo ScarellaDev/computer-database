@@ -85,8 +85,7 @@ public class UtilDaoSQL {
   /*
    * Logger
    */
-  private static Logger       logger                = LoggerFactory
-                                                        .getLogger("com.excilys.computerdatabase.persistence.impl.UtilDaoSQL");
+  private static Logger       logger                = LoggerFactory.getLogger(UtilDaoSQL.class);
 
   /**
    * Static instruction block that loads the JDBC driver once

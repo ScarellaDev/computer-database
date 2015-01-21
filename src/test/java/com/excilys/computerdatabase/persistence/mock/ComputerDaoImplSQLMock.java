@@ -42,7 +42,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
    * Logger
    */
   private Logger                     logger    = LoggerFactory
-                                                   .getLogger("com.excilys.computerdatabase.persistence.impl.computerDaoImplSQLMock");
+                                                   .getLogger(ComputerDaoImplSQLMock.class);
 
   /**
    * Return the instance of ComputerDaoImplSQLMock.
