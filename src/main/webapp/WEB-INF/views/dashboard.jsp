@@ -17,8 +17,8 @@ pageEncoding="UTF-8"%>
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addComputer" href="addcomputer">Add
-					Computer</a> <a class="btn btn-default" id="editComputer" href="#"
+					<a class="btn btn-success" id="addcomputer" href="addcomputer">Add
+					Computer</a> <a class="btn btn-default" id="editcomputer" href="#"
 					onclick="$.fn.toggleEditMode();">Edit</a>
 				</div>
 			</div>

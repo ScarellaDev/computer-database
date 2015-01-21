@@ -25,14 +25,8 @@ import com.excilys.computerdatabase.service.impl.CompanyServiceImpl;
 import com.excilys.computerdatabase.service.impl.ComputerServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
 
-/**
-* Controller managing HttpServletRequests on /addComputer URL
-* Used to add computers to the database through the webapp
-*
-* @author Jeremy SCARELLA
-*/
-@WebServlet("/addcomputer")
-public class AddComputerController extends HttpServlet {
+@WebServlet("/editcomputer")
+public class EditComputerController extends HttpServlet {
 
   private static final long              serialVersionUID    = 1L;
 
@@ -50,7 +44,7 @@ public class AddComputerController extends HttpServlet {
    * LOGGER
    */
   private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(AddComputerController.class);
+                                                                 .getLogger(EditComputerController.class);
 
   /*
    * DATE TIME FORMATTER
@@ -58,30 +52,50 @@ public class AddComputerController extends HttpServlet {
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
                                                                  .ofPattern("yyyy-MM-dd HH:mm:ss");
 
-  /**
-   * Prints error messages
-   */
   @Override
   protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
       throws ServletException, IOException {
+    long id = 0;
+    final String idString = req.getParameter("id");
+    if (StringValidation.isPositiveLong(idString)) {
+      id = Long.valueOf(req.getParameter("id"));
+
+      final Computer computer = computerDBService.getById(id);
+      req.setAttribute("computer", computer);
+    }
 
     final List<Company> companies = companyDBService.getAll();
     req.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/addcomputer.jsp");
-
+    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/editcomputer.jsp");
     // Forward the request
     dispatcher.forward(req, resp);
   }
 
-  /**
-   * Add computer to database using HttpServletRequest params {name, introduced, discontinued, companyId}
-   */
   @Override
   protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
       throws ServletException, IOException {
 
+    final Map<String, String> errorMsgMap = new HashMap<String, String>();
+
+    //Get the id
+    final String idS = req.getParameter("id");
+
+    //Check if the idString is a valid id
+    if (!StringValidation.isPositiveLong(idS)) {
+      errorMsgMap.put("eId", "Incorrect id : an id should be a long");
+      req.setAttribute("error", errorMsgMap);
+    }
+    final Long id = Long.valueOf(idS);
+
+    //Check if a computer with this id exist in the database
+    if (computerDBService.getById(id) == null) {
+      errorMsgMap.put("eId", "No computer with this id was found");
+      req.setAttribute("error", errorMsgMap);
+    }
+
+    //////////////
     Computer computer = new Computer();
 
     final Computer.Builder builder = Computer.builder();
@@ -89,8 +103,6 @@ public class AddComputerController extends HttpServlet {
     final String introducedS = req.getParameter("introduced");
     final String discontinuedS = req.getParameter("discontinued");
     final String companyIdS = req.getParameter("companyId");
-
-    final Map<String, String> errorMsgMap = new HashMap<String, String>();
 
     //Check if the name is a valid Name
     if (!StringValidation.isEmpty(name)) {
@@ -144,16 +156,16 @@ public class AddComputerController extends HttpServlet {
     } else {
       computer = null;
     }
-
-    //Return null if there was an error and set a Map of errors as an Attribute in the request
-    req.setAttribute("error", errorMsgMap);
+    ///////////////////////////
 
     if (computer != null) {
-      computerDBService.addByComputer(computer);
-      LOGGER.info(computer + " was successfully added to the database");
+      computer.setId(id);
+      computerDBService.updateByComputer(computer);
+      LOGGER.info(computer + " was successfully updated in the database");
       resp.sendRedirect("dashboard");
     } else {
       doGet(req, resp);
     }
   }
+
 }
