@@ -220,14 +220,14 @@ public class InputManagerCLI {
     }
 
     //Get name
-    System.out
-        .println("- please enter the name of the computer if you want to update it (press enter or type 'null' to skip value):");
+    System.out.println("- please enter the name of the computer:");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (StringValidation.isEmpty(userInput)) {
-        break;
+      if (StringValidation.isEmpty(userInput) || "null".equals(userInput)) {
+        System.out.println("Non valid name (cannot be empty or set to 'null')");
+        continue;
       } else {
         builder.name(userInput);
         break;

@@ -17,10 +17,8 @@ pageEncoding="UTF-8"%>
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addcomputer" href="addcomputer">Add
-					Computer</a>
-					<a class="btn btn-default" id="editcomputer" href="editcomputer">Update</a>
-					<a class="btn .btn-danger" id="deletecomputer" href="#"
+					<a class="btn btn-success" id="addcomputer" href="addcomputer">Add</a>
+					<a class="btn btn-danger" id="deletecomputer" href="#"
 					onclick="$.fn.toggleEditMode();">Delete</a>
 				</div>
 			</div>
@@ -56,7 +54,7 @@ pageEncoding="UTF-8"%>
 					<c:forEach items="${page.list}" var="computer">
 						<tr>
 							<td class="editMode"><input type="checkbox" name="cb" class="cb" value="${computer.id}"></td>
-							<td><a href="editComputer?id=${computer.id}"><c:out value="${computer.name}"/> </a></td>
+							<td><a href="editcomputer?id=${computer.id}"><c:out value="${computer.name}"/></a></td>
 							<td>${computer.introduced}</td>
 							<td>${computer.discontinued}</td>
 							<td>${computer.company.name}</td>
