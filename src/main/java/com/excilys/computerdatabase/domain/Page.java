@@ -11,7 +11,7 @@ public class Page<T> {
   /*
   * Index of the current page (1 by default)
   */
-  private int     pageIndex;
+  private Integer pageIndex;
 
   /*
   * List of elements of the current page
@@ -21,17 +21,22 @@ public class Page<T> {
   /*
   * Max number of elements the page can have (20 by default)
   */
-  private int     nbElementsPerPage;
+  private Integer nbElementsPerPage;
 
   /*
   * Total number of elements in the database
   */
-  private int     totalNbElements;
+  private Integer totalNbElements;
 
   /*
    * Total number of pages
    */
-  private int     totalNbPages;
+  private Integer totalNbPages;
+
+  /*
+   * Search parameter
+   */
+  private String  search;
 
   /*
    * Constructors
@@ -48,13 +53,14 @@ public class Page<T> {
    * @param totalNbElements
    * @param totalNbPages
    */
-  public Page(final int pageIndex, final List<T> list, final int nbElementsPerPage,
-      final int totalNbElements, final int totalNbPages) {
+  public Page(final Integer pageIndex, final List<T> list, final Integer nbElementsPerPage,
+      final Integer totalNbElements, final Integer totalNbPages, final String search) {
     this.pageIndex = pageIndex;
     this.list = list;
     this.nbElementsPerPage = nbElementsPerPage;
     this.totalNbElements = totalNbElements;
     this.totalNbPages = totalNbPages;
+    this.search = search;
   }
 
   /*
@@ -69,8 +75,8 @@ public class Page<T> {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
+    final Integer prime = 31;
+    Integer result = 1;
     result = prime * result + ((list == null) ? 0 : list.hashCode());
     result = prime * result + totalNbPages;
     result = prime * result + totalNbElements;
@@ -123,11 +129,11 @@ public class Page<T> {
   /*
    * Getter/Setter
    */
-  public int getPageIndex() {
+  public Integer getPageIndex() {
     return pageIndex;
   }
 
-  public void setPageIndex(int pageIndex) {
+  public void setPageIndex(Integer pageIndex) {
     this.pageIndex = pageIndex;
   }
 
@@ -139,28 +145,36 @@ public class Page<T> {
     this.list = list;
   }
 
-  public int getNbElementsPerPage() {
+  public Integer getNbElementsPerPage() {
     return nbElementsPerPage;
   }
 
-  public void setNbElementsPerPage(int nbElementsPerPage) {
+  public void setNbElementsPerPage(Integer nbElementsPerPage) {
     this.nbElementsPerPage = nbElementsPerPage;
   }
 
-  public int getTotalNbElements() {
+  public Integer getTotalNbElements() {
     return totalNbElements;
   }
 
-  public void setTotalNbElements(int totalNbElements) {
+  public void setTotalNbElements(Integer totalNbElements) {
     this.totalNbElements = totalNbElements;
   }
 
-  public int getTotalNbPages() {
+  public Integer getTotalNbPages() {
     return totalNbPages;
   }
 
-  public void setTotalNbPages(int totalNbPages) {
+  public void setTotalNbPages(Integer totalNbPages) {
     this.totalNbPages = totalNbPages;
+  }
+
+  public String getSearch() {
+    return search;
+  }
+
+  public void setSearch(String search) {
+    this.search = search;
   }
 
   /**

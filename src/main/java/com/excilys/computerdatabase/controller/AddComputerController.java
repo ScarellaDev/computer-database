@@ -51,17 +51,18 @@ public class AddComputerController extends HttpServlet {
    * Prints error messages
    */
   @Override
-  protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+  protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
     final List<Company> companies = companyDBService.getAll();
-    req.setAttribute("companies", companies);
+    httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/addcomputer.jsp");
+    final RequestDispatcher dispatcher = httpReq
+        .getRequestDispatcher("WEB-INF/views/addcomputer.jsp");
 
-    // Forward the request
-    dispatcher.forward(req, resp);
+    // Forward the httpRequest
+    dispatcher.forward(httpReq, httpResp);
   }
 
   /**

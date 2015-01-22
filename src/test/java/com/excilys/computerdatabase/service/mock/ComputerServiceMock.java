@@ -120,7 +120,6 @@ public class ComputerServiceMock implements IComputerDBService {
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of computers
    */
-  @Override
   public Page<Computer> getPagedList(final Page<Computer> page) {
     return computerDao.getPagedList(page);
   }

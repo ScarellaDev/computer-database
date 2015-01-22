@@ -52,28 +52,29 @@ public class EditComputerController extends HttpServlet {
   * Prints error message
   */
   @Override
-  protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+  protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
     Long id = 0L;
-    final String idS = req.getParameter("id");
+    final String idS = httpReq.getParameter("id");
     if (StringValidation.isPositiveLong(idS)) {
-      id = Long.valueOf(req.getParameter("id"));
+      id = Long.valueOf(httpReq.getParameter("id"));
 
       final Computer computer = computerDBService.getById(id);
-      req.setAttribute("computer", computer);
+      httpReq.setAttribute("computer", computer);
     }
 
     final List<Company> companies = companyDBService.getAll();
-    req.setAttribute("companies", companies);
+    httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/editcomputer.jsp");
-    // Forward the request
-    dispatcher.forward(req, resp);
+    final RequestDispatcher dispatcher = httpReq
+        .getRequestDispatcher("WEB-INF/views/editcomputer.jsp");
+    // Forward the httpRequest
+    dispatcher.forward(httpReq, httpResp);
   }
 
   /**
-   * Update computer in database using HttpServletRequest params {id (required), name, introduced, discontinued, companyId}
+   * Update computer in database using HttpServletRequest params {id (required), name (required), introduced, discontinued, companyId}
    */
   @Override
   protected void doPost(final HttpServletRequest httpReq, final HttpServletResponse httpResp)

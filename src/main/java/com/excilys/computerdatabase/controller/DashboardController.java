@@ -35,13 +35,17 @@ public class DashboardController extends HttpServlet {
    * Displays pages of computer lists from database using HttpServletRequest params {pageIndex, nbElementsPerPage}
    */
   @Override
-  protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+  protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
     Page<Computer> page = new Page<Computer>();
 
+    String search = null;
+    search = httpReq.getParameter("search");
+    page.setSearch(search);
+
     //Get pageIndex and set it
-    final String intString = req.getParameter("pageIndex");
+    final String intString = httpReq.getParameter("pageIndex");
     int pageIndex = 0;
     if (StringValidation.isPositiveInt(intString)) {
       pageIndex = Integer.valueOf(intString);
@@ -53,7 +57,7 @@ public class DashboardController extends HttpServlet {
     }
 
     //Get nbElementsPerPage and set it
-    final String nbElementsPerPageString = req.getParameter("nbElementsPerPage");
+    final String nbElementsPerPageString = httpReq.getParameter("nbElementsPerPage");
     int nbElementsPerPage = 0;
     if (StringValidation.isPositiveInt(nbElementsPerPageString)) {
       nbElementsPerPage = Integer.valueOf(nbElementsPerPageString);
@@ -66,12 +70,13 @@ public class DashboardController extends HttpServlet {
 
     //Retrieve the list of computers to display
     page = computerDBService.getPagedList(page);
-    req.setAttribute("page", page);
+    httpReq.setAttribute("page", page);
 
     // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = req.getRequestDispatcher("WEB-INF/views/dashboard.jsp");
+    final RequestDispatcher dispatcher = httpReq
+        .getRequestDispatcher("WEB-INF/views/dashboard.jsp");
 
-    // Forward the request
-    dispatcher.forward(req, resp);
+    // Forward the httpRequest
+    dispatcher.forward(httpReq, httpResp);
   }
 }

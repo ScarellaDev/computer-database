@@ -21,6 +21,7 @@ import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
+import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -544,7 +545,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
   @Override
   public Page<Computer> getPagedList(final Page<Computer> page) {
     Connection connection = null;
-    Statement countStatement = null;
+    PreparedStatement countStatement = null;
     PreparedStatement selectStatement = null;
     ResultSet countResults = null;
     ResultSet selectResults = null;
@@ -554,19 +555,31 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       connection = UtilDaoSQL.getConnection();
 
       //Create & execute the counting query
-      countStatement = connection.createStatement();
-      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQL.COMPUTER_COUNT_QUERY);
+      countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
+          + " WHERE name LIKE ?;");
+      if (StringValidation.isEmpty(page.getSearch())) {
+        countStatement.setString(1, "%");
+      } else {
+        countStatement.setString(1, page.getSearch() + "%");
+      }
+      countResults = countStatement.executeQuery();
 
       //Set the number of results of the page with the result
-      countResult.next();
-      page.setTotalNbElements(countResult.getInt("total"));
+      countResults.next();
+      page.setTotalNbElements(countResults.getInt("total"));
+
       page.refreshNbPages();
 
       //Create the SELECT query
       selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
-          + " LIMIT ? OFFSET ?;");
-      selectStatement.setInt(1, page.getNbElementsPerPage());
-      selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+          + " WHERE c.name LIKE ? LIMIT ? OFFSET ?;");
+      if (StringValidation.isEmpty(page.getSearch())) {
+        selectStatement.setString(1, "%");
+      } else {
+        selectStatement.setString(1, page.getSearch() + "%");
+      }
+      selectStatement.setInt(2, page.getNbElementsPerPage());
+      selectStatement.setInt(3, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
