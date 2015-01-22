@@ -1,7 +1,6 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -31,29 +30,23 @@ import com.excilys.computerdatabase.validator.StringValidation;
 @WebServlet("/editcomputer")
 public class EditComputerController extends HttpServlet {
 
-  private static final long              serialVersionUID    = 1L;
+  private static final long         serialVersionUID  = 1L;
 
   /*
    * Instance of computerDBService
    */
-  private static IComputerDBService      computerDBService   = ComputerDBServiceImpl.INSTANCE;
+  private static IComputerDBService computerDBService = ComputerDBServiceImpl.INSTANCE;
 
   /*
    * Instance of companyDBService
    */
-  private static ICompanyDBService       companyDBService    = CompanyDBServiceImpl.INSTANCE;
+  private static ICompanyDBService  companyDBService  = CompanyDBServiceImpl.INSTANCE;
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(EditComputerController.class);
-
-  /*
-   * DATE TIME FORMATTER
-   */
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-                                                                 .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final Logger       LOGGER            = LoggerFactory
+                                                          .getLogger(EditComputerController.class);
 
   /**
   * Prints error message
@@ -93,7 +86,7 @@ public class EditComputerController extends HttpServlet {
         httpResp.sendRedirect("dashboard");
       } else {
         LOGGER.warn("MySQL Error: computer UPDATE FAIL");
-        httpResp.sendRedirect("dashboard");
+        doGet(httpReq, httpResp);
       }
     } else {
       doGet(httpReq, httpResp);

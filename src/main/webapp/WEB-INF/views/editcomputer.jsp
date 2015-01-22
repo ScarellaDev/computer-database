@@ -15,8 +15,7 @@ pageEncoding="UTF-8"%>
                         id: ${computer.id}
                     </div>
                     <h1>Edit Computer</h1>
-
-					<p>${error.get("eId")}</p>
+					<p class="text-warning">${error.get("eId")}</p>
 					<p class="text-warning">${error.get("eName")}</p>
                     <p class="text-warning">${error.get("eDateI")}</p>
                     <p class="text-warning">${error.get("eDateD")}</p>

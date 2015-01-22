@@ -79,7 +79,7 @@ public class AddComputerController extends HttpServlet {
         httpResp.sendRedirect("dashboard");
       } else {
         LOGGER.warn("MySQL Error: computer INSERT FAIL");
-        httpResp.sendRedirect("dashboard");
+        doGet(httpReq, httpResp);
       }
     } else {
       doGet(httpReq, httpResp);

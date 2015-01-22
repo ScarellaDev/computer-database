@@ -200,24 +200,21 @@ public enum ComputerDaoImplSQL implements IComputerDao {
           }
 
           //Execute the query
-          if (statement.executeUpdate() == 0) {
-            return null;
-          } else {
-            results = statement.getGeneratedKeys();
-            if (results != null && results.next()) {
-              Long id = results.getLong(1);
-              Computer.Builder builder = Computer.builder();
-              builder.id(id);
-              builder.name(name);
-              builder.introduced(introducedL);
-              builder.discontinued(discontinuedL);
-              if (companyId != null) {
-                builder.company(COMPANIES.get(companyId.intValue() - 1));
-              }
-              return builder.build();
-            } else {
-              return null;
+          statement.executeUpdate();
+          results = statement.getGeneratedKeys();
+          if (results != null && results.next()) {
+            Long id = results.getLong(1);
+            Computer.Builder builder = Computer.builder();
+            builder.id(id);
+            builder.name(name);
+            builder.introduced(introducedL);
+            builder.discontinued(discontinuedL);
+            if (companyId != null) {
+              builder.company(COMPANIES.get(companyId.intValue() - 1));
             }
+            return builder.build();
+          } else {
+            return null;
           }
         } catch (SQLException e) {
           LOGGER.error("SQLError in addByString() with params = " + params);
@@ -269,17 +266,14 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       }
 
       //Execute the query
-      if (statement.executeUpdate() == 0) {
-        return null;
+      statement.executeUpdate();
+      results = statement.getGeneratedKeys();
+      if (results != null && results.next()) {
+        Long id = results.getLong(1);
+        computer.setId(id);
+        return computer;
       } else {
-        results = statement.getGeneratedKeys();
-        if (results != null && results.next()) {
-          Long id = results.getLong(1);
-          computer.setId(id);
-          return computer;
-        } else {
-          return null;
-        }
+        return null;
       }
     } catch (SQLException e) {
       LOGGER.error("SQLError in addByComputer() with computer = " + computer);
@@ -414,14 +408,12 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       statement.setLong(5, computer.getId());
 
       //Execute the query
-      if (statement.executeUpdate() == 0) {
-        return null;
-      } else {
-        connection.commit();
-        return computer;
-      }
+      statement.executeUpdate();
+      connection.commit();
+      return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
+      UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {
@@ -441,6 +433,43 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       return null;
     } else {
       return removeByComputer(computer);
+    }
+  }
+
+  /**
+   * Remove a list of computers from the database using their ids.
+   * @param idList : the list of ids of the computers to remove.
+   * @return true if the transaction was a success, false otherwise
+   */
+  public void removeByIdList(List<Long> idList) {
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    if (idList.isEmpty()) {
+      return;
+    }
+
+    try {
+      //Get a connection
+      connection = UtilDaoSQL.getConnection();
+      connection.setAutoCommit(false);
+
+      for (Long id : idList) {
+        //Create the query
+        statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
+            Statement.RETURN_GENERATED_KEYS);
+        statement.setLong(1, id);
+        statement.executeUpdate();
+      }
+      connection.commit();
+    } catch (SQLException e) {
+      LOGGER.error("SQLError in removeByIdList()");
+      UtilDaoSQL.rollback(connection);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      if (connection != null) {
+        UtilDaoSQL.close(connection, statement);
+      }
     }
   }
 
@@ -467,14 +496,12 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       statement.setLong(1, computer.getId());
 
       //Execute the query
-      if (statement.executeUpdate() == 0) {
-        return null;
-      } else {
-        connection.commit();
-        return computer;
-      }
+      statement.executeUpdate();
+      connection.commit();
+      return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
+      UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       if (connection != null) {

@@ -13,7 +13,6 @@ pageEncoding="UTF-8"%>
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1>Add Computer</h1>
-
                     <p class="text-warning">${error.get("eName")}</p>
                     <p class="text-warning">${error.get("eDateI")}</p>
                     <p class="text-warning">${error.get("eDateD")}</p>

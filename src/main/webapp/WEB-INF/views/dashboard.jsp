@@ -24,7 +24,7 @@ pageEncoding="UTF-8"%>
 			</div>
 		</div>
 		
-		<form id="deleteForm" action="delete" method="POST">
+		<form id="deleteForm" action="deletecomputer" method="POST">
 			<input type="hidden" name="selection" value="">
 		</form>
 		

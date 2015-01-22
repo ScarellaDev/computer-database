@@ -1,5 +1,7 @@
 package com.excilys.computerdatabase.validator;
 
+import java.time.LocalDateTime;
+
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
@@ -196,6 +198,18 @@ public class StringValidation {
     if (!dateS.matches(REGEX_DATE_EN)) {
       return false;
     }
+
+    LocalDateTime currentTime = LocalDateTime.now();
+    if (new Integer(dateS.substring(0, 4)) > currentTime.getYear()) {
+      return false;
+    }
+    if (new Integer(dateS.substring(5, 7)) > currentTime.getMonthValue()) {
+      return false;
+    }
+    if (new Integer(dateS.substring(8)) > currentTime.getDayOfMonth()) {
+      return false;
+    }
+
     return true;
   }
 }

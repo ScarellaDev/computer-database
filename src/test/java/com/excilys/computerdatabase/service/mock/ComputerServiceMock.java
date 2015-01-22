@@ -91,6 +91,14 @@ public class ComputerServiceMock implements IComputerDBService {
   }
 
   /**
+   * Remove a list of computers from the database using their ids.
+   * @param idList : the list of ids of the computers to remove.
+   */
+  public void removeByIdList(List<Long> idList) {
+    computerDao.removeByIdList(idList);
+  }
+
+  /**
    * Remove a computer from the database using a Computer instance.
    * @param computer : instance of the computer that needs to be removed from the database. Must have an id at least. 
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.

@@ -243,4 +243,19 @@ public enum UtilDaoSQL {
     }
     close(connection, statement);
   }
+
+  /**
+   * Execute rollback on connection if not null.
+   * @param connection
+   */
+  public static void rollback(Connection connection) {
+    if (connection != null) {
+      try {
+        connection.rollback();
+      } catch (SQLException e) {
+        LOGGER.warn("SQLException: couldn't rollback the Connection");
+        throw new PersistenceException(e.getMessage(), e);
+      }
+    }
+  }
 }

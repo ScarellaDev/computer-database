@@ -2,13 +2,14 @@ package com.excilys.computerdatabase.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
@@ -23,24 +24,23 @@ public class UtilControllerHttp {
   /*
    * Instance of computerDBService
    */
-  private static IComputerDBService      computerDBService   = ComputerDBServiceImpl.INSTANCE;
+  private static IComputerDBService      computerDBService     = ComputerDBServiceImpl.INSTANCE;
 
   /*
    * Instance of companyDBService
    */
-  private static ICompanyDBService       companyDBService    = CompanyDBServiceImpl.INSTANCE;
-
-  /*
-   * Instance of companyDBService
-   */
-  private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(UtilControllerHttp.class);
+  private static ICompanyDBService       companyDBService      = CompanyDBServiceImpl.INSTANCE;
 
   /*
    * DATE TIME FORMATTER
    */
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-                                                                 .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER   = DateTimeFormatter
+                                                                   .ofPattern("yyyy-MM-dd HH:mm:ss");
+
+  /*
+   * POSITIVE LONG PATTERN
+   */
+  private static final Pattern           POSITIVE_LONG_PATTERN = Pattern.compile("\\d{1,19}");
 
   /**
    * Builds a Computer instance based on the information contained in the given HttpServletRequest from an Add operation
@@ -61,7 +61,8 @@ public class UtilControllerHttp {
     if (!StringValidation.isEmpty(name)) {
       builder.name(name);
     } else {
-      errorMsgMap.put("eName", "Incorrect name : a name can't be empty or only spaces");
+      errorMsgMap.put("eName",
+          "Incorrect name : a name can't be empty or only spaces or set to 'null'");
     }
 
     //Check if the introduced date is valid
@@ -71,8 +72,10 @@ public class UtilControllerHttp {
         introducedSB.append(" 00:00:00");
         builder.introduced(LocalDateTime.parse(introducedSB, DATE_TIME_FORMATTER));
       } else {
-        errorMsgMap.put("eDateI",
-            "Incorrect date : the field must be at the yyyy-MM-dd format or left empty");
+        errorMsgMap
+            .put(
+                "eDateI",
+                "Incorrect introduced date : the field must be at the yyyy-MM-dd format (cannot be future date) or shoulb be left empty");
       }
     }
 
@@ -83,8 +86,10 @@ public class UtilControllerHttp {
         discontinuedSB.append(" 00:00:00");
         builder.discontinued(LocalDateTime.parse(discontinuedSB, DATE_TIME_FORMATTER));
       } else {
-        errorMsgMap.put("eDateD",
-            "Incorrect date : the field must be at the yyyy-MM-dd format or left empty");
+        errorMsgMap
+            .put(
+                "eDateD",
+                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (cannot be future date) or should be left empty");
       }
     }
 
@@ -140,7 +145,7 @@ public class UtilControllerHttp {
       return null;
     }
 
-    //Create a computer with the informations in the httpRequest
+    //Create a computer with the information in the httpRequest
     Computer computer = buildComputer(httpReq);
 
     //Check if the computer was created
@@ -150,5 +155,32 @@ public class UtilControllerHttp {
 
     computer.setId(id);
     return computer;
+  }
+
+  /**
+   * Builds a Computer instance based on the information contained in the given HttpServletRequest from an Update operation
+   * If there was an input error, it sets a Map "errorMsgMap" who contain error messages in the HttpServletRequest 
+   * @param httpReq : HttpServletRequest containing the information of the computer { id (required), name (required), introduced, discontinued, companyId }
+   * @return a Computer instance based on the request info if there was no errors or null if there was an error
+   */
+  public static void deleteComputers(HttpServletRequest httpReq) {
+
+    //Get the String containing the Ids of the computers to delete
+    String selection = httpReq.getParameter("selection");
+
+    //Create a matcher to find the positives longs in the String
+    Matcher m = POSITIVE_LONG_PATTERN.matcher(selection);
+
+    List<Long> idList = new ArrayList<Long>();
+
+    //For each long found, delete the computer
+    while (m.find()) {
+      idList.add(new Long(m.group()));
+    }
+
+    if (idList.isEmpty()) {
+      return;
+    }
+    computerDBService.removeByIdList(idList);
   }
 }
