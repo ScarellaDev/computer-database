@@ -18,8 +18,10 @@ pageEncoding="UTF-8"%>
 				</div>
 				<div class="pull-right">
 					<a class="btn btn-success" id="addcomputer" href="addcomputer">Add
-					Computer</a> <a class="btn btn-default" id="editcomputer" href="#"
-					onclick="$.fn.toggleEditMode();">Edit</a>
+					Computer</a>
+					<a class="btn btn-default" id="editcomputer" href="editcomputer">Update</a>
+					<a class="btn .btn-danger" id="deletecomputer" href="#"
+					onclick="$.fn.toggleEditMode();">Delete</a>
 				</div>
 			</div>
 		</div>

@@ -13,7 +13,7 @@ import com.excilys.computerdatabase.service.IComputerDBService;
 *
 * @author Jeremy SCARELLA
 */
-public enum ComputerServiceImpl implements IComputerDBService {
+public enum ComputerDBServiceImpl implements IComputerDBService {
 
   /*
   * Instance of ComputerServiceImpl

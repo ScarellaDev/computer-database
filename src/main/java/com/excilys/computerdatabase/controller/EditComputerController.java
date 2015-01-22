@@ -21,8 +21,8 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyServiceImpl;
-import com.excilys.computerdatabase.service.impl.ComputerServiceImpl;
+import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
+import com.excilys.computerdatabase.service.impl.ComputerDBServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 @WebServlet("/editcomputer")
@@ -33,12 +33,12 @@ public class EditComputerController extends HttpServlet {
   /*
    * Instance of computerDBService
    */
-  private static IComputerDBService      computerDBService   = ComputerServiceImpl.INSTANCE;
+  private static IComputerDBService      computerDBService   = ComputerDBServiceImpl.INSTANCE;
 
   /*
    * Instance of companyDBService
    */
-  private static ICompanyDBService       companyDBService    = CompanyServiceImpl.INSTANCE;
+  private static ICompanyDBService       companyDBService    = CompanyDBServiceImpl.INSTANCE;
 
   /*
    * LOGGER

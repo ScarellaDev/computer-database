@@ -13,7 +13,7 @@ import com.excilys.computerdatabase.service.ICompanyDBService;
 *
 * @author Jeremy SCARELLA
 */
-public enum CompanyServiceImpl implements ICompanyDBService {
+public enum CompanyDBServiceImpl implements ICompanyDBService {
 
   /*
   * Instance of CompanyServiceImpl

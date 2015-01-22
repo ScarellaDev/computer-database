@@ -24,9 +24,13 @@ pageEncoding="UTF-8"%>
                     <form id="form" action="editcomputer" method="POST">
                         <input type="hidden" name="id" value="${computer.id}"/>
                         <fieldset>
+                        	<div class="form-group">
+                                <label for="id">Computer id</label>
+                                <input type="number" class="form-control" id="id" name="id" placeholder="Computer id" value="${computer.id}" required="required">
+                            </div>
                             <div class="form-group">
-                                <label for="computerName">Computer name</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Computer name" value="${computer.name}" required="required">
+                                <label for="name">Computer name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Computer name" value="${computer.name}">
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
