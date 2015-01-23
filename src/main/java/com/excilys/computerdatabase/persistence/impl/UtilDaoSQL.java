@@ -70,7 +70,7 @@ public enum UtilDaoSQL {
   /*
    * COUNT query for computer table
    */
-  public static final String  COMPUTER_COUNT_QUERY  = "SELECT COUNT(id) AS total FROM computer";
+  public static final String  COMPUTER_COUNT_QUERY  = "SELECT COUNT(c.id) AS total FROM computer c LEFT JOIN company ON company.id=c.company_id";
 
   /*
    * MAX query for computer table

@@ -561,11 +561,13 @@ public enum ComputerDaoImplSQL implements IComputerDao {
 
       //Create & execute the counting query
       countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
-          + " WHERE name LIKE ?;");
+          + " WHERE c.name LIKE ? OR company.name LIKE ?;");
       if (StringValidation.isEmpty(page.getSearch())) {
         countStatement.setString(1, "%");
+        countStatement.setString(2, "%");
       } else {
         countStatement.setString(1, page.getSearch() + "%");
+        countStatement.setString(2, page.getSearch() + "%");
       }
       countResults = countStatement.executeQuery();
 
@@ -577,14 +579,16 @@ public enum ComputerDaoImplSQL implements IComputerDao {
 
       //Create the SELECT query
       selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
-          + " WHERE c.name LIKE ? LIMIT ? OFFSET ?;");
+          + " WHERE c.name LIKE ? OR company.name LIKE ? LIMIT ? OFFSET ?;");
       if (StringValidation.isEmpty(page.getSearch())) {
         selectStatement.setString(1, "%");
+        selectStatement.setString(2, "%");
       } else {
         selectStatement.setString(1, page.getSearch() + "%");
+        selectStatement.setString(2, page.getSearch() + "%");
       }
-      selectStatement.setInt(2, page.getNbElementsPerPage());
-      selectStatement.setInt(3, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      selectStatement.setInt(3, page.getNbElementsPerPage());
+      selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
