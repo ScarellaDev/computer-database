@@ -3,7 +3,6 @@ package com.excilys.computerdatabase.persistence.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.jolbox.bonecp.BoneCP;
+import com.jolbox.bonecp.BoneCPConfig;
 
 /**
 * Util class to create SQL database connections.
@@ -26,26 +27,6 @@ public enum UtilDaoSQL {
    * Instance of UtilDaoSQL
    */
   INSTANCE;
-
-  /*
-   * DRIVER to use for mysql database.
-   */
-  private static final String DB_DRIVER;
-
-  /*
-  * URL to the database server.
-  */
-  private static final String DB_URL;
-
-  /*
-  * USERNAME for the database.
-  */
-  private static final String DB_USERNAME;
-
-  /*
-  * PASSWORD for the database.
-  */
-  private static final String DB_PASSWORD;
 
   /*
    * SELECT query for computer table
@@ -103,17 +84,39 @@ public enum UtilDaoSQL {
   private static final Logger LOGGER                              = LoggerFactory
                                                                       .getLogger(UtilDaoSQL.class);
 
+  /*
+   * CONNECTION_POOL
+   */
+  private static final BoneCP CONNECTION_POOL;
+
   /**
    * Static instruction block that loads the JDBC driver once
    */
   static {
-    // Load db.properties
     Properties properties = new Properties();
-    InputStream input = UtilDaoSQL.class.getClassLoader().getResourceAsStream("db.properties");
+    InputStream input = null;
     try {
+      input = UtilDaoSQL.class.getClassLoader().getResourceAsStream("db.properties");
       properties.load(input);
+
+      final BoneCPConfig config = new BoneCPConfig();
+      // Load the Driver class
+      Class.forName(properties.getProperty("db.driver"));
+      config.setJdbcUrl(properties.getProperty("db.url"));
+      config.setUser(properties.getProperty("db.username"));
+      config.setPassword(properties.getProperty("db.password"));
+      config.setMinConnectionsPerPartition(5);
+      config.setMaxConnectionsPerPartition(10);
+      config.setPartitionCount(1);
+      CONNECTION_POOL = new BoneCP(config);
+    } catch (SQLException e) {
+      LOGGER.error("SQLException: error while creating the connection pool");
+      throw new PersistenceException(e.getMessage(), e);
     } catch (IOException e) {
-      LOGGER.error("IOException: couldn't load db.properties file");
+      LOGGER.error("IOException: couldn't load the database.properties file");
+      throw new PersistenceException(e.getMessage(), e);
+    } catch (ClassNotFoundException e) {
+      LOGGER.error("ClassNotFoundException: MySQL JDBC driver not found");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       try {
@@ -125,18 +128,6 @@ public enum UtilDaoSQL {
         throw new PersistenceException(e.getMessage(), e);
       }
     }
-    DB_DRIVER = properties.getProperty("db.driver");
-    DB_URL = properties.getProperty("db.url");
-    DB_USERNAME = properties.getProperty("db.username");
-    DB_PASSWORD = properties.getProperty("db.password");
-
-    // Load the driver for mysql database
-    try {
-      Class.forName(DB_DRIVER);
-    } catch (ClassNotFoundException e) {
-      LOGGER.error("ClassNotFoundException: MySQL JDBC driver not found");
-      throw new PersistenceException(e.getMessage(), e);
-    }
   }
 
   /**
@@ -146,7 +137,7 @@ public enum UtilDaoSQL {
   */
   public static Connection getConnection() {
     try {
-      return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+      return CONNECTION_POOL.getConnection();
     } catch (SQLException e) {
       LOGGER.error("SQLException: couldn't connect to the database");
       throw new PersistenceException(e.getMessage(), e);
@@ -160,7 +151,7 @@ public enum UtilDaoSQL {
   */
   public static Connection getConnectionWithManualCommit() {
     try {
-      Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+      Connection connection = CONNECTION_POOL.getConnection();
       connection.setAutoCommit(false);
       return connection;
     } catch (SQLException e) {
