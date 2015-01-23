@@ -101,6 +101,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
 
   /**
    * Remove a company from the database using its id.
+   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company to remove.
    */
   public void removeById(Connection connection, Long id) throws PersistenceException {

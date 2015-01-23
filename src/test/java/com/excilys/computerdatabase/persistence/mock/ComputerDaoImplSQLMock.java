@@ -453,6 +453,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
   /**
    * Remove all computers attached to the companyId given as parameter from the database.
+   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company that needs its computers to be removed.
    */
   public void removeByCompanyId(Connection connection, Long id) {
@@ -470,7 +471,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       //Execute the query
       statement.executeUpdate();
     } catch (SQLException e) {
-      LOGGER.error("SQLError in removeById() with id = " + id);
+      LOGGER.error("SQLError in removeByCompanyId() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       UtilDaoSQL.close(statement);

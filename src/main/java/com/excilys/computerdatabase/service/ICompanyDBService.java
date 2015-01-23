@@ -27,7 +27,7 @@ public interface ICompanyDBService {
   /**
    * Remove a company from the database using its id.
    * @param id : id of the company to remove.
-   * @return 
+   * @return true if DELETE query was successful
    */
   Boolean removeById(Long id);
 

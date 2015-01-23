@@ -65,6 +65,7 @@ public enum CompanyDBServiceImpl implements ICompanyDBService {
   /**
    * Remove a company from the database using its id.
    * @param id : id of the company to remove.
+   * @return true if DELETE query was successful
    */
   public Boolean removeById(Long id) {
     Connection connection = UtilDaoSQL.getConnectionWithManualCommit();

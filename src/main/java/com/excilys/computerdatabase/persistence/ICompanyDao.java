@@ -28,6 +28,7 @@ public interface ICompanyDao {
 
   /**
    * Remove a company from the database using its id.
+   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company to remove.
    */
   void removeById(Connection connection, Long id);

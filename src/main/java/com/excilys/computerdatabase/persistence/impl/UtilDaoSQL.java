@@ -167,6 +167,9 @@ public enum UtilDaoSQL {
   public static void close(Connection connection) {
     if (connection != null) {
       try {
+        if (connection.getAutoCommit()) {
+          connection.setAutoCommit(true);
+        }
         connection.close();
       } catch (SQLException e) {
         LOGGER.warn("SQLException: couldn't close Connection");

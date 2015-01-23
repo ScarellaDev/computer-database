@@ -65,6 +65,7 @@ public interface IComputerDao {
 
   /**
    * Remove all computers attached to the companyId given as parameter from the database.
+   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company that needs its computers to be removed.
    */
   void removeByCompanyId(Connection connection, Long id);
