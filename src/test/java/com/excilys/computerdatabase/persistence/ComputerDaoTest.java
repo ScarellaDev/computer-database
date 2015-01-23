@@ -17,6 +17,8 @@ import org.junit.Test;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.persistence.mock.ComputerDaoImplSQLMock;
 
@@ -192,15 +194,15 @@ public class ComputerDaoTest {
    */
   @Test
   public void getPagedList() {
-    final Page<Computer> page = new Page<Computer>();
+    final Page<ComputerDto> page = new Page<ComputerDto>();
     page.setNbElementsPerPage(20);
     page.setPageIndex(1);
-    final Page<Computer> pageReturned = new Page<Computer>();
+    final Page<ComputerDto> pageReturned = new Page<ComputerDto>();
     pageReturned.setNbElementsPerPage(20);
     pageReturned.setPageIndex(1);
     pageReturned.setTotalNbElements(4);
     pageReturned.setTotalNbPages(1);
-    pageReturned.setList(listComputers);
+    pageReturned.setList(ComputerDtoConverter.toDto(listComputers));
     assertEquals(pageReturned, computerDao.getPagedList(page));
   }
 }

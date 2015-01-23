@@ -37,7 +37,7 @@ public class DtoValidation {
         return false;
       }
     }
-    if (computerDto.getCompany() < 0) {
+    if (computerDto.getCompanyId() < 0) {
       return false;
     }
     return true;

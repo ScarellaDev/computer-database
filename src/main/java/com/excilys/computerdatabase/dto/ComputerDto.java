@@ -14,7 +14,7 @@ public class ComputerDto {
   private String name;
   private String introduced;
   private String discontinued;
-  private long   company;
+  private long   companyId;
   private String companyName;
 
   /*
@@ -38,7 +38,7 @@ public class ComputerDto {
     this.name = name;
     this.introduced = introduced;
     this.discontinued = discontinued;
-    this.company = company;
+    this.companyId = company;
     this.companyName = companyName;
   }
 
@@ -48,7 +48,7 @@ public class ComputerDto {
   @Override
   public String toString() {
     return "ComputerDto [id=" + id + ", name=" + name + ", introduced=" + introduced
-        + ", discontinued=" + discontinued + ", company=" + company + ", companyName="
+        + ", discontinued=" + discontinued + ", companyId=" + companyId + ", companyName="
         + companyName + "]";
   }
 
@@ -56,7 +56,7 @@ public class ComputerDto {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + (int) (company ^ (company >>> 32));
+    result = prime * result + (int) (companyId ^ (companyId >>> 32));
     result = prime * result + ((companyName == null) ? 0 : companyName.hashCode());
     result = prime * result + ((discontinued == null) ? 0 : discontinued.hashCode());
     result = prime * result + (int) (id ^ (id >>> 32));
@@ -78,7 +78,7 @@ public class ComputerDto {
     }
 
     ComputerDto other = (ComputerDto) obj;
-    if (company != other.company) {
+    if (companyId != other.companyId) {
       return false;
     }
 
@@ -147,8 +147,8 @@ public class ComputerDto {
       return this;
     }
 
-    public Builder company(final long company) {
-      computerDto.company = company;
+    public Builder companyId(final long companyId) {
+      computerDto.companyId = companyId;
       return this;
     }
 
@@ -197,12 +197,12 @@ public class ComputerDto {
     this.discontinued = discontinued;
   }
 
-  public long getCompany() {
-    return company;
+  public long getCompanyId() {
+    return companyId;
   }
 
-  public void setCompany(final long company) {
-    this.company = company;
+  public void setCompanyId(final long companyId) {
+    this.companyId = companyId;
   }
 
   public String getCompanyName() {

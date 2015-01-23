@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
@@ -59,8 +60,8 @@ public class EditComputerController extends HttpServlet {
     if (StringValidation.isPositiveLong(idS)) {
       id = Long.valueOf(httpReq.getParameter("id"));
 
-      final Computer computer = computerDBService.getById(id);
-      httpReq.setAttribute("computer", computer);
+      final ComputerDto computerDto = computerDBService.getById(id);
+      httpReq.setAttribute("computer", computerDto);
     }
 
     final List<Company> companies = companyDBService.getAll();

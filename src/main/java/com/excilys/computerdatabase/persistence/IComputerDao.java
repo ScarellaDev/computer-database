@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
 
 /**
 * Interface implemented by Daos to manage computers.
@@ -88,5 +89,5 @@ public interface IComputerDao {
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of computers
    */
-  Page<Computer> getPagedList(Page<Computer> page);
+  Page<ComputerDto> getPagedList(Page<ComputerDto> page);
 }

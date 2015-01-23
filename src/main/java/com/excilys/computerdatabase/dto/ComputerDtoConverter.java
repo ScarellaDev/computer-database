@@ -41,8 +41,8 @@ public class ComputerDtoConverter {
     if (computerDto.getDiscontinued() != null) {
       builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued(), DATE_TIME_FORMATTER));
     }
-    if (computerDto.getCompany() != 0) {
-      builder.company(new Company(computerDto.getCompany(), computerDto.getCompanyName()));
+    if (computerDto.getCompanyId() != 0) {
+      builder.company(new Company(computerDto.getCompanyId(), computerDto.getCompanyName()));
     }
     return builder.build();
   }
@@ -79,10 +79,10 @@ public class ComputerDtoConverter {
       builder.discontinued(computer.getDiscontinued().toString());
     }
     if (computer.getCompany() != null) {
-      builder.company(computer.getCompany().getId());
+      builder.companyId(computer.getCompany().getId());
       builder.companyName(computer.getCompany().getName());
     } else {
-      builder.company(0);
+      builder.companyId(0);
     }
 
     return builder.build();

@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
@@ -60,7 +61,7 @@ public class OutputManagerCLI {
   public static void showComputerPage() {
     System.out.println("-> You entered the computer list navigation:");
     //Create a Page
-    Page<Computer> page = new Page<Computer>();
+    Page<ComputerDto> page = new Page<ComputerDto>();
     //Get the first Page of computers from the database
     page = computerDBService.getPagedList(page);
     //Show the content of the page
@@ -168,12 +169,12 @@ public class OutputManagerCLI {
    */
   public static void showComputerList() {
     //Print computer list from DB
-    List<Computer> computers = new ArrayList<Computer>();
-    computers = computerDBService.getAll();
-    if (computers != null) {
+    List<ComputerDto> computersDto = new ArrayList<ComputerDto>();
+    computersDto = computerDBService.getAll();
+    if (computersDto != null) {
       System.out.println("Here is a list of all the computers in the DB:\r\n");
-      for (Computer computer : computers) {
-        System.out.println(computer.toString());
+      for (ComputerDto computerDto : computersDto) {
+        System.out.println(computerDto.toString());
       }
     } else {
       System.out.println("No computers found.");
@@ -314,12 +315,12 @@ public class OutputManagerCLI {
     //Print the details of the computer with id=idS
 
     if (StringValidation.isPositiveLong(idS)) {
-      Computer computer = computerDBService.getById(new Long(idS));
-      if (computer == null) {
+      ComputerDto computerDto = computerDBService.getById(new Long(idS));
+      if (computerDto == null) {
         System.out.println("MySQL Error: computer not found.\r\n");
       } else {
         System.out.println("Here are the details of the computer you requested:");
-        System.out.println(computer.toString());
+        System.out.println(computerDto.toString());
       }
     } else {
       System.out.println("The id you entered is incorrect.\r\n");
@@ -332,13 +333,13 @@ public class OutputManagerCLI {
    * Use the String "null" to skip a value.
    */
   public static void showAddResult(String[] params) {
-    Computer computer = null;
-    computer = computerDBService.addByString(params);
-    if (computer == null) {
+    ComputerDto computerDto = null;
+    computerDto = computerDBService.addByString(params);
+    if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
     } else {
       System.out.println("Your computer was successfully added to the DB :");
-      System.out.println(computer.toString());
+      System.out.println(computerDto.toString());
     }
   }
 
@@ -347,12 +348,12 @@ public class OutputManagerCLI {
    * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
    */
   public static void showAddResult(Computer computer) {
-    computer = computerDBService.addByComputer(computer);
-    if (computer == null) {
+    ComputerDto computerDto = computerDBService.addByComputer(computer);
+    if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
     } else {
       System.out.println("Your computer was successfully added to the DB :");
-      System.out.println(computer.toString());
+      System.out.println(computerDto.toString());
     }
   }
 
@@ -362,13 +363,12 @@ public class OutputManagerCLI {
    * All the attributes of the updated computer gets changed.
    */
   public static void showUpdateResult(String[] params) {
-    Computer computer = null;
-    computer = computerDBService.updateByString(params);
-    if (computer == null) {
+    ComputerDto computerDto = computerDBService.updateByString(params);
+    if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
     } else {
       System.out.println("Your computer was updated successfully in the DB :");
-      System.out.println(computer.toString());
+      System.out.println(computerDto.toString());
     }
   }
 
@@ -377,12 +377,12 @@ public class OutputManagerCLI {
    * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
    */
   public static void showUpdateResult(Computer computer) {
-    computer = computerDBService.updateByComputer(computer);
-    if (computer == null) {
+    ComputerDto computerDto = computerDBService.updateByComputer(computer);
+    if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
     } else {
       System.out.println("Your computer was updated successfully in the DB :");
-      System.out.println(computer.toString());
+      System.out.println(computerDto.toString());
     }
   }
 
@@ -393,13 +393,12 @@ public class OutputManagerCLI {
   public static void showRemoveComputerResult(String idS) {
     //Print the details of the computer with id=idS
     if (StringValidation.isPositiveLong(idS)) {
-      Computer computer = null;
-      computer = computerDBService.removeById(new Long(idS));
-      if (computer == null) {
+      ComputerDto computerDto = computerDBService.removeById(new Long(idS));
+      if (computerDto == null) {
         System.out.println("MySQL Error: computer could not be removed from DB.\r\n");
       } else {
         System.out.println("Your computer was successfully removed from the DB :");
-        System.out.println(computer.toString());
+        System.out.println(computerDto.toString());
       }
     } else {
       System.out.println("The id you entered is incorrect.\r\n");

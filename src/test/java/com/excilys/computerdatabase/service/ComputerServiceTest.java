@@ -15,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.service.mock.ComputerServiceMock;
 
@@ -34,8 +35,8 @@ public class ComputerServiceTest {
   private Computer     computer;
   private Computer     computer2;
   private IComputerDao computerDao;
-  Page<Computer>       page;
-  Page<Computer>       pageReturned;
+  Page<ComputerDto>    page;
+  Page<ComputerDto>    pageReturned;
 
   /**
    * Test initialisation using Mockito, creates a mock ComputerDao and two instances of Computer.
@@ -48,14 +49,14 @@ public class ComputerServiceTest {
     computer2 = Computer.builder().id(2L).name("CM-6").build();
     computerId2 = computer2.getId();
 
-    page = new Page<Computer>();
+    page = new Page<ComputerDto>();
     page.setNbElementsPerPage(5);
     page.setPageIndex(1);
-    pageReturned = new Page<Computer>();
+    pageReturned = new Page<ComputerDto>();
     page.setNbElementsPerPage(5);
     page.setPageIndex(1);
     page.setTotalNbElements(20);
-    page.setList(new ArrayList<Computer>());
+    page.setList(new ArrayList<ComputerDto>());
 
     when(computerDao.getAll()).thenReturn(new ArrayList<Computer>());
     when(computerDao.getById(anyLong())).thenReturn(Computer.builder().id(1L).build());

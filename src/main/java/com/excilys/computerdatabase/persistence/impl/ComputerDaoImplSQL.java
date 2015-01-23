@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.IRowMapper;
 import com.excilys.computerdatabase.mapper.impl.ComputerRowMapperImpl;
@@ -531,7 +533,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
    * @return A Page instance containing a sublist of computers
    */
   @Override
-  public Page<Computer> getPagedList(final Page<Computer> page) {
+  public Page<ComputerDto> getPagedList(final Page<ComputerDto> page) {
     Connection connection = null;
     PreparedStatement countStatement = null;
     PreparedStatement selectStatement = null;
@@ -566,7 +568,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
 
-      page.setList(computerRowMapper.mapRows(selectResults));
+      page.setList(ComputerDtoConverter.toDto(computerRowMapper.mapRows(selectResults)));
       return page;
     } catch (SQLException e) {
       LOGGER.error("SQLError in getPagedList() with page = " + page);

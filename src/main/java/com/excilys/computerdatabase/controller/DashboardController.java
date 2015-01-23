@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.service.IComputerDBService;
 import com.excilys.computerdatabase.service.impl.ComputerDBServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
@@ -38,7 +38,7 @@ public class DashboardController extends HttpServlet {
   protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
-    Page<Computer> page = new Page<Computer>();
+    Page<ComputerDto> page = new Page<ComputerDto>();
 
     //Get pageIndex and set it
     final String intString = httpReq.getParameter("pageIndex");

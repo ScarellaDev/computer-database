@@ -40,10 +40,10 @@ pageEncoding="UTF-8"%>
                                 <select class="form-control" id="companyId" name="companyId">
                                     <option value="0">--</option>
                                    	<c:forEach items="${companies}" var="company">
-                                   	<c:if test="${company.id == computer.company.id}">
+                                   	<c:if test="${company.id == computer.companyId}">
                                    	<option value="${company.id}" selected="selected">${company.name}</option>
                                    	</c:if>
-                                   	<c:if test="${company.id != computer.company.id}"></c:if>
+                                   	<c:if test="${company.id != computer.companyId}"></c:if>
                                    	<option value="${company.id}"><c:out value="${company.name}"/></option>
                                    	</c:forEach>
                                 </select>
