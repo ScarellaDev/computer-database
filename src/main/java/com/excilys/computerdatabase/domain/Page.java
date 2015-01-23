@@ -8,35 +8,52 @@ import java.util.List;
 * @author Jeremy SCARELLA
 */
 public class Page<T> {
+
+  /*
+   * COLUMN NAMES
+   */
+  private static final String[] COLUMN_NAMES = { "c.id", "c.name", "c.introduced",
+      "c.discontinued", "company.name"      };
+
   /*
   * Index of the current page (1 by default)
   */
-  private Integer pageIndex;
+  private Integer               pageIndex;
 
   /*
   * List of elements of the current page
   */
-  private List<T> list;
+  private List<T>               list;
 
   /*
   * Max number of elements the page can have (20 by default)
   */
-  private Integer nbElementsPerPage;
+  private Integer               nbElementsPerPage;
 
   /*
   * Total number of elements in the database
   */
-  private Integer totalNbElements;
+  private Integer               totalNbElements;
 
   /*
    * Total number of pages
    */
-  private Integer totalNbPages;
+  private Integer               totalNbPages;
 
   /*
    * Search parameter
    */
-  private String  search;
+  private String                search;
+
+  /*
+   * Sort parameter
+   */
+  private Integer               sort;
+
+  /*
+   * Order parameter (works with sort)
+   */
+  private String                order;
 
   /*
    * Constructors
@@ -44,6 +61,9 @@ public class Page<T> {
   public Page() {
     this.pageIndex = 1;
     this.nbElementsPerPage = 20;
+    this.search = "";
+    this.sort = 0;
+    this.order = "ASC";
   }
 
   /**
@@ -54,13 +74,16 @@ public class Page<T> {
    * @param totalNbPages
    */
   public Page(final Integer pageIndex, final List<T> list, final Integer nbElementsPerPage,
-      final Integer totalNbElements, final Integer totalNbPages, final String search) {
+      final Integer totalNbElements, final Integer totalNbPages, final String search,
+      final Integer sort, final String order) {
     this.pageIndex = pageIndex;
     this.list = list;
     this.nbElementsPerPage = nbElementsPerPage;
     this.totalNbElements = totalNbElements;
     this.totalNbPages = totalNbPages;
     this.search = search;
+    this.sort = sort;
+    this.order = order;
   }
 
   /*
@@ -70,18 +93,21 @@ public class Page<T> {
   public String toString() {
     return "Page [pageIndex=" + pageIndex + ", list=" + list + ", nbElementsPerPage="
         + nbElementsPerPage + ", totalNbElements=" + totalNbElements + ", totalNbPages="
-        + totalNbPages + "]";
+        + totalNbPages + ", search=" + search + ", sort=" + sort + ", order=" + order + "]";
   }
 
   @Override
   public int hashCode() {
-    final Integer prime = 31;
-    Integer result = 1;
+    final int prime = 31;
+    int result = 1;
     result = prime * result + ((list == null) ? 0 : list.hashCode());
-    result = prime * result + totalNbPages;
-    result = prime * result + totalNbElements;
-    result = prime * result + nbElementsPerPage;
-    result = prime * result + pageIndex;
+    result = prime * result + ((nbElementsPerPage == null) ? 0 : nbElementsPerPage.hashCode());
+    result = prime * result + ((pageIndex == null) ? 0 : pageIndex.hashCode());
+    result = prime * result + ((search == null) ? 0 : search.hashCode());
+    result = prime * result + ((sort == null) ? 0 : sort.hashCode());
+    result = prime * result + ((order == null) ? 0 : order.hashCode());
+    result = prime * result + ((totalNbElements == null) ? 0 : totalNbElements.hashCode());
+    result = prime * result + ((totalNbPages == null) ? 0 : totalNbPages.hashCode());
     return result;
   }
 
@@ -99,27 +125,51 @@ public class Page<T> {
 
     @SuppressWarnings("unchecked")
     final Page<T> other = (Page<T>) obj;
-    if (list == null) {
-      if (other.list != null) {
-        return false;
-      }
+    if (list == null && other.list != null) {
+      return false;
     } else if (!list.equals(other.list)) {
       return false;
     }
 
-    if (totalNbPages != other.totalNbPages) {
+    if (order == null && other.order != null) {
+      return false;
+    } else if (!order.equals(other.order)) {
       return false;
     }
 
-    if (totalNbElements != other.totalNbElements) {
+    if (sort == null && other.sort != null) {
+      return false;
+    } else if (!sort.equals(other.sort)) {
       return false;
     }
 
-    if (nbElementsPerPage != other.nbElementsPerPage) {
+    if (search == null && other.search != null) {
+      return false;
+    } else if (!search.equals(other.search)) {
       return false;
     }
 
-    if (pageIndex != other.pageIndex) {
+    if (totalNbPages == null && other.totalNbPages != null) {
+      return false;
+    } else if (!totalNbPages.equals(other.totalNbPages)) {
+      return false;
+    }
+
+    if (totalNbElements == null && other.totalNbElements != null) {
+      return false;
+    } else if (!totalNbElements.equals(other.totalNbElements)) {
+      return false;
+    }
+
+    if (nbElementsPerPage == null && other.nbElementsPerPage != null) {
+      return false;
+    } else if (!nbElementsPerPage.equals(other.nbElementsPerPage)) {
+      return false;
+    }
+
+    if (pageIndex == null && other.pageIndex != null) {
+      return false;
+    } else if (!pageIndex.equals(other.pageIndex)) {
       return false;
     }
 
@@ -129,6 +179,10 @@ public class Page<T> {
   /*
    * Getter/Setter
    */
+  public static String[] getColumnNames() {
+    return COLUMN_NAMES;
+  }
+
   public Integer getPageIndex() {
     return pageIndex;
   }
@@ -175,6 +229,22 @@ public class Page<T> {
 
   public void setSearch(String search) {
     this.search = search;
+  }
+
+  public Integer getSort() {
+    return sort;
+  }
+
+  public void setSort(Integer sort) {
+    this.sort = sort;
+  }
+
+  public String getOrder() {
+    return order;
+  }
+
+  public void setOrder(String order) {
+    this.order = order;
   }
 
   /**

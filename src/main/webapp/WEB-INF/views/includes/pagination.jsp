@@ -4,20 +4,20 @@ pageEncoding="UTF-8"%>
 <%@ page import="com.excilys.computerdatabase.domain.Page"%>
 <ul class="pagination">
 	<c:if test="${page.pageIndex != 1}">
-		<li><a href="dashboard?pageIndex=1&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}"
+		<li><a href="dashboard?pageIndex=1&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}"
 		aria-label="First">
 		<span aria-hidden="true">First</span>
 		</a></li>
-		<li><a href="dashboard?pageIndex=${page.pageIndex-1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}"
+		<li><a href="dashboard?pageIndex=${page.pageIndex-1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}"
 		aria-label="Previous">
 		<span aria-hidden="true">&laquo;</span>
 		</a></li>
 	</c:if>
 	<c:if test="${page.pageIndex-2 > 0}">
-		<li><a href="dashboard?pageIndex=${page.pageIndex-2}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}">${page.pageIndex-2}</a></li>
+		<li><a href="dashboard?pageIndex=${page.pageIndex-2}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}">${page.pageIndex-2}</a></li>
 	</c:if>
 	<c:if test="${page.pageIndex-1 > 0}">
-		<li><a href="dashboard?pageIndex=${page.pageIndex-1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}">${page.pageIndex-1}</a></li>
+		<li><a href="dashboard?pageIndex=${page.pageIndex-1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}">${page.pageIndex-1}</a></li>
 	</c:if>
 	<c:forEach begin="${page.pageIndex}" end="${page.pageIndex+2}" var="i">
 		<c:if test="${i <= page.totalNbPages}">
@@ -26,17 +26,17 @@ pageEncoding="UTF-8"%>
 					<li class="disabled"><span>${i}</span></li>
 				</c:when>
 				<c:otherwise>
-					<li><a href="dashboard?pageIndex=${i}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}" >${i}</a></li>
+					<li><a href="dashboard?pageIndex=${i}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}" >${i}</a></li>
 				</c:otherwise>
 			</c:choose>
 		</c:if>
 	</c:forEach>
 	<c:if test="${page.pageIndex != page.totalNbPages}">
-		<li><a href="dashboard?pageIndex=${page.pageIndex+1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}"
+		<li><a href="dashboard?pageIndex=${page.pageIndex+1}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}"
 		aria-label="Next">
 		<span aria-hidden="true">&raquo;</span>
 		</a></li>
-		<li><a href="dashboard?pageIndex=${page.totalNbPages}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}"
+		<li><a href="dashboard?pageIndex=${page.totalNbPages}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${page.sort}&order=${page.order}"
 		aria-label="Last">
 		<span aria-hidden="true">Last</span>
 		</a></li>
@@ -44,8 +44,8 @@ pageEncoding="UTF-8"%>
 </ul>
 
 <div class="btn-group btn-group-sm pull-right" role="group">
-	<a id="elements10" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=10&search=${page.search}">10</a>
-	<a id="elements25" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=25&search=${page.search}">25</a>
-	<a id="elements50" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=50&search=${page.search}">50</a>
-	<a id="elements100" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=100&search=${page.search}">100</a>
+	<a id="elements10" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=10&search=${page.search}&sort=${page.sort}&order=${page.order}">10</a>
+	<a id="elements25" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=25&search=${page.search}&sort=${page.sort}&order=${page.order}">25</a>
+	<a id="elements50" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=50&search=${page.search}&sort=${page.sort}&order=${page.order}">50</a>
+	<a id="elements100" type="button" class="btn btn-default" href="dashboard?pageIndex=1&nbElementsPerPage=100&search=${page.search}&sort=${page.sort}&order=${page.order}">100</a>
 </div>

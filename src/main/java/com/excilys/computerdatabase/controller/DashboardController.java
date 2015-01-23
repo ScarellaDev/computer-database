@@ -40,10 +40,6 @@ public class DashboardController extends HttpServlet {
 
     Page<Computer> page = new Page<Computer>();
 
-    String search = null;
-    search = httpReq.getParameter("search");
-    page.setSearch(search);
-
     //Get pageIndex and set it
     final String intString = httpReq.getParameter("pageIndex");
     int pageIndex = 0;
@@ -66,6 +62,28 @@ public class DashboardController extends HttpServlet {
       page.setNbElementsPerPage(10);
     } else {
       page.setNbElementsPerPage(nbElementsPerPage);
+    }
+
+    //Get search parameter
+    String search = httpReq.getParameter("search");
+    if (search != null) {
+      page.setSearch(search.trim());
+    }
+
+    //Get sort & order parameters
+    String sort = httpReq.getParameter("sort");
+    Integer sortId;
+    if (StringValidation.isPositiveInt(sort)) {
+      sortId = new Integer(httpReq.getParameter("sort"));
+    } else {
+      sortId = 0;
+    }
+    page.setSort(sortId);
+
+    String order = httpReq.getParameter("order");
+    if (order != null
+        && (order.compareToIgnoreCase("ASC") == 0 || order.compareToIgnoreCase("DESC") == 0)) {
+      page.setOrder(order.toUpperCase());
     }
 
     //Retrieve the list of computers to display

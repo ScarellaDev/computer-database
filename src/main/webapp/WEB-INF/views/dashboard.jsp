@@ -41,12 +41,22 @@ pageEncoding="UTF-8"%>
 						class="fa fa-trash-o fa-lg"></i>
 						</a>
 						</span></th>
-						<th>Computer name</th>
-						<th>Introduced date</th>
-						<!-- Table header for Discontinued Date -->
-						<th>Discontinued date</th>
-						<!-- Table header for Company -->
-						<th>Company</th>
+						<%String[][] columns = {{"1","Computer name"}, {"2", "Introduced date"},
+						{"3", "Discontinued date"}, {"4","Company name"}};
+						pageContext.setAttribute("columns", columns);%>
+						<c:forEach items="${columns}" var="col">
+							<c:choose>
+								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"ASC\") }">					
+									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=desc">${col[1]}</a></th>
+								</c:when>
+								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"DESC\") }">
+									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=asc">${col[1]}</a></th>
+								</c:when>
+								<c:otherwise>
+									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=asc">${col[1]}</a></th>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>	
 					</tr>
 				</thead>
 				<!-- Browse attribute computers -->

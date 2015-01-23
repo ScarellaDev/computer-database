@@ -21,7 +21,6 @@ import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
-import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -556,12 +555,9 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
       //Create & execute the counting query
       countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
-          + " WHERE name LIKE ?;");
-      if (StringValidation.isEmpty(page.getSearch())) {
-        countStatement.setString(1, "%");
-      } else {
-        countStatement.setString(1, page.getSearch() + "%");
-      }
+          + " WHERE c.name LIKE ? OR company.name LIKE ?;");
+      countStatement.setString(1, page.getSearch() + "%");
+      countStatement.setString(2, page.getSearch() + "%");
       countResults = countStatement.executeQuery();
 
       //Set the number of results of the page with the result
@@ -572,14 +568,12 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
       //Create the SELECT query
       selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
-          + " WHERE c.name LIKE ? LIMIT ? OFFSET ?;");
-      if (StringValidation.isEmpty(page.getSearch())) {
-        selectStatement.setString(1, "%");
-      } else {
-        selectStatement.setString(1, page.getSearch() + "%");
-      }
-      selectStatement.setInt(2, page.getNbElementsPerPage());
-      selectStatement.setInt(3, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+          + " WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY "
+          + Page.getColumnNames()[page.getSort()] + " " + page.getOrder() + " LIMIT ? OFFSET ?;");
+      selectStatement.setString(1, page.getSearch() + "%");
+      selectStatement.setString(2, page.getSearch() + "%");
+      selectStatement.setInt(3, page.getNbElementsPerPage());
+      selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
