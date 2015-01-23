@@ -165,8 +165,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
           if (params[3].matches("[0-9]+")) {
             companyId = new Long(params[3]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException(
-                  "The fourth argument must be a positive integer between [1, 43]");
+              throw new PersistenceException("The fourth argument must be a positive integer");
             }
           } else {
             throw new PersistenceException(
@@ -348,8 +347,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
           if (params[4].matches("[0-9]+")) {
             companyId = new Long(params[4]);
             if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException(
-                  "The fourth argument must be a positive integer between [1, 43]");
+              throw new PersistenceException("The fourth argument must be a positive integer");
             } else {
               company = COMPANIES.get(companyId.intValue() - 1);
             }
@@ -428,11 +426,63 @@ public enum ComputerDaoImplSQL implements IComputerDao {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   public Computer removeById(Long id) {
-    Computer computer = getById(id);
-    if (computer == null) {
-      return null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+
+    Computer computer = null;
+    if (id == null) {
+      return computer;
     } else {
-      return removeByComputer(computer);
+      computer = getById(id);
+    }
+
+    try {
+      //Get a connection
+      connection = UtilDaoSQL.getConnection();
+      connection.setAutoCommit(false);
+      //Create the query
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
+      statement.setLong(1, id);
+
+      //Execute the query
+      statement.executeUpdate();
+      connection.commit();
+      return computer;
+    } catch (SQLException e) {
+      LOGGER.error("SQLError in removeById() with id = " + id);
+      UtilDaoSQL.rollback(connection);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      if (connection != null) {
+        UtilDaoSQL.close(connection, statement);
+      }
+    }
+  }
+
+  /**
+   * Remove all computers attached to the companyId given as parameter from the database.
+   * @param id : id of the company that needs its computers to be removed.
+   */
+  public void removeByCompanyId(Connection connection, Long id) {
+    PreparedStatement statement = null;
+    if (id == null) {
+      return;
+    }
+
+    try {
+      //Create the query
+      statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_WHERE_COMPANY_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
+      statement.setLong(1, id);
+
+      //Execute the query
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      LOGGER.error("SQLError in removeById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      UtilDaoSQL.close(statement);
     }
   }
 

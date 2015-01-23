@@ -1,10 +1,17 @@
 package com.excilys.computerdatabase.service.mock;
 
+import java.sql.Connection;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
@@ -17,13 +24,24 @@ public class CompanyServiceMock implements ICompanyDBService {
   /*
   * Instance of ICompanyDao
   */
-  private ICompanyDao companyDao;
+  private ICompanyDao         companyDao;
+
+  /*
+  * Instance of the ICompanyDao
+  */
+  private IComputerDao        computerDao;
+
+  /*
+   * LOGGER
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyServiceMock.class);
 
   /*
    * Instance of CompanyServiceMock
    */
-  public CompanyServiceMock(ICompanyDao companyDao) {
+  public CompanyServiceMock(ICompanyDao companyDao, IComputerDao computerDao) {
     this.companyDao = companyDao;
+    this.computerDao = computerDao;
   }
 
   /**
@@ -43,6 +61,26 @@ public class CompanyServiceMock implements ICompanyDBService {
   @Override
   public List<Company> getAll() {
     return companyDao.getAll();
+  }
+
+  /**
+   * Remove a company from the database using its id.
+   * @param id : id of the company to remove.
+   */
+  public Boolean removeById(Long id) {
+    Connection connection = UtilDaoSQL.getConnectionWithManualCommit();
+    try {
+      computerDao.removeByCompanyId(connection, id);
+      companyDao.removeById(connection, id);
+      UtilDaoSQL.commit(connection);
+    } catch (PersistenceException e) {
+      LOGGER.error("SQLError in removeById()");
+      UtilDaoSQL.rollback(connection);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      UtilDaoSQL.close(connection);
+    }
+    return true;
   }
 
   /**

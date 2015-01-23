@@ -25,6 +25,13 @@ public interface ICompanyDBService {
   List<Company> getAll();
 
   /**
+   * Remove a company from the database using its id.
+   * @param id : id of the company to remove.
+   * @return 
+   */
+  Boolean removeById(Long id);
+
+  /**
    * Get a Page of companies in the database.
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of companies

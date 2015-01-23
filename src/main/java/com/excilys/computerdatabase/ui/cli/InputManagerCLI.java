@@ -88,7 +88,7 @@ public class InputManagerCLI {
         System.out.println("-> show command aborted");
         return;
       } else {
-        if (StringValidation.isComputerId(userInput)) {
+        if (StringValidation.isPositiveLong(userInput)) {
           OutputManagerCLI.showComputer(userInput);
           break;
         } else {
@@ -169,7 +169,7 @@ public class InputManagerCLI {
 
     //Get company_id
     System.out
-        .println("- please enter the id (between [1, 43]) of the company of the computer you want to add (press enter or type 'null' to skip this value):");
+        .println("- please enter the id of the company of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -178,11 +178,11 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isCompanyId(userInput)) {
+        if (StringValidation.isPositiveLong(userInput)) {
           builder.company(companyDBService.getById(new Long(userInput)));
           break;
         } else {
-          System.out.println("Please, enter a new valid id (between [1, 43]):");
+          System.out.println("Please, enter a new valid id:");
           continue;
         }
       }
@@ -208,12 +208,11 @@ public class InputManagerCLI {
         System.out.println("-> update command aborted");
         return;
       } else {
-        if (StringValidation.isComputerId(userInput)) {
+        if (StringValidation.isPositiveLong(userInput)) {
           builder.id(new Long(userInput));
           break;
         } else {
-          System.out.println("Please, enter a new valid id (between [1, "
-              + computerDBService.getLastId() + "]):");
+          System.out.println("Please, enter a new valid id:");
           continue;
         }
       }
@@ -282,7 +281,7 @@ public class InputManagerCLI {
 
     //Get company_id
     System.out
-        .println("- please enter the id (between [1, 43]) of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
+        .println("- please enter the id of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -291,11 +290,11 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isCompanyId(userInput)) {
+        if (StringValidation.isPositiveLong(userInput)) {
           builder.company(companyDBService.getById(new Long(userInput)));
           break;
         } else {
-          System.out.println("Please, enter a new valid id (between [1, 43]):");
+          System.out.println("Please, enter a new valid id:");
           continue;
         }
       }
@@ -307,18 +306,77 @@ public class InputManagerCLI {
    * Step by step input for the "remove" command.
    */
   public static void askParamsRemove() {
+    userInput = null;
     System.out
-        .println("-> You entered the remove command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");;
+        .println("-> You entered the remove command, please enter the option you want to display:\r\n- 'computer'\r\n- 'company'");
+    sc = new Scanner(System.in);
+    userInput = sc.nextLine().trim().toLowerCase();
+    switch (userInput) {
+      case "computer":
+        askParamsRemoveComputer();
+        break;
+      case "remove computer":
+        askParamsRemoveComputer();
+        break;
+      case "6":
+        askParamsRemoveComputer();
+        break;
+      case "company":
+        askParamsRemoveCompany();
+        break;
+      case "remove company":
+        askParamsRemoveCompany();
+        break;
+      case "7":
+        askParamsRemoveCompany();
+        break;
+      default:
+        System.out.println("Non valid command.\r\n-> remove command aborted");
+        break;
+    }
+  }
+
+  /**
+   * Step by step input for the "remove" command.
+   */
+  public static void askParamsRemoveComputer() {
+    System.out
+        .println("-> You entered the remove computer command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");;
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
-        System.out.println("-> remove command aborted");
+        System.out.println("-> remove computer command aborted");
         return;
       } else {
-        if (StringValidation.isComputerId(userInput)) {
-          OutputManagerCLI.showRemoveResult(userInput);
+        if (StringValidation.isPositiveLong(userInput)) {
+          OutputManagerCLI.showRemoveComputerResult(userInput);
+          break;
+        } else {
+          System.out.println("Please, enter a new valid id:");
+          continue;
+        }
+      }
+    }
+  }
+
+  /**
+   * Step by step input for the "remove" command.
+   */
+  public static void askParamsRemoveCompany() {
+    System.out
+        .println("-> You entered the remove company command, please enter the id of the company you want to remove from the DB (or press enter to quit command):");;
+    while (true) {
+      userInput = null;
+      sc = new Scanner(System.in);
+      userInput = sc.nextLine().trim().toLowerCase();
+      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+        System.out.println("-> remove company command aborted");
+        return;
+      } else {
+        if (StringValidation.isPositiveLong(userInput)) {
+          OutputManagerCLI.showRemoveCompanyResult(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");

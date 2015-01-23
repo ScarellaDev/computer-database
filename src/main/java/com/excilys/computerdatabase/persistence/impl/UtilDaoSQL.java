@@ -50,47 +50,58 @@ public enum UtilDaoSQL {
   /*
    * SELECT query for computer table
    */
-  public static final String  COMPUTER_SELECT_QUERY = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company FROM computer c LEFT JOIN company ON company.id=c.company_id";
+  public static final String  COMPUTER_SELECT_QUERY               = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company FROM computer c LEFT JOIN company ON company.id=c.company_id";
 
   /*
    * INSERT query for computer table
    */
-  public static final String  COMPUTER_INSERT_QUERY = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
+  public static final String  COMPUTER_INSERT_QUERY               = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
 
   /*
    * UPDATE query for computer table
    */
-  public static final String  COMPUTER_UPDATE_QUERY = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?";
+  public static final String  COMPUTER_UPDATE_QUERY               = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?";
 
   /*
    * DELETE query for computer table
    */
-  public static final String  COMPUTER_DELETE_QUERY = "DELETE computer FROM computer WHERE id = ?";
+  public static final String  COMPUTER_DELETE_QUERY               = "DELETE computer FROM computer WHERE id = ?";
+
+  /*
+   * DELETE query for computer table, delete all computers with company.id = ?
+   */
+  public static final String  COMPUTER_DELETE_WHERE_COMPANY_QUERY = "DELETE c FROM computer c LEFT JOIN company ON company.id=c.company_id WHERE company.id = ?";
 
   /*
    * COUNT query for computer table
    */
-  public static final String  COMPUTER_COUNT_QUERY  = "SELECT COUNT(c.id) AS total FROM computer c LEFT JOIN company ON company.id=c.company_id";
+  public static final String  COMPUTER_COUNT_QUERY                = "SELECT COUNT(c.id) AS total FROM computer c LEFT JOIN company ON company.id=c.company_id";
 
   /*
    * MAX query for computer table
    */
-  public static final String  COMPUTER_MAX_QUERY    = "SELECT MAX(id) AS id FROM computer";
+  public static final String  COMPUTER_MAX_QUERY                  = "SELECT MAX(id) AS id FROM computer";
 
   /*
    * SELECT query for company table
    */
-  public static final String  COMPANY_SELECT_QUERY  = "SELECT * FROM company";
+  public static final String  COMPANY_SELECT_QUERY                = "SELECT * FROM company";
+
+  /*
+   * DELETE query for company table
+   */
+  public static final String  COMPANY_DELETE_QUERY                = "DELETE company FROM company WHERE id = ?";
 
   /*
    * COUNT query for company table
    */
-  public static final String  COMPANY_COUNT_QUERY   = "SELECT COUNT(id) AS total FROM company";
+  public static final String  COMPANY_COUNT_QUERY                 = "SELECT COUNT(id) AS total FROM company";
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER                = LoggerFactory.getLogger(UtilDaoSQL.class);
+  private static final Logger LOGGER                              = LoggerFactory
+                                                                      .getLogger(UtilDaoSQL.class);
 
   /**
    * Static instruction block that loads the JDBC driver once
@@ -136,6 +147,22 @@ public enum UtilDaoSQL {
   public static Connection getConnection() {
     try {
       return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+    } catch (SQLException e) {
+      LOGGER.error("SQLException: couldn't connect to the database");
+      throw new PersistenceException(e.getMessage(), e);
+    }
+  }
+
+  /**
+  * Retrieve a SQL connection to the database with setAutoCommit(false).
+  * @return The {@link Connection} instance.
+  * @throws SQLException : if a database access error occurs.
+  */
+  public static Connection getConnectionWithManualCommit() {
+    try {
+      Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+      connection.setAutoCommit(false);
+      return connection;
     } catch (SQLException e) {
       LOGGER.error("SQLException: couldn't connect to the database");
       throw new PersistenceException(e.getMessage(), e);
@@ -242,6 +269,21 @@ public enum UtilDaoSQL {
       }
     }
     close(connection, statement);
+  }
+
+  /**
+   * Execute commit on connection if not null.
+   * @param connection
+   */
+  public static void commit(Connection connection) {
+    if (connection != null) {
+      try {
+        connection.commit();
+      } catch (SQLException e) {
+        LOGGER.warn("SQLException: couldn't commit the Connection");
+        throw new PersistenceException(e.getMessage(), e);
+      }
+    }
   }
 
   /**

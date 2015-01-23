@@ -54,10 +54,16 @@ public class CommandLineInterface {
         OutputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("6 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showRemoveResult(mainUserInput);
-      } else if (mainUserInput.toLowerCase().startsWith("remove ")) {
-        mainUserInput = mainUserInput.substring(7);
-        OutputManagerCLI.showRemoveResult(mainUserInput);
+        OutputManagerCLI.showRemoveComputerResult(mainUserInput);
+      } else if (mainUserInput.toLowerCase().startsWith("remove computer ")) {
+        mainUserInput = mainUserInput.substring(16);
+        OutputManagerCLI.showRemoveComputerResult(mainUserInput);
+      } else if (mainUserInput.toLowerCase().startsWith("7 ")) {
+        mainUserInput = mainUserInput.substring(2);
+        OutputManagerCLI.showRemoveCompanyResult(mainUserInput);
+      } else if (mainUserInput.toLowerCase().startsWith("remove company ")) {
+        mainUserInput = mainUserInput.substring(15);
+        OutputManagerCLI.showRemoveCompanyResult(mainUserInput);
       } else {
         Boolean help = false;
         if (mainUserInput.toLowerCase().startsWith("help ")) {
@@ -111,15 +117,22 @@ public class CommandLineInterface {
             if (help) {
               OutputManagerCLI.showHelp(6);
             } else {
-              InputManagerCLI.askParamsRemove();
+              InputManagerCLI.askParamsRemoveComputer();
+            }
+            break;
+          case "7":
+            if (help) {
+              OutputManagerCLI.showHelp(7);
+            } else {
+              InputManagerCLI.askParamsRemoveCompany();
             }
             break;
           case "menu":
-            OutputManagerCLI.showHelp(7);
+            OutputManagerCLI.showHelp(8);
             break;
           case "ls":
             if (help) {
-              OutputManagerCLI.showHelp(8);
+              OutputManagerCLI.showHelp(9);
             } else {
               InputManagerCLI.askParamsLs();
             }
@@ -132,28 +145,28 @@ public class CommandLineInterface {
             break;
           case "show":
             if (help) {
-              OutputManagerCLI.showHelp(9);
+              OutputManagerCLI.showHelp(10);
             } else {
               InputManagerCLI.askParamsShow();
             }
             break;
           case "add":
             if (help) {
-              OutputManagerCLI.showHelp(10);
+              OutputManagerCLI.showHelp(11);
             } else {
               InputManagerCLI.askParamsAdd();
             }
             break;
           case "update":
             if (help) {
-              OutputManagerCLI.showHelp(11);
+              OutputManagerCLI.showHelp(12);
             } else {
               InputManagerCLI.askParamsUpdate();
             }
             break;
           case "remove":
             if (help) {
-              OutputManagerCLI.showHelp(12);
+              OutputManagerCLI.showHelp(13);
             } else {
               InputManagerCLI.askParamsRemove();
             }

@@ -47,7 +47,8 @@ public class OutputManagerCLI {
     menu.append("3. Show the details of one computer (cmd: 'show id')\r\n");
     menu.append("4. Add a computer (cmd: 'add name introduced discontinued companyId')\r\n");
     menu.append("5. Update a computer (cmd: 'update id name introduced discontinued companyId')\r\n");
-    menu.append("6. Remove a computer (cmd: 'remove id')\r\n");
+    menu.append("6. Remove a computer (cmd: 'remove computer id')\r\n");
+    menu.append("7. Remove a company (cmd: 'remove company id')\r\n");
     menu.append("\r\nINFO: to display the help concerning a command, just type 'help commandNumber' or 'help commandName'\r\n");
     menu.append("INFO2: in order to quit the program, just type 'q' or 'quit' or 'exit'\r\n");
     System.out.println(menu);
@@ -311,26 +312,17 @@ public class OutputManagerCLI {
    */
   public static void showComputer(String idS) {
     //Print the details of the computer with id=idS
-    Long max = computerDBService.getLastId();
 
-    if (idS.matches("[0-9]+")) {
-      Long id = new Long(idS);
-
-      if (id < 1 || id > max) {
-        System.out.println("The id you entered is incorrect, it must be within [1, "
-            + max.toString() + "].\r\n");
+    if (StringValidation.isPositiveLong(idS)) {
+      Computer computer = computerDBService.getById(new Long(idS));
+      if (computer == null) {
+        System.out.println("MySQL Error: computer not found.\r\n");
       } else {
-        Computer computer = computerDBService.getById(new Long(idS));
-        if (computer == null) {
-          System.out.println("MySQL Error: computer not found.\r\n");
-        } else {
-          System.out.println("Here are the details of the computer you requested:");
-          System.out.println(computer.toString());
-        }
+        System.out.println("Here are the details of the computer you requested:");
+        System.out.println(computer.toString());
       }
     } else {
-      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString()
-          + "].\r\n");
+      System.out.println("The id you entered is incorrect.\r\n");
     }
   }
 
@@ -395,32 +387,40 @@ public class OutputManagerCLI {
   }
 
   /**
-   * Display the result of the "remove" command.
+   * Display the result of the "remove computer" command.
    * @param idS : String representing the Long id of the computer to remove.
    */
-  public static void showRemoveResult(String idS) {
+  public static void showRemoveComputerResult(String idS) {
     //Print the details of the computer with id=idS
-    Long max = computerDBService.getLastId();
-
-    if (idS.matches("[0-9]+")) {
-      Long id = new Long(idS);
-
-      if (id < 1 || id > max) {
-        System.out.println("The id you entered is incorrect, it must be within [1, "
-            + max.toString() + "].\r\n");
+    if (StringValidation.isPositiveLong(idS)) {
+      Computer computer = null;
+      computer = computerDBService.removeById(new Long(idS));
+      if (computer == null) {
+        System.out.println("MySQL Error: computer could not be removed from DB.\r\n");
       } else {
-        Computer computer = null;
-        computer = computerDBService.removeById(new Long(idS));
-        if (computer == null) {
-          System.out.println("MySQL Error: computer could not be removed from DB.\r\n");
-        } else {
-          System.out.println("Your computer was successfully removed from the DB :");
-          System.out.println(computer.toString());
-        }
+        System.out.println("Your computer was successfully removed from the DB :");
+        System.out.println(computer.toString());
       }
     } else {
-      System.out.println("The id you entered is incorrect, it must be within [1, " + max.toString()
-          + "].\r\n");
+      System.out.println("The id you entered is incorrect.\r\n");
+    }
+  }
+
+  /**
+   * Display the result of the "remove company" command.
+   * @param idS : String representing the Long id of the company to remove.
+   */
+  public static void showRemoveCompanyResult(String idS) {
+    //Print the details of the computer with id=idS
+    if (StringValidation.isPositiveLong(idS)) {
+      if (companyDBService.removeById(new Long(idS))) {
+        System.out
+            .println("Your company and the attached computers were successfully removed from the DB.");
+      } else {
+        System.out.println("MySQL Error: company could not be removed from DB.\r\n");
+      }
+    } else {
+      System.out.println("The id you entered is incorrect.\r\n");
     }
   }
 
@@ -445,8 +445,7 @@ public class OutputManagerCLI {
       case 3:
         System.out
             .println("HELP command '3': type '3 id' or 'show id' in order to display the details of a specific computer.");
-        System.out.println("- id is an integer between [1, "
-            + computerDBService.getLastId().toString() + "]\r\n");
+        System.out.println("- id is a positive integer\r\n");
         break;
       case 4:
         System.out
@@ -465,34 +464,36 @@ public class OutputManagerCLI {
             .println("- id is mandatory whereas name and introduced and discontinued and companyId are optional");
         System.out
             .println("- introduced and discontinued are dates with the following format: 'yyyy-MM-dd'");
-        System.out.println("- id is an integer between [1, "
-            + computerDBService.getLastId().toString() + "]");
-        System.out.println("- companyId is an integer between [1, 43]");
+        System.out.println("- id is a positive integer");
+        System.out.println("- companyId is a positive integer");
         System.out.println("- if you do not want to set a value, refer to it as null\r\n");
         break;
       case 6:
         System.out
-            .println("HELP command '6': type '6 id' or 'remove id' in order to remove a specific computer from the DB.\r\n");
+            .println("HELP command '6': type '6 id' or 'remove computer id' in order to remove a specific computer from the DB.\r\n");
         break;
       case 7:
+        System.out
+            .println("HELP command '7': type '7 id' or 'remove company id' in order to remove a specific company and the related computers from the DB.\r\n");
+        break;
+      case 8:
         System.out.println("HELP command 'menu':");
         System.out.println("- type '0' or 'menu' in order to display the menu.\r\n");
         break;
-      case 8:
+      case 9:
         System.out.println("HELP command 'ls':");
         System.out
             .println("- type '1' or 'ls computers' in order to display the list of all the computers in DB.");
         System.out
             .println("- type '2' or 'ls companies' in order to display the list of all the computers in DB.\r\n");
         break;
-      case 9:
+      case 10:
         System.out.println("HELP command 'show':");
         System.out
             .println("- type '3 id' or 'show id' in order to display the details of a specific computer.");
-        System.out.println("- id is an integer between [1, "
-            + computerDBService.getLastId().toString() + "]\r\n");
+        System.out.println("- id is a positive integer\r\n");
         break;
-      case 10:
+      case 11:
         System.out.println("HELP command 'add':");
         System.out
             .println("- type '4 name introduced discontinued companyId' or 'add name introduced discontinued companyId' in order to add a new computer to the DB.");
@@ -503,7 +504,7 @@ public class OutputManagerCLI {
         System.out.println("- companyId is an integer between [1, 43]");
         System.out.println("- if you do not want to set a value, refer to it as null\r\n");
         break;
-      case 11:
+      case 12:
         System.out.println("HELP command 'update':");
         System.out
             .println("- type '5 id name introduced discontinued companyId' or 'update id name introduced discontinued companyId' in order to update an existing computer in the DB.");
@@ -511,12 +512,11 @@ public class OutputManagerCLI {
             .println("- id is mandatory whereas name and introduced and discontinued and companyId are optional");
         System.out
             .println("- introduced and discontinued are dates with the following format: 'yyyy-MM-dd'");
-        System.out.println("- id is an integer between [1, "
-            + computerDBService.getLastId().toString() + "]");
+        System.out.println("- id is a positive integer");
         System.out.println("- companyId is an integer between [1, 43]");
         System.out.println("- if you do not want to set a value, refer to it as null\r\n");
         break;
-      case 12:
+      case 13:
         System.out.println("HELP command 'remove':");
         System.out
             .println("- type '6 id' or 'remove id' in order to remove a specific computer from the DB.\r\n");

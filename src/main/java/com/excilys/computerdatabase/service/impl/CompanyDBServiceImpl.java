@@ -1,11 +1,19 @@
 package com.excilys.computerdatabase.service.impl;
 
+import java.sql.Connection;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
+import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL;
+import com.excilys.computerdatabase.persistence.impl.ComputerDaoImplSQL;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
@@ -23,7 +31,17 @@ public enum CompanyDBServiceImpl implements ICompanyDBService {
   /*
   * Instance of the ICompanyDao
   */
-  private ICompanyDao companyDao = CompanyDaoImplSQL.INSTANCE;
+  private ICompanyDao         companyDao  = CompanyDaoImplSQL.INSTANCE;
+
+  /*
+  * Instance of the ICompanyDao
+  */
+  private IComputerDao        computerDao = ComputerDaoImplSQL.INSTANCE;
+
+  /*
+   * LOGGER
+   */
+  private static final Logger LOGGER      = LoggerFactory.getLogger(CompanyDBServiceImpl.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -42,6 +60,26 @@ public enum CompanyDBServiceImpl implements ICompanyDBService {
   @Override
   public List<Company> getAll() {
     return companyDao.getAll();
+  }
+
+  /**
+   * Remove a company from the database using its id.
+   * @param id : id of the company to remove.
+   */
+  public Boolean removeById(Long id) {
+    Connection connection = UtilDaoSQL.getConnectionWithManualCommit();
+    try {
+      computerDao.removeByCompanyId(connection, id);
+      companyDao.removeById(connection, id);
+      UtilDaoSQL.commit(connection);
+    } catch (PersistenceException e) {
+      LOGGER.error("SQLError in removeById()");
+      UtilDaoSQL.rollback(connection);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      UtilDaoSQL.close(connection);
+    }
+    return true;
   }
 
   /**

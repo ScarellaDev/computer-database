@@ -1,5 +1,6 @@
 package com.excilys.computerdatabase.persistence;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
@@ -63,6 +64,12 @@ public interface IComputerDao {
   Computer removeById(Long id);
 
   /**
+   * Remove all computers attached to the companyId given as parameter from the database.
+   * @param id : id of the company that needs its computers to be removed.
+   */
+  void removeByCompanyId(Connection connection, Long id);
+
+  /**
    * Remove a list of computers from the database using their ids.
    * @param idList : the list of ids of the computers to remove.
    */
@@ -74,12 +81,6 @@ public interface IComputerDao {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   Computer removeByComputer(Computer computer);
-
-  /**
-   * Get the maximum id in the computer database.
-   * @return The Long id that was found or null if the database is empty.
-   */
-  Long getLastId();
 
   /**
    * Get a Page of computers in the database.

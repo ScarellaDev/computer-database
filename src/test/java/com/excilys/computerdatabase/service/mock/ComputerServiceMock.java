@@ -1,10 +1,16 @@
 package com.excilys.computerdatabase.service.mock;
 
+import java.sql.Connection;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.IComputerDBService;
 
 /**
@@ -25,6 +31,11 @@ public class ComputerServiceMock implements IComputerDBService {
   public ComputerServiceMock(IComputerDao computerDao) {
     this.computerDao = computerDao;
   }
+
+  /*
+   * LOGGER
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerServiceMock.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -91,6 +102,24 @@ public class ComputerServiceMock implements IComputerDBService {
   }
 
   /**
+   * Remove all computers attached to the companyId given as parameter from the database.
+   * @param id : id of the company that needs its computers to be removed.
+   */
+  public void removeByCompanyId(Long id) {
+    Connection connection = UtilDaoSQL.getConnectionWithManualCommit();
+    try {
+      computerDao.removeByCompanyId(connection, id);
+      UtilDaoSQL.commit(connection);
+    } catch (PersistenceException e) {
+      LOGGER.error("SQLError in removeById()");
+      UtilDaoSQL.rollback(connection);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      UtilDaoSQL.close(connection);
+    }
+  }
+
+  /**
    * Remove a list of computers from the database using their ids.
    * @param idList : the list of ids of the computers to remove.
    */
@@ -105,14 +134,6 @@ public class ComputerServiceMock implements IComputerDBService {
    */
   public Computer removeByComputer(Computer computer) {
     return computerDao.removeByComputer(computer);
-  }
-
-  /**
-   * Get the maximum id in the computer database.
-   * @return The Long id that was found or null if the database is empty.
-   */
-  public Long getLastId() {
-    return computerDao.getLastId();
   }
 
   /**

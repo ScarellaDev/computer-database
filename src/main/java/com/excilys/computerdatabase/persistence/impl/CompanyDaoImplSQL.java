@@ -103,6 +103,32 @@ public enum CompanyDaoImplSQL implements ICompanyDao {
   }
 
   /**
+   * Remove a company from the database using its id.
+   * @param id : id of the company to remove.
+   */
+  public void removeById(Connection connection, Long id) throws PersistenceException {
+    PreparedStatement statement = null;
+    if (id == null) {
+      return;
+    }
+
+    try {
+      //Create the query
+      statement = connection.prepareStatement(UtilDaoSQL.COMPANY_DELETE_QUERY,
+          Statement.RETURN_GENERATED_KEYS);
+      statement.setLong(1, id);
+
+      //Execute the query
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      LOGGER.error("SQLError in removeById() with id = " + id);
+      throw new PersistenceException(e.getMessage(), e);
+    } finally {
+      UtilDaoSQL.close(statement);
+    }
+  }
+
+  /**
    * Get a Page of companies in the database.
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of companies
