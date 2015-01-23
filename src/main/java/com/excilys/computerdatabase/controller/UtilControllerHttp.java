@@ -19,6 +19,11 @@ import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
 import com.excilys.computerdatabase.service.impl.ComputerDBServiceImpl;
 import com.excilys.computerdatabase.validator.StringValidation;
 
+/**
+* Util class for Controllers : operations based on HttpRequests
+* 
+* @author Jeremy SCARELLA
+*/
 public class UtilControllerHttp {
 
   /*

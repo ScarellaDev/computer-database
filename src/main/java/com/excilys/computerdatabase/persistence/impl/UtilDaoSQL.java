@@ -31,7 +31,7 @@ public enum UtilDaoSQL {
   /*
    * SELECT query for computer table
    */
-  public static final String  COMPUTER_SELECT_QUERY               = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company FROM computer c LEFT JOIN company ON company.id=c.company_id";
+  public static final String  COMPUTER_SELECT_QUERY               = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company_name FROM computer c LEFT JOIN company ON company.id=c.company_id";
 
   /*
    * INSERT query for computer table

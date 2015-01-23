@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,7 +18,10 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.mapper.IRowMapper;
+import com.excilys.computerdatabase.mapper.impl.ComputerRowMapperImpl;
 import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -34,8 +36,13 @@ public enum ComputerDaoImplSQL implements IComputerDao {
   INSTANCE;
 
   /*
-   * CONSTANT List of the companies that are in the database (cache)
+   * Instance of ComputerRowMapperImpl
    */
+  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapperImpl();
+
+  /*
+  * CONSTANT List of the companies that are in the database (cache)
+  */
   private static final List<Company>     COMPANIES           = CompanyDaoImplSQL.INSTANCE.getAll();
 
   /*
@@ -70,7 +77,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
 
       //Create a computer if there is a result
       if (results.next()) {
-        computer = getComputerFromRS(results);
+        computer = computerRowMapper.mapRow(results);
       }
       return computer;
     } catch (SQLException e) {
@@ -88,7 +95,6 @@ public enum ComputerDaoImplSQL implements IComputerDao {
    * @return List of all the computers in the database.
    */
   public List<Computer> getAll() {
-    List<Computer> computers = new ArrayList<Computer>();
     Connection connection = null;
     Statement statement = null;
     ResultSet results = null;
@@ -99,11 +105,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       //Query the database to get all the computers
       statement = connection.createStatement();
       results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY);
-      //Create computers and put them in the computers list with the result
-      while (results.next()) {
-        computers.add(getComputerFromRS(results));
-      }
-      return computers;
+      return computerRowMapper.mapRows(results);
     } catch (SQLException e) {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
@@ -128,14 +130,15 @@ public enum ComputerDaoImplSQL implements IComputerDao {
     if (params.length > 0) {
       if (params.length < 5) {
         String name;
-        if (params[0].toLowerCase().equals("null")) {
+        if (params[0].toLowerCase().equals("null") || StringValidation.isEmpty(params[0])) {
           return null;
         } else {
           name = params[0];
         }
 
         LocalDateTime introducedL;
-        if (params.length > 1 && !params[1].toLowerCase().equals("null")) {
+        if (params.length > 1 && !params[1].toLowerCase().equals("null")
+            && StringValidation.isDate(params[1])) {
           StringBuffer introducedS = new StringBuffer(params[1]);
           introducedS.append(" 00:00:00");
           try {
@@ -148,7 +151,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         }
 
         LocalDateTime discontinuedL;
-        if (params.length > 2 && !params[2].toLowerCase().equals("null")) {
+        if (params.length > 2 && !params[2].toLowerCase().equals("null")
+            && StringValidation.isDate(params[2])) {
           StringBuffer discontinuedS = new StringBuffer(params[2]);
           discontinuedS.append(" 00:00:00");
           try {
@@ -161,16 +165,9 @@ public enum ComputerDaoImplSQL implements IComputerDao {
         }
 
         Long companyId;
-        if (params.length > 3 && !params[3].toLowerCase().equals("null")) {
-          if (params[3].matches("[0-9]+")) {
-            companyId = new Long(params[3]);
-            if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException("The fourth argument must be a positive integer");
-            }
-          } else {
-            throw new PersistenceException(
-                "The fourth argument must contains digits only and be a positive integer");
-          }
+        if (params.length > 3 && !params[3].toLowerCase().equals("null")
+            && StringValidation.isPositiveLong(params[3])) {
+          companyId = new Long(params[3]);
         } else {
           companyId = null;
         }
@@ -292,71 +289,44 @@ public enum ComputerDaoImplSQL implements IComputerDao {
     if (params.length > 1) {
       if (params.length < 6) {
 
-        Long id;
-        Long max = getLastId();
-        if (params[0].matches("[0-9]+")) {
-          id = new Long(params[0]);
-          if (id < 1 || id > max) {
-            throw new PersistenceException("The first argument must be a positive integer.");
-          } else {
-            id = new Long(params[0]);
-          }
-        } else {
-          throw new PersistenceException(
-              "The first argument must contains digits only and be a positive integer.");
+        Computer.Builder builder = Computer.builder();
+
+        if (StringValidation.isPositiveLong(params[0])) {
+          builder.id(new Long(params[0]));
         }
 
-        String name;
-        if (!params[1].toLowerCase().equals("null")) {
-          name = params[1];
-        } else {
-          name = null;
+        if (!params[1].toLowerCase().equals("null") && !StringValidation.isEmpty(params[1])) {
+          builder.name(params[1]);
         }
 
-        LocalDateTime introduced;
-        if (params.length > 2 && !params[2].toLowerCase().equals("null")) {
+        if (params.length > 2 && !params[2].toLowerCase().equals("null")
+            && StringValidation.isDate(params[2])) {
           StringBuffer introducedS = new StringBuffer(params[2]);
           introducedS.append(" 00:00:00");
           try {
-            introduced = LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER);
+            builder.introduced(LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER));
           } catch (DateTimeParseException e) {
             return null;
           }
-        } else {
-          introduced = null;
         }
 
-        LocalDateTime discontinued;
-        if (params.length > 3 && !params[3].toLowerCase().equals("null")) {
+        if (params.length > 3 && !params[3].toLowerCase().equals("null")
+            && StringValidation.isDate(params[3])) {
           StringBuffer discontinuedS = new StringBuffer(params[3]);
           discontinuedS.append(" 00:00:00");
           try {
-            discontinued = LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER);
+            builder.discontinued(LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER));
           } catch (DateTimeParseException e) {
             return null;
           }
-        } else {
-          discontinued = null;
         }
 
-        Long companyId;
-        Company company = null;
-        if (params.length > 4 && !params[4].toLowerCase().equals("null")) {
-          if (params[4].matches("[0-9]+")) {
-            companyId = new Long(params[4]);
-            if (companyId < 1 || companyId > 43) {
-              throw new PersistenceException("The fourth argument must be a positive integer");
-            } else {
-              company = COMPANIES.get(companyId.intValue() - 1);
-            }
-          } else {
-            throw new PersistenceException(
-                "The fourth argument must contains digits only and be a positive integer");
-          }
-        } else {
-          companyId = null;
+        if (params.length > 4 && !params[4].toLowerCase().equals("null")
+            && StringValidation.isPositiveLong(params[4])) {
+          builder.company(COMPANIES.get(new Long(params[4]).intValue() - 1));
         }
-        return updateByComputer(new Computer(id, name, introduced, discontinued, company));
+
+        return updateByComputer(builder.build());
       } else {
         throw new PersistenceException("Too many arguments passed (max = 5)");
       }
@@ -556,37 +526,6 @@ public enum ComputerDaoImplSQL implements IComputerDao {
   }
 
   /**
-   * Get the maximum id in the computer database.
-   * @return The Long id that was found or null if the database is empty.
-   */
-  public Long getLastId() {
-    Connection connection = null;
-    Statement statement = null;
-    ResultSet results = null;
-    Long lastId = null;
-
-    try {
-      //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
-      //Query the database to get all the computers
-      statement = connection.createStatement();
-      results = statement.executeQuery(UtilDaoSQL.COMPUTER_MAX_QUERY);
-      //Create computers and put them in the computers list with the result
-      if (results.next()) {
-        lastId = results.getLong("id");
-      }
-    } catch (SQLException e) {
-      LOGGER.error("SQLError in getAll()");
-      throw new PersistenceException(e.getMessage(), e);
-    } finally {
-      UtilDaoSQL.close(results);
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
-    }
-    return lastId;
-  }
-
-  /**
    * Get a Page of computers in the database.
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of computers
@@ -598,7 +537,6 @@ public enum ComputerDaoImplSQL implements IComputerDao {
     PreparedStatement selectStatement = null;
     ResultSet countResults = null;
     ResultSet selectResults = null;
-    final List<Computer> computers = new ArrayList<Computer>();
 
     try {
       connection = UtilDaoSQL.getConnection();
@@ -628,11 +566,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
 
-      //Create the computers with the results
-      while (selectResults.next()) {
-        computers.add(getComputerFromRS(selectResults));
-      }
-      page.setList(computers);
+      page.setList(computerRowMapper.mapRows(selectResults));
       return page;
     } catch (SQLException e) {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
@@ -644,48 +578,5 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       UtilDaoSQL.close(selectStatement);
       UtilDaoSQL.close(connection);
     }
-  }
-
-  /**
-   * Get a Computer instance based on the columns of a row of a ResultSet.
-   * @param rs : ResultSet on a row containing a computer.
-   * @return The computer instance extracted from the ResulSet.
-   */
-  private Computer getComputerFromRS(final ResultSet rs) {
-    Long id = null;
-    String name = null;
-    Timestamp introducedT;
-    LocalDateTime introduced = null;
-    Timestamp discontinuedT;
-    LocalDateTime discontinued = null;
-    Long companyId;
-    Company company = null;
-
-    try {
-      id = rs.getLong("id");
-      name = rs.getString("name");
-      introducedT = rs.getTimestamp("introduced");
-      if (introducedT != null) {
-        introduced = rs.getTimestamp("introduced").toLocalDateTime();
-      } else {
-        introduced = null;
-      }
-      discontinuedT = rs.getTimestamp("discontinued");
-      if (discontinuedT != null) {
-        discontinued = rs.getTimestamp("discontinued").toLocalDateTime();
-      } else {
-        discontinued = null;
-      }
-      companyId = rs.getLong("company_Id");
-      if (companyId != null) {
-        company = new Company(companyId, rs.getString("company"));
-      } else {
-        company = null;
-      }
-    } catch (SQLException e) {
-      LOGGER.error("SQLError in getComputerFromRS() with rs = " + rs);
-      throw new PersistenceException(e.getMessage(), e);
-    }
-    return new Computer(id, name, introduced, discontinued, company);
   }
 }
