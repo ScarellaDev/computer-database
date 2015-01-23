@@ -221,48 +221,6 @@ public enum UtilDaoSQL {
   }
 
   /**
-   * Close elements if they are not null.
-   * @param connection
-   * @param statement
-   */
-  public static void close(Connection connection, Statement statement) {
-    if (statement != null) {
-      try {
-        statement.close();
-      } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close Statement");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-    if (connection != null) {
-      try {
-        connection.close();
-      } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close Connection");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
-  * Close elements if they are not null.
-  * @param connection
-  * @param statement
-  * @param results
-  */
-  public static void close(Connection connection, Statement statement, ResultSet results) {
-    if (results != null) {
-      try {
-        results.close();
-      } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close ResultSet");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-    close(connection, statement);
-  }
-
-  /**
    * Execute commit on connection if not null.
    * @param connection
    */

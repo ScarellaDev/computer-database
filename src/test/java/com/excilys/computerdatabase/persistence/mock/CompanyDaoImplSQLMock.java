@@ -61,9 +61,9 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
-      }
+      UtilDaoSQL.close(results);
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -94,9 +94,8 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 

@@ -77,9 +77,9 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
-      }
+      UtilDaoSQL.close(results);
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -108,9 +108,9 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
-      }
+      UtilDaoSQL.close(results);
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -219,9 +219,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
           LOGGER.error("SQLError in addByString() with params = " + params);
           throw new PersistenceException(e.getMessage(), e);
         } finally {
-          if (connection != null) {
-            UtilDaoSQL.close(connection, statement);
-          }
+          UtilDaoSQL.close(statement);
+          UtilDaoSQL.close(connection);
         }
       } else {
         throw new PersistenceException("Too many arguments passed (max = 4)");
@@ -278,9 +277,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       LOGGER.error("SQLError in addByComputer() with computer = " + computer);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -414,9 +412,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -454,9 +451,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -517,9 +513,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -554,9 +549,8 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       UtilDaoSQL.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement);
-      }
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
   }
 
@@ -584,9 +578,9 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      if (connection != null) {
-        UtilDaoSQL.close(connection, statement, results);
-      }
+      UtilDaoSQL.close(results);
+      UtilDaoSQL.close(statement);
+      UtilDaoSQL.close(connection);
     }
     return lastId;
   }

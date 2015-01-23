@@ -80,7 +80,9 @@ public class ComputerDaoTest {
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 3,'CM-2a',null,null,2);");
     statement
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
-    UtilDaoSQL.close(connection, statement);
+
+    UtilDaoSQL.close(statement);
+    UtilDaoSQL.close(connection);
   }
 
   /**
