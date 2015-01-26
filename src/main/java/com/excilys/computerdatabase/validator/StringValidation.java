@@ -1,7 +1,5 @@
 package com.excilys.computerdatabase.validator;
 
-import java.time.LocalDateTime;
-
 /**
 * Validation class to check the String inputs entered by the user in the CLI.
 *
@@ -138,15 +136,21 @@ public class StringValidation {
       return false;
     }
 
-    LocalDateTime currentTime = LocalDateTime.now();
-    if (new Integer(dateS.substring(0, 4)) > currentTime.getYear()) {
+    //TIMESTAMP has a range of '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC
+    if (new Integer(dateS.substring(0, 4)) < 1970) {
       return false;
     }
-    if (new Integer(dateS.substring(5, 7)) > currentTime.getMonthValue()) {
+    if (new Integer(dateS.substring(0, 4)) > 2038) {
       return false;
     }
-    if (new Integer(dateS.substring(8)) > currentTime.getDayOfMonth()) {
-      return false;
+    if (new Integer(dateS.substring(0, 4)) == 2038) {
+      if (new Integer(dateS.substring(5, 7)) > 1) {
+        return false;
+      } else {
+        if (new Integer(dateS.substring(8)) > 19) {
+          return false;
+        }
+      }
     }
 
     return true;
