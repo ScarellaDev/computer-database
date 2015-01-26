@@ -156,7 +156,8 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
         LocalDateTime discontinuedL;
         if (params.length > 2 && !params[2].toLowerCase().equals("null")
-            && StringValidation.isDate(params[2])) {
+            && StringValidation.isDate(params[2])
+            && StringValidation.isLaterDate(params[1], params[2])) {
           StringBuffer discontinuedS = new StringBuffer(params[2]);
           discontinuedS.append(" 00:00:00");
           try {
@@ -315,7 +316,8 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
         }
 
         if (params.length > 3 && !params[3].toLowerCase().equals("null")
-            && StringValidation.isDate(params[3])) {
+            && StringValidation.isDate(params[3])
+            && StringValidation.isLaterDate(params[2], params[3])) {
           StringBuffer discontinuedS = new StringBuffer(params[3]);
           discontinuedS.append(" 00:00:00");
           try {

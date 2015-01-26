@@ -359,7 +359,7 @@ public class OutputManagerCLI {
 
   /**
    * Display the result of the "update" command.
-   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
+   * @param params : String table composed of "id" (mandatory), "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
    * All the attributes of the updated computer gets changed.
    */
   public static void showUpdateResult(String[] params) {

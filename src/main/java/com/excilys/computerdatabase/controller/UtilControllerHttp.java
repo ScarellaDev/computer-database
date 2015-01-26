@@ -55,10 +55,10 @@ public class UtilControllerHttp {
    */
   public static Computer buildComputer(HttpServletRequest httpReq) {
     Computer.Builder builder = Computer.builder();
-    String name = httpReq.getParameter("name");
-    String introducedS = httpReq.getParameter("introduced");
-    String discontinuedS = httpReq.getParameter("discontinued");
-    String companyIdS = httpReq.getParameter("companyId");
+    String name = httpReq.getParameter("name").trim();
+    String introducedS = httpReq.getParameter("introduced").trim();
+    String discontinuedS = httpReq.getParameter("discontinued").trim();
+    String companyIdS = httpReq.getParameter("companyId").trim();
 
     Map<String, String> errorMsgMap = new HashMap<String, String>();
 
@@ -71,7 +71,7 @@ public class UtilControllerHttp {
     }
 
     //Check if the introduced date is valid
-    if (introducedS != null && !introducedS.trim().isEmpty()) {
+    if (introducedS != null && !introducedS.isEmpty()) {
       if (StringValidation.isDate(introducedS)) {
         StringBuffer introducedSB = new StringBuffer(introducedS);
         introducedSB.append(" 00:00:00");
@@ -85,8 +85,9 @@ public class UtilControllerHttp {
     }
 
     //Check if the discontinued date is valid
-    if (discontinuedS != null && !discontinuedS.trim().isEmpty()) {
-      if (StringValidation.isDate(discontinuedS)) {
+    if (discontinuedS != null && !discontinuedS.isEmpty()) {
+      if (StringValidation.isDate(discontinuedS)
+          && StringValidation.isLaterDate(introducedS, discontinuedS)) {
         StringBuffer discontinuedSB = new StringBuffer(discontinuedS);
         discontinuedSB.append(" 00:00:00");
         builder.discontinued(LocalDateTime.parse(discontinuedSB, DATE_TIME_FORMATTER));
@@ -94,12 +95,12 @@ public class UtilControllerHttp {
         errorMsgMap
             .put(
                 "eDateD",
-                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC) or should be left empty");
+                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC), older than the introduced date or should be left empty");
       }
     }
 
     //Check if the company id is valid
-    if (companyIdS != null && !companyIdS.trim().isEmpty()) {
+    if (companyIdS != null && !companyIdS.isEmpty()) {
       if (StringValidation.isPositiveLong(companyIdS)) {
         final Company company = companyDBService.getById(Long.valueOf(companyIdS));
 

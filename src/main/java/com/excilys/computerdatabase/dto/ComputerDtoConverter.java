@@ -55,14 +55,12 @@ public class ComputerDtoConverter {
   * @return a Computer List
   */
   public static List<Computer> toComputer(final List<ComputerDto> computerDtos) {
-    final List<Computer> computers = computerDtos.stream().map(computerDto -> {
-      final Computer computer = ComputerDtoConverter.toComputer(computerDto);
-      if (computer != null) {
-        return computer;
-      }
+
+    if (computerDtos == null) {
       return null;
-    }).collect(Collectors.toList());
-    return computers;
+    }
+
+    return computerDtos.stream().map(c -> toComputer(c)).collect(Collectors.toList());
   }
 
   /**
@@ -96,13 +94,10 @@ public class ComputerDtoConverter {
   * @return a ComputerDto List
   */
   public static List<ComputerDto> toDto(final List<Computer> computers) {
-    final List<ComputerDto> computerDtos = computers.stream().map(computer -> {
-      final ComputerDto computerDto = ComputerDtoConverter.toDto(computer);
-      if (computerDto != null) {
-        return computerDto;
-      }
+    if (computers == null) {
       return null;
-    }).collect(Collectors.toList());
-    return computerDtos;
+    }
+
+    return computers.stream().map(c -> toDto(c)).collect(Collectors.toList());
   }
 }
