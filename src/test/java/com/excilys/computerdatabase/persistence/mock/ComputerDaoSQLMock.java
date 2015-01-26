@@ -22,6 +22,7 @@ import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.IRowMapper;
 import com.excilys.computerdatabase.mapper.impl.ComputerRowMapper;
+import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.validator.StringValidation;
@@ -32,11 +33,16 @@ import com.excilys.computerdatabase.validator.StringValidation;
 * 
 * @author Jeremy SCARELLA
 */
-public enum ComputerDaoImplSQLMock implements IComputerDao {
+public enum ComputerDaoSQLMock implements IComputerDao {
   /*
-  * Instance of ComputerDaoImplSQLMock
+  * Instance of ComputerDaoSQLMock
   */
   INSTANCE;
+
+  /*
+   * CONNECTION_MANAGER
+   */
+  private static final ConnectionManager CM                  = ConnectionManager.INSTANCE;
 
   /*
    * Instance of ComputerRowMapperImpl
@@ -46,7 +52,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company>     COMPANIES           = CompanyDaoImplSQLMock.INSTANCE
+  private static final List<Company>     COMPANIES           = CompanyDaoSQLMock.INSTANCE
                                                                  .getAll();
 
   /*
@@ -59,7 +65,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
    * LOGGER
    */
   private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(ComputerDaoImplSQLMock.class);
+                                                                 .getLogger(ComputerDaoSQLMock.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -73,7 +79,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     ResultSet results = null;
 
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
 
       //Query the database
       statement = connection.createStatement();
@@ -88,9 +94,9 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(results);
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(results);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -105,7 +111,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
       results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY);
@@ -114,9 +120,9 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(results);
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(results);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -179,7 +185,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
         try {
           //Get a connection to the database
-          connection = UtilDaoSQL.getConnection();
+          connection = CM.getConnection();
           //Create the query
           statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
               Statement.RETURN_GENERATED_KEYS);
@@ -221,8 +227,8 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
           LOGGER.error("SQLError in addByString() with params = " + params);
           throw new PersistenceException(e.getMessage(), e);
         } finally {
-          UtilDaoSQL.close(statement);
-          UtilDaoSQL.close(connection);
+          CM.close(statement);
+          CM.close(connection);
         }
       } else {
         throw new PersistenceException("Too many arguments passed (max = 4)");
@@ -244,7 +250,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -279,8 +285,8 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       LOGGER.error("SQLError in addByComputer() with computer = " + computer);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -352,7 +358,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_UPDATE_QUERY,
@@ -385,11 +391,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
-      UtilDaoSQL.rollback(connection);
+      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -411,7 +417,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
@@ -424,20 +430,20 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeById() with id = " + id);
-      UtilDaoSQL.rollback(connection);
+      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
   /**
    * Remove all computers attached to the companyId given as parameter from the database.
-   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company that needs its computers to be removed.
    */
-  public void removeByCompanyId(Connection connection, Long id) {
+  public void removeByCompanyId(Long id) {
+    final Connection connection = CM.getTransactionConnection();
     PreparedStatement statement = null;
     if (id == null) {
       return;
@@ -453,9 +459,10 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByCompanyId() with id = " + id);
+      CM.rollbackTransactionConnection();
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
+      CM.close(statement);
     }
   }
 
@@ -474,7 +481,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       connection.setAutoCommit(false);
 
       for (Long id : idList) {
@@ -487,11 +494,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       connection.commit();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByIdList()");
-      UtilDaoSQL.rollback(connection);
+      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -510,7 +517,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
 
     try {
       //Get a connection
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
       connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
@@ -523,11 +530,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
-      UtilDaoSQL.rollback(connection);
+      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -545,7 +552,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
     ResultSet selectResults = null;
 
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
@@ -578,11 +585,11 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(countResults);
-      UtilDaoSQL.close(selectResults);
-      UtilDaoSQL.close(countStatement);
-      UtilDaoSQL.close(selectStatement);
-      UtilDaoSQL.close(connection);
+      CM.close(countResults);
+      CM.close(selectResults);
+      CM.close(countStatement);
+      CM.close(selectStatement);
+      CM.close(connection);
     }
   }
 }

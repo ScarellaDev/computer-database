@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 
@@ -23,16 +24,22 @@ import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 * 
 * @author Jeremy SCARELLA
 */
-public enum CompanyDaoImplSQLMock implements ICompanyDao {
+public enum CompanyDaoSQLMock implements ICompanyDao {
   /*
-  * Instance of CompanyDaoImplSQLMock
+  * Instance of CompanyDaoSQLMock
   */
   INSTANCE;
 
   /*
+   * CONNECTION_MANAGER
+   */
+  private static final ConnectionManager CM     = ConnectionManager.INSTANCE;
+
+  /*
    * LOGGER
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDaoImplSQLMock.class);
+  private static final Logger            LOGGER = LoggerFactory
+                                                    .getLogger(CompanyDaoSQLMock.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -46,7 +53,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     Company company = null;
 
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
 
       statement = connection.createStatement();
       //Execute the query
@@ -61,9 +68,9 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(results);
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(results);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -77,7 +84,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     List<Company> companies = new ArrayList<Company>();
     Company company;
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
 
       statement = connection.createStatement();
       //Execute the query
@@ -94,8 +101,8 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
-      UtilDaoSQL.close(connection);
+      CM.close(statement);
+      CM.close(connection);
     }
   }
 
@@ -104,7 +111,8 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
    * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company to remove.
    */
-  public void removeById(Connection connection, Long id) throws PersistenceException {
+  public void removeById(Long id) throws PersistenceException {
+    final Connection connection = CM.getTransactionConnection();
     PreparedStatement statement = null;
     if (id == null) {
       return;
@@ -120,9 +128,10 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeById() with id = " + id);
+      CM.rollbackTransactionConnection();
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(statement);
+      CM.close(statement);
     }
   }
 
@@ -141,7 +150,7 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
     final List<Company> companies = new ArrayList<Company>();
 
     try {
-      connection = UtilDaoSQL.getConnection();
+      connection = CM.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.createStatement();
@@ -171,11 +180,11 @@ public enum CompanyDaoImplSQLMock implements ICompanyDao {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      UtilDaoSQL.close(countResults);
-      UtilDaoSQL.close(selectResults);
-      UtilDaoSQL.close(countStatement);
-      UtilDaoSQL.close(selectStatement);
-      UtilDaoSQL.close(connection);
+      CM.close(countResults);
+      CM.close(selectResults);
+      CM.close(countStatement);
+      CM.close(selectStatement);
+      CM.close(connection);
     }
   }
 

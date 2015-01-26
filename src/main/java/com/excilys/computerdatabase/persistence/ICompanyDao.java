@@ -1,6 +1,5 @@
 package com.excilys.computerdatabase.persistence;
 
-import java.sql.Connection;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Company;
@@ -28,10 +27,9 @@ public interface ICompanyDao {
 
   /**
    * Remove a company from the database using its id.
-   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company to remove.
    */
-  void removeById(Connection connection, Long id);
+  void removeById(Long id);
 
   /**
   * Get a Page of companies in the database.

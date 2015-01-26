@@ -1,6 +1,5 @@
 package com.excilys.computerdatabase.persistence;
 
-import java.sql.Connection;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
@@ -66,10 +65,9 @@ public interface IComputerDao {
 
   /**
    * Remove all computers attached to the companyId given as parameter from the database.
-   * @param connection : the shared Connection for the CompanyDBService.removeById().
    * @param id : id of the company that needs its computers to be removed.
    */
-  void removeByCompanyId(Connection connection, Long id);
+  void removeByCompanyId(Long id);
 
   /**
    * Remove a list of computers from the database using their ids.

@@ -63,12 +63,6 @@ public interface IComputerDBService {
   ComputerDto removeById(Long id);
 
   /**
-   * Remove all computers attached to the companyId given as parameter from the database.
-   * @param id : id of the company that needs its computers to be removed.
-   */
-  void removeByCompanyId(Long id);
-
-  /**
    * Remove a list of computers from the database using their ids.
    * @param idList : the list of ids of the computers to remove.
    */

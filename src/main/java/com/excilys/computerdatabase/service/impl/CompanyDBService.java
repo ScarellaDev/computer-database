@@ -1,19 +1,15 @@
 package com.excilys.computerdatabase.service.impl;
 
-import java.sql.Connection;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
 import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
-import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 
 /**
@@ -29,19 +25,19 @@ public enum CompanyDBService implements ICompanyDBService {
   INSTANCE;
 
   /*
-  * Instance of the ICompanyDao
-  */
-  private ICompanyDao         companyDao  = CompanyDaoSQL.INSTANCE;
-
-  /*
-  * Instance of the ICompanyDao
-  */
-  private IComputerDao        computerDao = ComputerDaoSQL.INSTANCE;
-
-  /*
-   * LOGGER
+   * CONNECTION_MANAGER
    */
-  private static final Logger LOGGER      = LoggerFactory.getLogger(CompanyDBService.class);
+  private static final ConnectionManager CM          = ConnectionManager.INSTANCE;
+
+  /*
+  * Instance of the ICompanyDao
+  */
+  private ICompanyDao                    companyDao  = CompanyDaoSQL.INSTANCE;
+
+  /*
+  * Instance of the ICompanyDao
+  */
+  private IComputerDao                   computerDao = ComputerDaoSQL.INSTANCE;
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -68,17 +64,15 @@ public enum CompanyDBService implements ICompanyDBService {
    * @return true if DELETE query was successful
    */
   public Boolean removeById(Long id) {
-    Connection connection = UtilDaoSQL.getConnectionWithManualCommit();
     try {
-      computerDao.removeByCompanyId(connection, id);
-      companyDao.removeById(connection, id);
-      UtilDaoSQL.commit(connection);
+      CM.startTransactionConnection();
+      computerDao.removeByCompanyId(id);
+      companyDao.removeById(id);
+      CM.commitTransactionConnection();
     } catch (PersistenceException e) {
-      LOGGER.error("SQLError in removeById()");
-      UtilDaoSQL.rollback(connection);
-      throw new PersistenceException(e.getMessage(), e);
+
     } finally {
-      UtilDaoSQL.close(connection);
+      CM.closeTransactionConnection();
     }
     return true;
   }
