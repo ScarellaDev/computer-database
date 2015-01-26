@@ -80,7 +80,7 @@ public class UtilControllerHttp {
         errorMsgMap
             .put(
                 "eDateI",
-                "Incorrect introduced date : the field must be at the yyyy-MM-dd format (cannot be future date) or shoulb be left empty");
+                "Incorrect introduced date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC) or shoulb be left empty");
       }
     }
 
@@ -94,7 +94,7 @@ public class UtilControllerHttp {
         errorMsgMap
             .put(
                 "eDateD",
-                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (cannot be future date) or should be left empty");
+                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC) or should be left empty");
       }
     }
 
