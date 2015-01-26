@@ -2,6 +2,7 @@
 pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="com.excilys.computerdatabase.domain.*"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="h" %>
 <jsp:include page="includes/header.jsp" />
 
 	<section id="main">
@@ -46,14 +47,14 @@ pageEncoding="UTF-8"%>
 						pageContext.setAttribute("columns", columns);%>
 						<c:forEach items="${columns}" var="col">
 							<c:choose>
-								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"ASC\") }">					
-									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=desc">${col[1]}</a></th>
+								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"ASC\") }">
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="desc">${col[1]}</h:link></th>
 								</c:when>
 								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"DESC\") }">
-									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=asc">${col[1]}</a></th>
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc">${col[1]}</h:link></th>
 								</c:when>
 								<c:otherwise>
-									<th><a href="dashboard?pageIndex=${page.pageIndex}&nbElementsPerPage=${page.nbElementsPerPage}&search=${page.search}&sort=${col[0]}&order=asc">${col[1]}</a></th>
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc">${col[1]}</h:link></th>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>	
@@ -77,7 +78,7 @@ pageEncoding="UTF-8"%>
 	
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
-			<jsp:include page="includes/pagination.jsp"/>
+			<h:pagination target="dashboard" pageIndex="${page.pageIndex}" totalNbPages="${page.totalNbPages}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${page.sort.toString()}" order="${page.order}"/>
 		</div>
 	</footer>
 	
