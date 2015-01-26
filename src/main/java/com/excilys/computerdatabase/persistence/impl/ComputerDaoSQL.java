@@ -21,7 +21,7 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.IRowMapper;
-import com.excilys.computerdatabase.mapper.impl.ComputerRowMapperImpl;
+import com.excilys.computerdatabase.mapper.impl.ComputerRowMapper;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.validator.StringValidation;
 
@@ -31,21 +31,21 @@ import com.excilys.computerdatabase.validator.StringValidation;
 * 
 * @author Jeremy SCARELLA
 */
-public enum ComputerDaoImplSQL implements IComputerDao {
+public enum ComputerDaoSQL implements IComputerDao {
   /*
-  * Instance of ComputerDaoImplSQL
+  * Instance of ComputerDaoSQL
   */
   INSTANCE;
 
   /*
    * Instance of ComputerRowMapperImpl
    */
-  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapperImpl();
+  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapper();
 
   /*
   * CONSTANT List of the companies that are in the database (cache)
   */
-  private static final List<Company>     COMPANIES           = CompanyDaoImplSQL.INSTANCE.getAll();
+  private static final List<Company>     COMPANIES           = CompanyDaoSQL.INSTANCE.getAll();
 
   /*
    * DATE TIME FORMATTER
@@ -57,7 +57,7 @@ public enum ComputerDaoImplSQL implements IComputerDao {
    * LOGGER
    */
   private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(ComputerDaoImplSQL.class);
+                                                                 .getLogger(ComputerDaoSQL.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -550,11 +550,16 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       connection = UtilDaoSQL.getConnection();
 
       //Create & execute the counting query
-      countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
-          + " WHERE c.name LIKE ? OR company.name LIKE ?;");
-      countStatement.setString(1, page.getSearch() + "%");
-      countStatement.setString(2, page.getSearch() + "%");
-      countResults = countStatement.executeQuery();
+      if (StringValidation.isEmpty(page.getSearch())) {
+        countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY);
+        countResults = countStatement.executeQuery();
+      } else {
+        countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
+            + " WHERE c.name LIKE ? OR company.name LIKE ?;");
+        countStatement.setString(1, page.getSearch() + "%");
+        countStatement.setString(2, page.getSearch() + "%");
+        countResults = countStatement.executeQuery();
+      }
 
       //Set the number of results of the page with the result
       countResults.next();
@@ -563,13 +568,21 @@ public enum ComputerDaoImplSQL implements IComputerDao {
       page.refreshNbPages();
 
       //Create the SELECT query
-      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
-          + " WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY "
-          + Page.getColumnNames()[page.getSort()] + " " + page.getOrder() + " LIMIT ? OFFSET ?;");
-      selectStatement.setString(1, page.getSearch() + "%");
-      selectStatement.setString(2, page.getSearch() + "%");
-      selectStatement.setInt(3, page.getNbElementsPerPage());
-      selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      if (StringValidation.isEmpty(page.getSearch())) {
+        selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
+            + " ORDER BY " + Page.getColumnNames()[page.getSort()] + " " + page.getOrder()
+            + " LIMIT ? OFFSET ?;");
+        selectStatement.setInt(1, page.getNbElementsPerPage());
+        selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      } else {
+        selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
+            + " WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY "
+            + Page.getColumnNames()[page.getSort()] + " " + page.getOrder() + " LIMIT ? OFFSET ?;");
+        selectStatement.setString(1, page.getSearch() + "%");
+        selectStatement.setString(2, page.getSearch() + "%");
+        selectStatement.setInt(3, page.getNbElementsPerPage());
+        selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      }
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();

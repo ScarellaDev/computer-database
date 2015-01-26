@@ -12,7 +12,7 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.persistence.impl.ComputerDaoImplSQL;
+import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.IComputerDBService;
 
@@ -21,7 +21,7 @@ import com.excilys.computerdatabase.service.IComputerDBService;
 *
 * @author Jeremy SCARELLA
 */
-public enum ComputerDBServiceImpl implements IComputerDBService {
+public enum ComputerDBService implements IComputerDBService {
 
   /*
   * Instance of ComputerServiceImpl
@@ -31,12 +31,12 @@ public enum ComputerDBServiceImpl implements IComputerDBService {
   /*
   * Instance of the IComputerDao
   */
-  private IComputerDao        computerDao = ComputerDaoImplSQL.INSTANCE;
+  private IComputerDao        computerDao = ComputerDaoSQL.INSTANCE;
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER      = LoggerFactory.getLogger(ComputerDBServiceImpl.class);
+  private static final Logger LOGGER      = LoggerFactory.getLogger(ComputerDBService.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.

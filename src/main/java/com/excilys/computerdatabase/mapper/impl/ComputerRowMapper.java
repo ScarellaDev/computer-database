@@ -19,12 +19,12 @@ import com.excilys.computerdatabase.mapper.IRowMapper;
 * 
 * @author Jeremy SCARELLA
 */
-public class ComputerRowMapperImpl implements IRowMapper<Computer> {
+public class ComputerRowMapper implements IRowMapper<Computer> {
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerRowMapperImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerRowMapper.class);
 
   /**
    * Returns a Computer based on a row of ResultSet

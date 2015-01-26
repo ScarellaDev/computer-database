@@ -14,7 +14,7 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.IRowMapper;
-import com.excilys.computerdatabase.mapper.impl.CompanyRowMapperImpl;
+import com.excilys.computerdatabase.mapper.impl.CompanyRowMapper;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 
 /**
@@ -23,21 +23,21 @@ import com.excilys.computerdatabase.persistence.ICompanyDao;
 * 
 * @author Jeremy SCARELLA
 */
-public enum CompanyDaoImplSQL implements ICompanyDao {
+public enum CompanyDaoSQL implements ICompanyDao {
   /*
-  * Instance of CompanyDaoImplSQL
+  * Instance of CompanyDaoSQL
   */
   INSTANCE;
 
   /*
    * Instance of CompanyRowMapperImpl
    */
-  private IRowMapper<Company> companyMapper = new CompanyRowMapperImpl();
+  private IRowMapper<Company> companyMapper = new CompanyRowMapper();
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER        = LoggerFactory.getLogger(CompanyDaoImplSQL.class);
+  private static final Logger LOGGER        = LoggerFactory.getLogger(CompanyDaoSQL.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.

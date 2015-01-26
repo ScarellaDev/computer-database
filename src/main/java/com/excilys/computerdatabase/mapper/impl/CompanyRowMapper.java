@@ -17,12 +17,12 @@ import com.excilys.computerdatabase.mapper.IRowMapper;
 * 
 * @author Jeremy SCARELLA
 */
-public class CompanyRowMapperImpl implements IRowMapper<Company> {
+public class CompanyRowMapper implements IRowMapper<Company> {
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyRowMapperImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyRowMapper.class);
 
   /**
    * Returns a Company based on a row of ResultSet

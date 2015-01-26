@@ -21,7 +21,7 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.IRowMapper;
-import com.excilys.computerdatabase.mapper.impl.ComputerRowMapperImpl;
+import com.excilys.computerdatabase.mapper.impl.ComputerRowMapper;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.validator.StringValidation;
@@ -41,7 +41,7 @@ public enum ComputerDaoImplSQLMock implements IComputerDao {
   /*
    * Instance of ComputerRowMapperImpl
    */
-  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapperImpl();
+  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapper();
 
   /*
    * CONSTANT List of the companies that are in the database (cache)

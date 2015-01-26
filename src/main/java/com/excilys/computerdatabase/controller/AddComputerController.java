@@ -17,8 +17,8 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyDBServiceImpl;
-import com.excilys.computerdatabase.service.impl.ComputerDBServiceImpl;
+import com.excilys.computerdatabase.service.impl.CompanyDBService;
+import com.excilys.computerdatabase.service.impl.ComputerDBService;
 
 /**
 * Controller managing HttpServletRequests on /addcomputer URL
@@ -34,12 +34,12 @@ public class AddComputerController extends HttpServlet {
   /*
    * Instance of computerDBService
    */
-  private static IComputerDBService computerDBService = ComputerDBServiceImpl.INSTANCE;
+  private static IComputerDBService computerDBService = ComputerDBService.INSTANCE;
 
   /*
    * Instance of companyDBService
    */
-  private static ICompanyDBService  companyDBService  = CompanyDBServiceImpl.INSTANCE;
+  private static ICompanyDBService  companyDBService  = CompanyDBService.INSTANCE;
 
   /*
    * LOGGER

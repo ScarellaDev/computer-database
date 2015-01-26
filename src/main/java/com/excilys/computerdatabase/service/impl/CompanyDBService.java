@@ -11,8 +11,8 @@ import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.persistence.impl.CompanyDaoImplSQL;
-import com.excilys.computerdatabase.persistence.impl.ComputerDaoImplSQL;
+import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
+import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
 import com.excilys.computerdatabase.service.ICompanyDBService;
 
@@ -21,7 +21,7 @@ import com.excilys.computerdatabase.service.ICompanyDBService;
 *
 * @author Jeremy SCARELLA
 */
-public enum CompanyDBServiceImpl implements ICompanyDBService {
+public enum CompanyDBService implements ICompanyDBService {
 
   /*
   * Instance of CompanyServiceImpl
@@ -31,17 +31,17 @@ public enum CompanyDBServiceImpl implements ICompanyDBService {
   /*
   * Instance of the ICompanyDao
   */
-  private ICompanyDao         companyDao  = CompanyDaoImplSQL.INSTANCE;
+  private ICompanyDao         companyDao  = CompanyDaoSQL.INSTANCE;
 
   /*
   * Instance of the ICompanyDao
   */
-  private IComputerDao        computerDao = ComputerDaoImplSQL.INSTANCE;
+  private IComputerDao        computerDao = ComputerDaoSQL.INSTANCE;
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER      = LoggerFactory.getLogger(CompanyDBServiceImpl.class);
+  private static final Logger LOGGER      = LoggerFactory.getLogger(CompanyDBService.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.

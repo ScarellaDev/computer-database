@@ -17,6 +17,8 @@
 		<junit.version>4.12</junit.version>
 		<mockito-all.version>2.0.2-beta</mockito-all.version>
 		<selenium-firefox.version>2.44.0</selenium-firefox.version>
+		<selenium-chrome.version>2.44.0</selenium-chrome.version>
+		<slf4j-api.version>1.7.10</slf4j-api.version>
 		<logback-classic.version>1.1.2</logback-classic.version>
 	</properties>
 
@@ -79,22 +81,38 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- selenium-java.jar -->
+		<!-- selenium-firefox-driver.jar -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
 			<version>${selenium-firefox.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- selenium-chrome-driver.jar -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-chrome-driver</artifactId>
+			<version>${selenium-chrome.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- /TESTING -->
 		
 		<!-- LOGGER -->
+		<!-- slf4j-api.jar -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-api.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- logback-classic.jar -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback-classic.version}</version>
-			<scope>compile</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- /LOGGER -->
 		
