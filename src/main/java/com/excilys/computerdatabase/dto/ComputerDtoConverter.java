@@ -36,10 +36,12 @@ public class ComputerDtoConverter {
     builder.id(computerDto.getId()).name(computerDto.getName());
 
     if (computerDto.getIntroduced() != null) {
-      builder.introduced(LocalDateTime.parse(computerDto.getIntroduced(), DATE_TIME_FORMATTER));
+      builder.introduced(LocalDateTime.parse(computerDto.getIntroduced() + " 00:00:00",
+          DATE_TIME_FORMATTER));
     }
     if (computerDto.getDiscontinued() != null) {
-      builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued(), DATE_TIME_FORMATTER));
+      builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued() + " 00:00:00",
+          DATE_TIME_FORMATTER));
     }
     if (computerDto.getCompanyId() != 0) {
       builder.company(new Company(computerDto.getCompanyId(), computerDto.getCompanyName()));
@@ -73,10 +75,10 @@ public class ComputerDtoConverter {
     builder.id(computer.getId()).name(computer.getName());
 
     if (computer.getIntroduced() != null) {
-      builder.introduced(computer.getIntroduced().toString());
+      builder.introduced(computer.getIntroduced().toString().substring(0, 10));
     }
     if (computer.getDiscontinued() != null) {
-      builder.discontinued(computer.getDiscontinued().toString());
+      builder.discontinued(computer.getDiscontinued().toString().substring(0, 10));
     }
     if (computer.getCompany() != null) {
       builder.companyId(computer.getCompany().getId());
