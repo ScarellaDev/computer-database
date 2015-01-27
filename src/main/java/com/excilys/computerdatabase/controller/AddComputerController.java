@@ -10,9 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyService;
@@ -29,23 +26,17 @@ import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 @WebServlet("/addcomputer")
 public class AddComputerController extends HttpServlet {
 
-  private static final long         serialVersionUID  = 1L;
+  private static final long       serialVersionUID = 1L;
 
   /*
    * Instance of computerService
    */
-  private static IComputerService computerService = ComputerServiceJDBC.INSTANCE;
+  private static IComputerService computerService  = ComputerServiceJDBC.INSTANCE;
 
   /*
    * Instance of companyService
    */
-  private static ICompanyService  companyService  = CompanyServiceJDBC.INSTANCE;
-
-  /*
-   * LOGGER
-   */
-  private static final Logger       LOGGER            = LoggerFactory
-                                                          .getLogger(AddComputerController.class);
+  private static ICompanyService  companyService   = CompanyServiceJDBC.INSTANCE;
 
   /**
    * Prints error messages
@@ -76,10 +67,8 @@ public class AddComputerController extends HttpServlet {
 
     if (computer != null) {
       if (computerService.addByComputer(computer) != null) {
-        LOGGER.info("MySQL Info: computer INSERT SUCCESS: " + computer);
         httpResp.sendRedirect("dashboard");
       } else {
-        LOGGER.warn("MySQL Error: computer INSERT FAIL");
         doGet(httpReq, httpResp);
       }
     } else {

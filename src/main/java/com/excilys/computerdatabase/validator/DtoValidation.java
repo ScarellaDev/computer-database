@@ -33,7 +33,9 @@ public class DtoValidation {
       }
     }
     if (computerDto.getDiscontinued() != null) {
-      if (!StringValidation.isDate(computerDto.getDiscontinued())) {
+      if (!StringValidation.isDate(computerDto.getDiscontinued())
+          || !StringValidation.isLaterDate(computerDto.getIntroduced(),
+              computerDto.getDiscontinued())) {
         return false;
       }
     }

@@ -60,9 +60,11 @@ public enum CompanyServiceJDBC implements ICompanyService {
       company = companyDao.getById(id);
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getById()", e);
+      LOGGER.debug("CompanyServiceJDBC - GET BY ID FAIL: " + company);
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("CompanyServiceJDBC - GET BY ID SUCCESS: " + company);
     return company;
   }
 
@@ -77,9 +79,11 @@ public enum CompanyServiceJDBC implements ICompanyService {
       companies = companyDao.getAll();
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getAll()", e);
+      LOGGER.debug("CompanyServiceJDBC - GET ALL FAIL");
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("CompanyServiceJDBC - GET ALL SUCCESS");
     return companies;
   }
 
@@ -97,9 +101,11 @@ public enum CompanyServiceJDBC implements ICompanyService {
     } catch (PersistenceException e) {
       CM.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID FAIL");
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID SUCCESS");
     return true;
   }
 
@@ -115,9 +121,11 @@ public enum CompanyServiceJDBC implements ICompanyService {
       newPage = companyDao.getPagedList(page);
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
+      LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST FAIL: " + newPage);
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;
   }
 }

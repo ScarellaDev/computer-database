@@ -34,8 +34,8 @@ public class OutputManagerCLI {
    * Scanner sc : get the user input
    * String userInput : save the user input
    */
-  private static Scanner            sc;
-  private static String             userInput;
+  private static Scanner          sc;
+  private static String           userInput;
 
   /**
    * Display the main menu
@@ -72,13 +72,13 @@ public class OutputManagerCLI {
     while (true) {
       if (page.getPageIndex() == 1) {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'next' or 'n' or press enter to show the next page\r\nor 'last' or 'l' to show the last page\r\nor the number of the page you want to display");
       } else if (page.getPageIndex() == page.getTotalNbPages()) {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'previous' or 'p' to show the previous page\r\nor 'first' or 'f' to show the first page\r\nor the number of the page you want to display");
       } else {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor 'first' or 'f' to show the first page or 'last' or 'l' to show the last page\r\nor the number of the page you want to display");
       }
 
       userInput = null;
@@ -156,6 +156,34 @@ public class OutputManagerCLI {
               System.out.println("Warning: first page reached!");
             }
             break;
+          case "f":
+            page.setPageIndex(1);
+            page = computerService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "first":
+            page.setPageIndex(1);
+            page = computerService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "l":
+            page.setPageIndex(page.getTotalNbPages());
+            page = computerService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "last":
+            page.setPageIndex(page.getTotalNbPages());
+            page = computerService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
           default:
             System.out.println("Non valid command, please try again.");
             break;
@@ -198,13 +226,13 @@ public class OutputManagerCLI {
     while (true) {
       if (page.getPageIndex() == 1) {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'next' or 'n' or press enter to show the next page\r\nor 'last' or 'l' to show the last page\r\nor the number of the page you want to display");
       } else if (page.getPageIndex() == page.getTotalNbPages()) {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'previous' or 'p' to show the previous page\r\nor 'first' or 'f' to show the first page\r\nor the number of the page you want to display");
       } else {
         System.out
-            .println("\r\nType 'return' or 'r' to exit, 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor the number of the page you want to display");
+            .println("\r\nType 'return' or 'r' to exit\r\nor 'previous' or 'p' to show the previous page, 'next' or 'n' or press enter to show the next page\r\nor 'first' or 'f' to show the first page or 'last' or 'l' to show the last page\r\nor the number of the page you want to display");
       }
 
       userInput = null;
@@ -281,6 +309,34 @@ public class OutputManagerCLI {
             } else {
               System.out.println("Warning: first page reached!");
             }
+            break;
+          case "f":
+            page.setPageIndex(1);
+            page = companyService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "first":
+            page.setPageIndex(1);
+            page = companyService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "l":
+            page.setPageIndex(page.getTotalNbPages());
+            page = companyService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
+            break;
+          case "last":
+            page.setPageIndex(page.getTotalNbPages());
+            page = companyService.getPagedList(page);
+            System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
+                + " / Total number of computers : " + page.getTotalNbElements());
+            page.getList().forEach(System.out::println);
             break;
           default:
             System.out.println("Non valid command, please try again.");

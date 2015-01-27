@@ -29,12 +29,12 @@ public class UtilControllerHttp {
   /*
    * Instance of computerService
    */
-  private static IComputerService      computerService     = ComputerServiceJDBC.INSTANCE;
+  private static IComputerService        computerService       = ComputerServiceJDBC.INSTANCE;
 
   /*
    * Instance of companyService
    */
-  private static ICompanyService       companyService      = CompanyServiceJDBC.INSTANCE;
+  private static ICompanyService         companyService        = CompanyServiceJDBC.INSTANCE;
 
   /*
    * DATE TIME FORMATTER

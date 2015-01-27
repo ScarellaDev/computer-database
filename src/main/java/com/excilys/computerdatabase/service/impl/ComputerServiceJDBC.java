@@ -54,9 +54,12 @@ public enum ComputerServiceJDBC implements IComputerService {
       computer = computerDao.getById(id);
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getById()", e);
+      LOGGER.debug("ComputerServiceJDBC - GET BY ID FAIL: " + ComputerDtoConverter.toDto(computer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER
+        .debug("ComputerServiceJDBC - GET BY ID SUCCESS: " + ComputerDtoConverter.toDto(computer));
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -70,9 +73,11 @@ public enum ComputerServiceJDBC implements IComputerService {
       computers = computerDao.getAll();
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getAll()", e);
+      LOGGER.debug("ComputerServiceJDBC - GET ALL FAIL");
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - GET ALL SUCCESS");
     return ComputerDtoConverter.toDto(computers);
   }
 
@@ -90,10 +95,14 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during addByString()", e);
+      LOGGER.debug("ComputerServiceJDBC - ADD BY STRING FAIL: "
+          + ComputerDtoConverter.toDto(computer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - ADD BY STRING SUCCESS: "
+        + ComputerDtoConverter.toDto(computer));
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -110,10 +119,14 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during addByComputer()", e);
+      LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER FAIL: "
+          + ComputerDtoConverter.toDto(newComputer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER SUCCESS: "
+        + ComputerDtoConverter.toDto(newComputer));
     return ComputerDtoConverter.toDto(newComputer);
   }
 
@@ -131,10 +144,14 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during updateByString()", e);
+      LOGGER.debug("ComputerServiceJDBC - UPDATE BY STRING FAIL: "
+          + ComputerDtoConverter.toDto(computer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - UPDATE BY STRING SUCCESS: "
+        + ComputerDtoConverter.toDto(computer));
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -151,10 +168,14 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during updateByComputer()", e);
+      LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER FAIL: "
+          + ComputerDtoConverter.toDto(newComputer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER SUCCESS: "
+        + ComputerDtoConverter.toDto(newComputer));
     return ComputerDtoConverter.toDto(newComputer);
   }
 
@@ -172,9 +193,13 @@ public enum ComputerServiceJDBC implements IComputerService {
     } catch (PersistenceException e) {
       CM.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL: "
+          + ComputerDtoConverter.toDto(computer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID SUCCESS: "
+        + ComputerDtoConverter.toDto(computer));
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -189,10 +214,12 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during removeByIdList()", e);
+      LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST FAIL");
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST SUCCESS");
   }
 
   /**
@@ -208,10 +235,14 @@ public enum ComputerServiceJDBC implements IComputerService {
       CM.commit();
     } catch (PersistenceException e) {
       CM.rollback();
-      LOGGER.warn("PersistenceException: during removeById()", e);
+      LOGGER.warn("PersistenceException: during removeByComputer()", e);
+      LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER FAIL: "
+          + ComputerDtoConverter.toDto(newComputer));
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER SUCCESS: "
+        + ComputerDtoConverter.toDto(newComputer));
     return ComputerDtoConverter.toDto(newComputer);
   }
 
@@ -226,9 +257,11 @@ public enum ComputerServiceJDBC implements IComputerService {
       newPage = computerDao.getPagedList(page);
     } catch (PersistenceException e) {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
+      LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST FAIL: " + newPage);
     } finally {
       CM.closeConnection();
     }
+    LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;
   }
 }

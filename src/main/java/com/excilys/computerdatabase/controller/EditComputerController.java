@@ -10,9 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.dto.ComputerDto;
@@ -31,23 +28,17 @@ import com.excilys.computerdatabase.validator.StringValidation;
 @WebServlet("/editcomputer")
 public class EditComputerController extends HttpServlet {
 
-  private static final long         serialVersionUID  = 1L;
+  private static final long       serialVersionUID = 1L;
 
   /*
    * Instance of computerService
    */
-  private static IComputerService computerService = ComputerServiceJDBC.INSTANCE;
+  private static IComputerService computerService  = ComputerServiceJDBC.INSTANCE;
 
   /*
    * Instance of companyService
    */
-  private static ICompanyService  companyService  = CompanyServiceJDBC.INSTANCE;
-
-  /*
-   * LOGGER
-   */
-  private static final Logger       LOGGER            = LoggerFactory
-                                                          .getLogger(EditComputerController.class);
+  private static ICompanyService  companyService   = CompanyServiceJDBC.INSTANCE;
 
   /**
   * Prints error message
@@ -84,10 +75,8 @@ public class EditComputerController extends HttpServlet {
     Computer computer = UtilControllerHttp.buildComputerWithId(httpReq);
     if (computer != null) {
       if (computerService.updateByComputer(computer) != null) {
-        LOGGER.info("MySQL Info: computer UPDATE SUCCESS: " + computer);
         httpResp.sendRedirect("dashboard");
       } else {
-        LOGGER.warn("MySQL Error: computer UPDATE FAIL");
         doGet(httpReq, httpResp);
       }
     } else {
