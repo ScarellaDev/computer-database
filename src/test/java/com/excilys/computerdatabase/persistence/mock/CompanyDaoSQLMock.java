@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.mapper.IRowMapper;
+import com.excilys.computerdatabase.mapper.impl.CompanyRowMapper;
 import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.impl.UtilDaoSQL;
@@ -33,13 +34,18 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
   /*
    * CONNECTION_MANAGER
    */
-  private static final ConnectionManager CM     = ConnectionManager.INSTANCE;
+  private static final ConnectionManager CM            = ConnectionManager.INSTANCE;
+
+  /*
+   * Instance of CompanyRowMapperImpl
+   */
+  private IRowMapper<Company>            companyMapper = new CompanyRowMapper();
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER = LoggerFactory
-                                                    .getLogger(CompanyDaoSQLMock.class);
+  private static final Logger            LOGGER        = LoggerFactory
+                                                           .getLogger(CompanyDaoSQLMock.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -47,6 +53,10 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
    * @return The company that was found or null if there is no company for this id.
    */
   public Company getById(Long id) {
+    if (id == null) {
+      return null;
+    }
+
     Connection connection = null;
     Statement statement = null;
     ResultSet results = null;
@@ -55,13 +65,14 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
     try {
       connection = CM.getConnection();
 
+      //Create the query
       statement = connection.createStatement();
       //Execute the query
       results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY + " WHERE company.id=" + id
           + ";");
       //Create a company if there is a result
       if (results.next()) {
-        company = getCompanyFromRS(results);
+        company = companyMapper.mapRow(results);
       }
       return company;
     } catch (SQLException e) {
@@ -70,7 +81,6 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
     } finally {
       CM.close(results);
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -81,44 +91,39 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
   public List<Company> getAll() {
     Connection connection = null;
     Statement statement = null;
-    List<Company> companies = new ArrayList<Company>();
-    Company company;
+    ResultSet results = null;
+
     try {
       connection = CM.getConnection();
 
+      //Create the query
       statement = connection.createStatement();
       //Execute the query
-      ResultSet results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY);
-      //Create companies with the results
-      while (results.next()) {
-        company = new Company();
-        company.setId(results.getLong("id"));
-        company.setName(results.getString("name"));
-        companies.add(company);
-      }
-      return companies;
+      results = statement.executeQuery(UtilDaoSQL.COMPANY_SELECT_QUERY);
+      return companyMapper.mapRows(results);
     } catch (SQLException e) {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
   /**
    * Remove a company from the database using its id.
-   * @param connection : the shared Connection for the CompanyDBService.removeById().
+   * @param connection : the shared Connection for the CompanyServiceJDBC.removeById().
    * @param id : id of the company to remove.
    */
-  public void removeById(Long id) throws PersistenceException {
-    final Connection connection = CM.getTransactionConnection();
-    PreparedStatement statement = null;
+  public void removeById(Long id) {
     if (id == null) {
       return;
     }
 
+    Connection connection = null;
+    PreparedStatement statement = null;
+
     try {
+      connection = CM.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPANY_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -128,7 +133,6 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeById() with id = " + id);
-      CM.rollbackTransactionConnection();
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
@@ -141,24 +145,28 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
    * @return A Page instance containing a sublist of companies
    */
   @Override
-  public Page<Company> getPagedList(final Page<Company> page) {
+  public Page<Company> getPagedList(Page<Company> page) {
+    if (page == null) {
+      return null;
+    }
+
     Connection connection = null;
     Statement countStatement = null;
     PreparedStatement selectStatement = null;
     ResultSet countResults = null;
     ResultSet selectResults = null;
-    final List<Company> companies = new ArrayList<Company>();
 
     try {
       connection = CM.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.createStatement();
-      final ResultSet countResult = countStatement.executeQuery(UtilDaoSQL.COMPANY_COUNT_QUERY);
+      countResults = countStatement.executeQuery(UtilDaoSQL.COMPANY_COUNT_QUERY);
 
       //Set the number of results of the page with the result
-      countResult.next();
-      page.setTotalNbElements(countResult.getInt("total"));
+      countResults.next();
+      page.setTotalNbElements(countResults.getInt("total"));
+
       page.refreshNbPages();
 
       //Create the SELECT query
@@ -170,11 +178,7 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
 
-      //Create the computers with the results
-      while (selectResults.next()) {
-        companies.add(getCompanyFromRS(selectResults));
-      }
-      page.setList(companies);
+      page.setList(companyMapper.mapRows(selectResults));
       return page;
     } catch (SQLException e) {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
@@ -184,21 +188,6 @@ public enum CompanyDaoSQLMock implements ICompanyDao {
       CM.close(selectResults);
       CM.close(countStatement);
       CM.close(selectStatement);
-      CM.close(connection);
-    }
-  }
-
-  /**
-  * Get a Company instance based on the columns of a row of a ResultSet.
-  * @param rs : ResultSet on a row containing a company.
-  * @return The company instance extracted from the ResulSet.
-  */
-  private Company getCompanyFromRS(final ResultSet rs) {
-    try {
-      return Company.builder().id(rs.getLong("id")).name(rs.getString("name")).build();
-    } catch (SQLException e) {
-      LOGGER.error("SQLError in getCompanyFromRS() with rs = " + rs);
-      throw new PersistenceException(e.getMessage(), e);
     }
   }
 }

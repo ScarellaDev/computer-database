@@ -52,6 +52,10 @@ public enum CompanyDaoSQL implements ICompanyDao {
    * @return The company that was found or null if there is no company for this id.
    */
   public Company getById(Long id) {
+    if (id == null) {
+      return null;
+    }
+
     Connection connection = null;
     Statement statement = null;
     ResultSet results = null;
@@ -76,7 +80,6 @@ public enum CompanyDaoSQL implements ICompanyDao {
     } finally {
       CM.close(results);
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -102,23 +105,24 @@ public enum CompanyDaoSQL implements ICompanyDao {
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
   /**
    * Remove a company from the database using its id.
-   * @param connection : the shared Connection for the CompanyDBService.removeById().
+   * @param connection : the shared Connection for the CompanyServiceJDBC.removeById().
    * @param id : id of the company to remove.
    */
   public void removeById(Long id) {
-    final Connection connection = CM.getTransactionConnection();
-    PreparedStatement statement = null;
     if (id == null) {
       return;
     }
 
+    Connection connection = null;
+    PreparedStatement statement = null;
+
     try {
+      connection = CM.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPANY_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -128,7 +132,6 @@ public enum CompanyDaoSQL implements ICompanyDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeById() with id = " + id);
-      CM.rollbackTransactionConnection();
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
@@ -142,6 +145,10 @@ public enum CompanyDaoSQL implements ICompanyDao {
    */
   @Override
   public Page<Company> getPagedList(Page<Company> page) {
+    if (page == null) {
+      return null;
+    }
+
     Connection connection = null;
     Statement countStatement = null;
     PreparedStatement selectStatement = null;
@@ -180,7 +187,6 @@ public enum CompanyDaoSQL implements ICompanyDao {
       CM.close(selectResults);
       CM.close(countStatement);
       CM.close(selectStatement);
-      CM.close(connection);
     }
   }
 }

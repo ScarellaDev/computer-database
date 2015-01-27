@@ -5,10 +5,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.service.ICompanyDBService;
-import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyDBService;
-import com.excilys.computerdatabase.service.impl.ComputerDBService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -18,14 +18,14 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 public class InputManagerCLI {
   /*
-   * Instance of computerDBService
+   * Instance of computerService
    */
-  private static IComputerDBService      computerDBService = ComputerDBService.INSTANCE;
+  private static IComputerService      computerService = ComputerServiceJDBC.INSTANCE;
 
   /*
-   * Instance of companyDBService
+   * Instance of companyService
    */
-  private static ICompanyDBService       companyDBService  = CompanyDBService.INSTANCE;
+  private static ICompanyService       companyService  = CompanyServiceJDBC.INSTANCE;
 
   /*
    * Scanner sc : get the user input
@@ -179,7 +179,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isPositiveLong(userInput)) {
-          builder.company(companyDBService.getById(new Long(userInput)));
+          builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
           System.out.println("Please, enter a new valid id:");
@@ -291,7 +291,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isPositiveLong(userInput)) {
-          builder.company(companyDBService.getById(new Long(userInput)));
+          builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
           System.out.println("Please, enter a new valid id:");

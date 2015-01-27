@@ -52,8 +52,7 @@ public enum ComputerDaoSQLMock implements IComputerDao {
   /*
    * CONSTANT List of the companies that are in the database (cache)
    */
-  private static final List<Company>     COMPANIES           = CompanyDaoSQLMock.INSTANCE
-                                                                 .getAll();
+  private static final List<Company>     COMPANIES           = CompanyDaoSQLMock.INSTANCE.getAll();
 
   /*
    * DATE TIME FORMATTER
@@ -73,6 +72,10 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return The computer that was found or null if there is no computer for this id.
    */
   public Computer getById(Long id) {
+    if (id == null) {
+      return null;
+    }
+
     Computer computer = null;
     Connection connection = null;
     Statement statement = null;
@@ -96,7 +99,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
     } finally {
       CM.close(results);
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -122,7 +124,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
     } finally {
       CM.close(results);
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -133,6 +134,10 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   public Computer addByString(String[] params) {
+    if (params == null) {
+      return null;
+    }
+
     Connection connection = null;
     PreparedStatement statement = null;
     ResultSet results = null;
@@ -228,7 +233,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
           throw new PersistenceException(e.getMessage(), e);
         } finally {
           CM.close(statement);
-          CM.close(connection);
         }
       } else {
         throw new PersistenceException("Too many arguments passed (max = 4)");
@@ -244,6 +248,10 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   public Computer addByComputer(Computer computer) {
+    if (computer == null) {
+      return null;
+    }
+
     Connection connection = null;
     PreparedStatement statement = null;
     ResultSet results = null;
@@ -286,7 +294,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -297,6 +304,10 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   public Computer updateByString(String[] params) {
+    if (params == null) {
+      return null;
+    }
+
     if (params.length > 1) {
       if (params.length < 6) {
 
@@ -304,10 +315,14 @@ public enum ComputerDaoSQLMock implements IComputerDao {
 
         if (StringValidation.isPositiveLong(params[0])) {
           builder.id(new Long(params[0]));
+        } else {
+          return null;
         }
 
         if (!params[1].toLowerCase().equals("null") && !StringValidation.isEmpty(params[1])) {
           builder.name(params[1]);
+        } else {
+          return null;
         }
 
         if (params.length > 2 && !params[2].toLowerCase().equals("null")
@@ -353,13 +368,16 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   public Computer updateByComputer(Computer computer) {
+    if (computer == null) {
+      return null;
+    }
+
     Connection connection = null;
     PreparedStatement statement = null;
 
     try {
       //Get a connection to the database
       connection = CM.getConnection();
-      connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_UPDATE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -387,15 +405,12 @@ public enum ComputerDaoSQLMock implements IComputerDao {
 
       //Execute the query
       statement.executeUpdate();
-      connection.commit();
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
-      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -405,20 +420,19 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   public Computer removeById(Long id) {
+    if (id == null) {
+      return null;
+    }
+
     Connection connection = null;
     PreparedStatement statement = null;
 
     Computer computer = null;
-    if (id == null) {
-      return computer;
-    } else {
-      computer = getById(id);
-    }
+    computer = getById(id);
 
     try {
       //Get a connection
       connection = CM.getConnection();
-      connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -426,15 +440,12 @@ public enum ComputerDaoSQLMock implements IComputerDao {
 
       //Execute the query
       statement.executeUpdate();
-      connection.commit();
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeById() with id = " + id);
-      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -443,13 +454,15 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @param id : id of the company that needs its computers to be removed.
    */
   public void removeByCompanyId(Long id) {
-    final Connection connection = CM.getTransactionConnection();
-    PreparedStatement statement = null;
     if (id == null) {
       return;
     }
 
+    Connection connection = null;
+    PreparedStatement statement = null;
+
     try {
+      connection = CM.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_WHERE_COMPANY_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -459,7 +472,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
       statement.executeUpdate();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByCompanyId() with id = " + id);
-      CM.rollbackTransactionConnection();
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
@@ -472,17 +484,16 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return true if the transaction was a success, false otherwise
    */
   public void removeByIdList(List<Long> idList) {
-    Connection connection = null;
-    PreparedStatement statement = null;
-
     if (idList.isEmpty()) {
       return;
     }
 
+    Connection connection = null;
+    PreparedStatement statement = null;
+
     try {
       //Get a connection
       connection = CM.getConnection();
-      connection.setAutoCommit(false);
 
       for (Long id : idList) {
         //Create the query
@@ -491,14 +502,11 @@ public enum ComputerDaoSQLMock implements IComputerDao {
         statement.setLong(1, id);
         statement.executeUpdate();
       }
-      connection.commit();
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByIdList()");
-      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -508,17 +516,16 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   public Computer removeByComputer(Computer computer) {
-    Connection connection = null;
-    PreparedStatement statement = null;
-
     if (computer == null) {
       return null;
     }
 
+    Connection connection = null;
+    PreparedStatement statement = null;
+
     try {
       //Get a connection
       connection = CM.getConnection();
-      connection.setAutoCommit(false);
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -526,15 +533,12 @@ public enum ComputerDaoSQLMock implements IComputerDao {
 
       //Execute the query
       statement.executeUpdate();
-      connection.commit();
       return computer;
     } catch (SQLException e) {
       LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
-      CM.rollback(connection);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
       CM.close(statement);
-      CM.close(connection);
     }
   }
 
@@ -545,6 +549,10 @@ public enum ComputerDaoSQLMock implements IComputerDao {
    */
   @Override
   public Page<ComputerDto> getPagedList(final Page<ComputerDto> page) {
+    if (page == null) {
+      return null;
+    }
+
     Connection connection = null;
     PreparedStatement countStatement = null;
     PreparedStatement selectStatement = null;
@@ -555,11 +563,16 @@ public enum ComputerDaoSQLMock implements IComputerDao {
       connection = CM.getConnection();
 
       //Create & execute the counting query
-      countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
-          + " WHERE c.name LIKE ? OR company.name LIKE ?;");
-      countStatement.setString(1, page.getSearch() + "%");
-      countStatement.setString(2, page.getSearch() + "%");
-      countResults = countStatement.executeQuery();
+      if (StringValidation.isEmpty(page.getSearch())) {
+        countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY);
+        countResults = countStatement.executeQuery();
+      } else {
+        countStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_COUNT_QUERY
+            + " WHERE c.name LIKE ? OR company.name LIKE ?;");
+        countStatement.setString(1, page.getSearch() + "%");
+        countStatement.setString(2, page.getSearch() + "%");
+        countResults = countStatement.executeQuery();
+      }
 
       //Set the number of results of the page with the result
       countResults.next();
@@ -568,13 +581,21 @@ public enum ComputerDaoSQLMock implements IComputerDao {
       page.refreshNbPages();
 
       //Create the SELECT query
-      selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
-          + " WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY "
-          + Page.getColumnNames()[page.getSort()] + " " + page.getOrder() + " LIMIT ? OFFSET ?;");
-      selectStatement.setString(1, page.getSearch() + "%");
-      selectStatement.setString(2, page.getSearch() + "%");
-      selectStatement.setInt(3, page.getNbElementsPerPage());
-      selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      if (StringValidation.isEmpty(page.getSearch())) {
+        selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
+            + " ORDER BY " + Page.getColumnNames()[page.getSort()] + " " + page.getOrder()
+            + " LIMIT ? OFFSET ?;");
+        selectStatement.setInt(1, page.getNbElementsPerPage());
+        selectStatement.setInt(2, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      } else {
+        selectStatement = connection.prepareStatement(UtilDaoSQL.COMPUTER_SELECT_QUERY
+            + " WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY "
+            + Page.getColumnNames()[page.getSort()] + " " + page.getOrder() + " LIMIT ? OFFSET ?;");
+        selectStatement.setString(1, page.getSearch() + "%");
+        selectStatement.setString(2, page.getSearch() + "%");
+        selectStatement.setInt(3, page.getNbElementsPerPage());
+        selectStatement.setInt(4, (page.getPageIndex() - 1) * page.getNbElementsPerPage());
+      }
 
       //Execute the SELECT query
       selectResults = selectStatement.executeQuery();
@@ -589,7 +610,6 @@ public enum ComputerDaoSQLMock implements IComputerDao {
       CM.close(selectResults);
       CM.close(countStatement);
       CM.close(selectStatement);
-      CM.close(connection);
     }
   }
 }

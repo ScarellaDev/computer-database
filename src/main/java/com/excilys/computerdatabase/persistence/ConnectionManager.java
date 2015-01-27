@@ -1,18 +1,16 @@
 package com.excilys.computerdatabase.persistence;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.util.AppSettings;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
@@ -31,155 +29,92 @@ public enum ConnectionManager {
   /*
    * ConnectionPool
    */
-  private BoneCP                  connectionPool = null;
+  private BoneCP                  connectionPool        = null;
 
   /*
    * ThreadLocal<Connection>
    */
-  private ThreadLocal<Connection> connection     = null;
+  private ThreadLocal<Connection> threadLocalConnection = null;
 
   /*
-   * logger
+   * LOGGER
    */
-  private Logger                  logger         = LoggerFactory.getLogger(ConnectionManager.class);
+  private static final Logger     LOGGER                = LoggerFactory
+                                                            .getLogger(ConnectionManager.class);
 
   /**
-  * Constructor. Load the MySQL JDBC Driver
+  * Constructor. Load the MySQL JDBC Driver, sets the Connection Pool
   */
   private ConnectionManager() {
-    Properties properties = new Properties();
-    InputStream input = null;
+
     try {
-      input = ConnectionManager.class.getClassLoader().getResourceAsStream("db.properties");
-      properties.load(input);
-
       // Load the Driver class
-      Class.forName(properties.getProperty("db.driver"));
+      Class.forName(AppSettings.DB_DRIVER);
+    } catch (ClassNotFoundException e) {
+      throw new PersistenceException("ClassNotFoundException: MySQL JDBC driver not found", e);
+    }
 
-      final BoneCPConfig config = new BoneCPConfig();
-      config.setJdbcUrl(properties.getProperty("db.url"));
-      config.setUser(properties.getProperty("db.username"));
-      config.setPassword(properties.getProperty("db.password"));
-      config.setMinConnectionsPerPartition(5);
-      config.setMaxConnectionsPerPartition(10);
-      config.setPartitionCount(1);
+    final BoneCPConfig config = new BoneCPConfig();
+    config.setJdbcUrl(AppSettings.DB_URL);
+    config.setUser(AppSettings.DB_USERNAME);
+    config.setPassword(AppSettings.DB_PASSWORD);
+    config.setMinConnectionsPerPartition(3);
+    config.setMaxConnectionsPerPartition(10);
+    config.setPartitionCount(2);
+
+    try {
       connectionPool = new BoneCP(config);
     } catch (SQLException e) {
-      logger.error("SQLException: error while creating the connection pool");
-      throw new PersistenceException(e.getMessage(), e);
-    } catch (IOException e) {
-      logger.error("IOException: couldn't load the database.properties file");
-      throw new PersistenceException(e.getMessage(), e);
-    } catch (ClassNotFoundException e) {
-      logger.error("ClassNotFoundException: MySQL JDBC driver not found");
-      throw new PersistenceException(e.getMessage(), e);
-    } finally {
-      try {
-        if (input != null) {
-          input.close();
-        }
-      } catch (IOException e) {
-        logger.error("IOException: couldn't close InputStream during db.properties file loading");
-        throw new PersistenceException(e.getMessage(), e);
-      }
+      throw new PersistenceException("SQLException: error while creating the connection pool", e);
     }
+
+    threadLocalConnection = new ThreadLocal<Connection>();
   }
 
   /**
   * Retrieve a SQL connection to the database.
-  * @return The {@link Connection} instance.
   * @throws SQLException : if a database access error occurs.
+  * @return threadLocalConnection
   */
   public Connection getConnection() {
-    try {
-      return connectionPool.getConnection();
-    } catch (SQLException e) {
-      logger.error("SQLException: couldn't connect to the database");
-      throw new PersistenceException(e.getMessage(), e);
+    if (threadLocalConnection.get() == null) {
+      // No connection available for current Thread
+      try {
+        threadLocalConnection.set(connectionPool.getConnection());
+      } catch (SQLException e) {
+        LOGGER.warn("SQLException: couldn't get database connection", e);
+        throw new PersistenceException(e.getMessage(), e);
+      }
     }
+    return threadLocalConnection.get();
   }
 
   /**
   * Retrieve a SQL connection to the database with setAutoCommit(false).
   * @throws SQLException : if a database access error occurs.
   */
-  public void startTransactionConnection() {
+  public void startTransaction() {
     try {
-      final Connection connection = connectionPool.getConnection();
+      Connection connection = getConnection();
       connection.setAutoCommit(false);
-      this.connection = new ThreadLocal<Connection>();
-      this.connection.set(connection);
+      connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
     } catch (SQLException e) {
-      logger.error("SQLException: couldn't connect to the database");
+      LOGGER.error("SQLException: couldn't start transaction");
       throw new PersistenceException(e.getMessage(), e);
     }
   }
 
   /**
-   * Get the Transaction Connection if not null
-   */
-  public Connection getTransactionConnection() {
-    if (connection != null) {
-      return connection.get();
-    }
-    return null;
-  }
-
-  /**
-   * Close Transaction Connection if not null
-   */
-  public void closeTransactionConnection() {
-    if (connection != null) {
-      try {
-        connection.get().close();
-      } catch (final SQLException e) {
-        logger.warn("SQLException: couldn't close the transaction Connection");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
-   * Execute commit on transaction connection if not null.
-   */
-  public void commitTransactionConnection() {
-    if (connection != null) {
-      try {
-        connection.get().commit();
-      } catch (SQLException e) {
-        logger.warn("SQLException: couldn't commit the transaction Connection");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
-   * Execute rollback on transaction connection if not null.
-   */
-  public void rollbackTransactionConnection() {
-    if (connection != null) {
-      try {
-        connection.get().rollback();
-      } catch (SQLException e) {
-        logger.warn("SQLException: couldn't rollback the transaction Connection");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
    * Close Connection if it is not null.
-   * @param connection
    */
-  public void close(Connection connection) {
-    if (connection != null) {
+  public void closeConnection() {
+    if (getConnection() != null) {
       try {
-        if (connection.getAutoCommit()) {
-          connection.setAutoCommit(true);
-        }
-        connection.close();
+        getConnection().setAutoCommit(true);
+        getConnection().close();
+        threadLocalConnection.remove();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close Connection");
+        LOGGER.warn("SQLException: couldn't close Connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -194,7 +129,7 @@ public enum ConnectionManager {
       try {
         statement.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close Statement");
+        LOGGER.warn("SQLException: couldn't close Statement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -209,7 +144,7 @@ public enum ConnectionManager {
       try {
         pStatement.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close PreparedStatement");
+        LOGGER.warn("SQLException: couldn't close PreparedStatement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -224,7 +159,7 @@ public enum ConnectionManager {
       try {
         results.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close ResultSet");
+        LOGGER.warn("SQLException: couldn't close ResultSet");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -232,29 +167,27 @@ public enum ConnectionManager {
 
   /**
    * Execute commit on connection if not null.
-   * @param connection
    */
-  public void commit(Connection connection) {
-    if (connection != null) {
+  public void commit() {
+    if (getConnection() != null) {
       try {
-        connection.commit();
+        getConnection().commit();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't commit the Connection");
-        throw new PersistenceException(e.getMessage(), e);
+        LOGGER.warn("SQLException: couldn't commit the Connection");
+        rollback();
       }
     }
   }
 
   /**
    * Execute rollback on connection if not null.
-   * @param connection
    */
-  public void rollback(Connection connection) {
-    if (connection != null) {
+  public void rollback() {
+    if (getConnection() != null) {
       try {
-        connection.rollback();
+        getConnection().rollback();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't rollback the Connection");
+        LOGGER.warn("SQLException: couldn't rollback the Connection");
         throw new PersistenceException(e.getMessage(), e);
       }
     }

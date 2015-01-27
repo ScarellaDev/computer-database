@@ -11,7 +11,7 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 *
 * @author Jeremy SCARELLA
 */
-public interface IComputerDBService {
+public interface IComputerService {
   /**
    * Get the computer in the database corresponding to the id in parameter.
    * @param id : id of the computer in the database.

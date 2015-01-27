@@ -17,7 +17,7 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.mock.ComputerServiceMock;
+import com.excilys.computerdatabase.service.mock.ComputerServiceJDBCMock;
 
 /**
  * Test class for the ComputerService
@@ -29,7 +29,7 @@ public class ComputerServiceTest {
   /*
    * Attributes
    */
-  IComputerDBService   computerDBService;
+  IComputerService   computerService;
   private Long         computerId;
   private Long         computerId2;
   private Computer     computer;
@@ -62,7 +62,7 @@ public class ComputerServiceTest {
     when(computerDao.getById(anyLong())).thenReturn(Computer.builder().id(1L).build());
     when(computerDao.getPagedList(page)).thenReturn(pageReturned);
 
-    computerDBService = new ComputerServiceMock(computerDao);
+    computerService = new ComputerServiceJDBCMock(computerDao);
   }
 
   /**
@@ -71,7 +71,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testGetById() {
-    assertEquals(Computer.builder().id(1L).build(), computerDBService.getById(1L));
+    assertEquals(Computer.builder().id(1L).build(), computerService.getById(1L));
   }
 
   /**
@@ -80,7 +80,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testGetAll() {
-    assertEquals(new ArrayList<Computer>(), computerDBService.getAll());
+    assertEquals(new ArrayList<Computer>(), computerService.getAll());
   }
 
   /**
@@ -91,7 +91,7 @@ public class ComputerServiceTest {
   public void testAddByString() {
     String[] params = "CM-4 1992-01-01 null null".split("\\s+");
 
-    computerDBService.addByString(params);
+    computerService.addByString(params);
     verify(computerDao).addByString(params);
   }
 
@@ -101,7 +101,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void testAddByComputer() {
-    computerDBService.addByComputer(computer);
+    computerService.addByComputer(computer);
     verify(computerDao).addByComputer(computer);
   }
 
@@ -113,7 +113,7 @@ public class ComputerServiceTest {
   public void updateByString() {
     String[] params = (computerId.toString() + " CM-7 1994-01-01 null null").split("\\s+");
 
-    computerDBService.updateByString(params);
+    computerService.updateByString(params);
     verify(computerDao).updateByString(params);
   }
 
@@ -123,7 +123,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void updateByComputer() {
-    computerDBService.updateByComputer(computer);
+    computerService.updateByComputer(computer);
     verify(computerDao).updateByComputer(computer);
   }
 
@@ -133,7 +133,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void removeById() {
-    computerDBService.removeById(computerId);
+    computerService.removeById(computerId);
     verify(computerDao).removeById(computerId);
   }
 
@@ -143,7 +143,7 @@ public class ComputerServiceTest {
    */
   @Test
   public void removeByComputer() {
-    computerDBService.removeByComputer(Computer.builder().id(computerId2).build());
+    computerService.removeByComputer(Computer.builder().id(computerId2).build());
     verify(computerDao).removeByComputer(Computer.builder().id(computerId2).build());
   }
 
@@ -153,6 +153,6 @@ public class ComputerServiceTest {
    */
   @Test
   public void getPagedList() {
-    assertEquals(pageReturned, computerDBService.getPagedList(page));
+    assertEquals(pageReturned, computerService.getPagedList(page));
   }
 }

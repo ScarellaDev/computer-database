@@ -16,7 +16,7 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.mock.CompanyServiceMock;
+import com.excilys.computerdatabase.service.mock.CompanyServiceJDBCMock;
 
 /**
  * Test class for the CompanyService
@@ -28,7 +28,7 @@ public class CompanyServiceTest {
   /*
    * Attributes
    */
-  ICompanyDBService companyDBService;
+  ICompanyService companyService;
   Page<Company>     page;
   Page<Company>     pageReturned;
 
@@ -51,7 +51,7 @@ public class CompanyServiceTest {
     when(companyDao.getAll()).thenReturn(new ArrayList<Company>());
     when(companyDao.getById(1L)).thenReturn(Company.builder().id(1L).build());
     when(companyDao.getPagedList(page)).thenReturn(pageReturned);
-    companyDBService = new CompanyServiceMock(companyDao, computerDao);
+    companyService = new CompanyServiceJDBCMock(companyDao, computerDao);
   }
 
   /**
@@ -60,8 +60,8 @@ public class CompanyServiceTest {
    */
   @Test
   public void getById() {
-    assertNull(companyDBService.getById(0L));
-    assertEquals(Company.builder().id(1L).build(), companyDBService.getById(1L));
+    assertNull(companyService.getById(0L));
+    assertEquals(Company.builder().id(1L).build(), companyService.getById(1L));
   }
 
   /**
@@ -70,7 +70,7 @@ public class CompanyServiceTest {
    */
   @Test
   public void getAll() {
-    assertEquals(new ArrayList<Company>(), companyDBService.getAll());
+    assertEquals(new ArrayList<Company>(), companyService.getAll());
   }
 
   /**
@@ -79,6 +79,6 @@ public class CompanyServiceTest {
    */
   @Test
   public void getPagedList() {
-    assertEquals(pageReturned, companyDBService.getPagedList(page));
+    assertEquals(pageReturned, companyService.getPagedList(page));
   }
 }

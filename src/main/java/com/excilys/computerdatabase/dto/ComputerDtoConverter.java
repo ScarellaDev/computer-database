@@ -28,6 +28,10 @@ public class ComputerDtoConverter {
   * @return a Computer
   */
   public static Computer toComputer(final ComputerDto computerDto) {
+    if (computerDto == null) {
+      return null;
+    }
+
     if (!DtoValidation.isValidComputerDto(computerDto)) {
       return null;
     }
@@ -55,7 +59,6 @@ public class ComputerDtoConverter {
   * @return a Computer List
   */
   public static List<Computer> toComputer(final List<ComputerDto> computerDtos) {
-
     if (computerDtos == null) {
       return null;
     }
@@ -69,6 +72,10 @@ public class ComputerDtoConverter {
   * @return a ComputerDto
   */
   public static ComputerDto toDto(final Computer computer) {
+    if (computer == null) {
+      return null;
+    }
+
     final ComputerDto.Builder builder = ComputerDto.builder();
     builder.id(computer.getId()).name(computer.getName());
 

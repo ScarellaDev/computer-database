@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.service.ICompanyDBService;
-import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyDBService;
-import com.excilys.computerdatabase.service.impl.ComputerDBService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -27,14 +27,14 @@ import com.excilys.computerdatabase.validator.StringValidation;
 public class UtilControllerHttp {
 
   /*
-   * Instance of computerDBService
+   * Instance of computerService
    */
-  private static IComputerDBService      computerDBService     = ComputerDBService.INSTANCE;
+  private static IComputerService      computerService     = ComputerServiceJDBC.INSTANCE;
 
   /*
-   * Instance of companyDBService
+   * Instance of companyService
    */
-  private static ICompanyDBService       companyDBService      = CompanyDBService.INSTANCE;
+  private static ICompanyService       companyService      = CompanyServiceJDBC.INSTANCE;
 
   /*
    * DATE TIME FORMATTER
@@ -102,7 +102,7 @@ public class UtilControllerHttp {
     //Check if the company id is valid
     if (companyIdS != null && !companyIdS.isEmpty()) {
       if (StringValidation.isPositiveLong(companyIdS)) {
-        final Company company = companyDBService.getById(Long.valueOf(companyIdS));
+        final Company company = companyService.getById(Long.valueOf(companyIdS));
 
         //Check if a company with this id exist in the database 
         if (company != null) {
@@ -145,7 +145,7 @@ public class UtilControllerHttp {
     Long id = Long.valueOf(idS);
 
     //Check if a computer with this id exist in the database
-    if (computerDBService.getById(id) == null) {
+    if (computerService.getById(id) == null) {
       errorMsgMap.put("eId", "No computer with this id was found");
       httpReq.setAttribute("error", errorMsgMap);
       return null;
@@ -187,6 +187,6 @@ public class UtilControllerHttp {
     if (idList.isEmpty()) {
       return;
     }
-    computerDBService.removeByIdList(idList);
+    computerService.removeByIdList(idList);
   }
 }

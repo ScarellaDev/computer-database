@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.ComputerDBService;
+import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -24,12 +24,12 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 @WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
-  private static final long         serialVersionUID  = 1L;
+  private static final long         serialVersionUID = 1L;
 
   /*
-   * Instance of computerDBService
+   * Instance of computerService
    */
-  private static IComputerDBService computerDBService = ComputerDBService.INSTANCE;
+  private static IComputerService computerService  = ComputerServiceJDBC.INSTANCE;
 
   /**
    * Displays pages of computer lists from database using HttpServletRequest params {pageIndex, nbElementsPerPage}
@@ -87,7 +87,7 @@ public class DashboardController extends HttpServlet {
     }
 
     //Retrieve the list of computers to display
-    page = computerDBService.getPagedList(page);
+    page = computerService.getPagedList(page);
     httpReq.setAttribute("page", page);
 
     // Get the JSP dispatcher

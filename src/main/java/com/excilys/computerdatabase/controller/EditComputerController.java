@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.service.ICompanyDBService;
-import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyDBService;
-import com.excilys.computerdatabase.service.impl.ComputerDBService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -34,14 +34,14 @@ public class EditComputerController extends HttpServlet {
   private static final long         serialVersionUID  = 1L;
 
   /*
-   * Instance of computerDBService
+   * Instance of computerService
    */
-  private static IComputerDBService computerDBService = ComputerDBService.INSTANCE;
+  private static IComputerService computerService = ComputerServiceJDBC.INSTANCE;
 
   /*
-   * Instance of companyDBService
+   * Instance of companyService
    */
-  private static ICompanyDBService  companyDBService  = CompanyDBService.INSTANCE;
+  private static ICompanyService  companyService  = CompanyServiceJDBC.INSTANCE;
 
   /*
    * LOGGER
@@ -60,11 +60,11 @@ public class EditComputerController extends HttpServlet {
     if (StringValidation.isPositiveLong(idS)) {
       id = Long.valueOf(httpReq.getParameter("id"));
 
-      final ComputerDto computerDto = computerDBService.getById(id);
+      final ComputerDto computerDto = computerService.getById(id);
       httpReq.setAttribute("computer", computerDto);
     }
 
-    final List<Company> companies = companyDBService.getAll();
+    final List<Company> companies = companyService.getAll();
     httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
@@ -83,7 +83,7 @@ public class EditComputerController extends HttpServlet {
 
     Computer computer = UtilControllerHttp.buildComputerWithId(httpReq);
     if (computer != null) {
-      if (computerDBService.updateByComputer(computer) != null) {
+      if (computerService.updateByComputer(computer) != null) {
         LOGGER.info("MySQL Info: computer UPDATE SUCCESS: " + computer);
         httpResp.sendRedirect("dashboard");
       } else {

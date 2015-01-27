@@ -8,10 +8,10 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.service.ICompanyDBService;
-import com.excilys.computerdatabase.service.IComputerDBService;
-import com.excilys.computerdatabase.service.impl.CompanyDBService;
-import com.excilys.computerdatabase.service.impl.ComputerDBService;
+import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -21,14 +21,14 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 public class OutputManagerCLI {
   /*
-   * Instance of computerDBService
+   * Instance of computerService
    */
-  private static IComputerDBService computerDBService = ComputerDBService.INSTANCE;
+  private static IComputerService computerService = ComputerServiceJDBC.INSTANCE;
 
   /*
-   * Instance of companyDBService
+   * Instance of companyService
    */
-  private static ICompanyDBService  companyDBService  = CompanyDBService.INSTANCE;
+  private static ICompanyService  companyService  = CompanyServiceJDBC.INSTANCE;
 
   /*
    * Scanner sc : get the user input
@@ -63,7 +63,7 @@ public class OutputManagerCLI {
     //Create a Page
     Page<ComputerDto> page = new Page<ComputerDto>();
     //Get the first Page of computers from the database
-    page = computerDBService.getPagedList(page);
+    page = computerService.getPagedList(page);
     //Show the content of the page
     System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
         + " / Total number of computers : " + page.getTotalNbElements());
@@ -86,7 +86,7 @@ public class OutputManagerCLI {
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput == null || userInput.isEmpty() || "".equals(userInput)) {
         if (page.next()) {
-          page = computerDBService.getPagedList(page);
+          page = computerService.getPagedList(page);
           System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
               + " / Total number of computers : " + page.getTotalNbElements());
           page.getList().forEach(System.out::println);
@@ -99,7 +99,7 @@ public class OutputManagerCLI {
           System.out.println("Non valid page number.");
         } else {
           page.setPageIndex(index);
-          page = computerDBService.getPagedList(page);
+          page = computerService.getPagedList(page);
           System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
               + " / Total number of computers : " + page.getTotalNbElements());
           page.getList().forEach(System.out::println);
@@ -114,7 +114,7 @@ public class OutputManagerCLI {
             return;
           case "n":
             if (page.next()) {
-              page = computerDBService.getPagedList(page);
+              page = computerService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of computers : "
                   + page.getTotalNbElements());
@@ -125,7 +125,7 @@ public class OutputManagerCLI {
             break;
           case "next":
             if (page.next()) {
-              page = computerDBService.getPagedList(page);
+              page = computerService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of computers : "
                   + page.getTotalNbElements());
@@ -136,7 +136,7 @@ public class OutputManagerCLI {
             break;
           case "p":
             if (page.previous()) {
-              page = computerDBService.getPagedList(page);
+              page = computerService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of computers : "
                   + page.getTotalNbElements());
@@ -147,7 +147,7 @@ public class OutputManagerCLI {
             break;
           case "previous":
             if (page.previous()) {
-              page = computerDBService.getPagedList(page);
+              page = computerService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of computers : "
                   + page.getTotalNbElements());
@@ -170,7 +170,7 @@ public class OutputManagerCLI {
   public static void showComputerList() {
     //Print computer list from DB
     List<ComputerDto> computersDto = new ArrayList<ComputerDto>();
-    computersDto = computerDBService.getAll();
+    computersDto = computerService.getAll();
     if (computersDto != null) {
       System.out.println("Here is a list of all the computers in the DB:\r\n");
       for (ComputerDto computerDto : computersDto) {
@@ -190,7 +190,7 @@ public class OutputManagerCLI {
     //Create a Page
     Page<Company> page = new Page<Company>();
     //Get the first Page of computers from the database
-    page = companyDBService.getPagedList(page);
+    page = companyService.getPagedList(page);
     //Show the content of the page
     System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
         + " / Total number of companies : " + page.getTotalNbElements());
@@ -212,7 +212,7 @@ public class OutputManagerCLI {
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || "".equals(userInput)) {
         if (page.next()) {
-          page = companyDBService.getPagedList(page);
+          page = companyService.getPagedList(page);
           System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
               + " / Total number of companies : " + page.getTotalNbElements());
           page.getList().forEach(System.out::println);
@@ -225,7 +225,7 @@ public class OutputManagerCLI {
           System.out.println("Non valid page number.");
         } else {
           page.setPageIndex(index);
-          page = companyDBService.getPagedList(page);
+          page = companyService.getPagedList(page);
           System.out.println("Page " + page.getPageIndex() + " out of " + page.getTotalNbPages()
               + " / Total number of companies : " + page.getTotalNbElements());
           page.getList().forEach(System.out::println);
@@ -240,7 +240,7 @@ public class OutputManagerCLI {
             return;
           case "n":
             if (page.next()) {
-              page = companyDBService.getPagedList(page);
+              page = companyService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of companies : "
                   + page.getTotalNbElements());
@@ -251,7 +251,7 @@ public class OutputManagerCLI {
             break;
           case "next":
             if (page.next()) {
-              page = companyDBService.getPagedList(page);
+              page = companyService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of companies : "
                   + page.getTotalNbElements());
@@ -262,7 +262,7 @@ public class OutputManagerCLI {
             break;
           case "p":
             if (page.previous()) {
-              page = companyDBService.getPagedList(page);
+              page = companyService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of companies : "
                   + page.getTotalNbElements());
@@ -273,7 +273,7 @@ public class OutputManagerCLI {
             break;
           case "previous":
             if (page.previous()) {
-              page = companyDBService.getPagedList(page);
+              page = companyService.getPagedList(page);
               System.out.println("Page " + page.getPageIndex() + " out of "
                   + page.getTotalNbPages() + " / Total number of companies : "
                   + page.getTotalNbElements());
@@ -296,7 +296,7 @@ public class OutputManagerCLI {
   public static void showCompanyList() {
     //Print company list from DB
     List<Company> companies = new ArrayList<Company>();
-    companies = companyDBService.getAll();
+    companies = companyService.getAll();
     if (companies != null) {
       System.out.println("Here is a list of all the companies in the DB:\r\n");
       for (Company company : companies) {
@@ -315,7 +315,7 @@ public class OutputManagerCLI {
     //Print the details of the computer with id=idS
 
     if (StringValidation.isPositiveLong(idS)) {
-      ComputerDto computerDto = computerDBService.getById(new Long(idS));
+      ComputerDto computerDto = computerService.getById(new Long(idS));
       if (computerDto == null) {
         System.out.println("MySQL Error: computer not found.\r\n");
       } else {
@@ -334,7 +334,7 @@ public class OutputManagerCLI {
    */
   public static void showAddResult(String[] params) {
     ComputerDto computerDto = null;
-    computerDto = computerDBService.addByString(params);
+    computerDto = computerService.addByString(params);
     if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
     } else {
@@ -348,7 +348,7 @@ public class OutputManagerCLI {
    * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
    */
   public static void showAddResult(Computer computer) {
-    ComputerDto computerDto = computerDBService.addByComputer(computer);
+    ComputerDto computerDto = computerService.addByComputer(computer);
     if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
     } else {
@@ -363,7 +363,7 @@ public class OutputManagerCLI {
    * All the attributes of the updated computer gets changed.
    */
   public static void showUpdateResult(String[] params) {
-    ComputerDto computerDto = computerDBService.updateByString(params);
+    ComputerDto computerDto = computerService.updateByString(params);
     if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
     } else {
@@ -377,7 +377,7 @@ public class OutputManagerCLI {
    * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
    */
   public static void showUpdateResult(Computer computer) {
-    ComputerDto computerDto = computerDBService.updateByComputer(computer);
+    ComputerDto computerDto = computerService.updateByComputer(computer);
     if (computerDto == null) {
       System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
     } else {
@@ -393,7 +393,7 @@ public class OutputManagerCLI {
   public static void showRemoveComputerResult(String idS) {
     //Print the details of the computer with id=idS
     if (StringValidation.isPositiveLong(idS)) {
-      ComputerDto computerDto = computerDBService.removeById(new Long(idS));
+      ComputerDto computerDto = computerService.removeById(new Long(idS));
       if (computerDto == null) {
         System.out.println("MySQL Error: computer could not be removed from DB.\r\n");
       } else {
@@ -412,7 +412,7 @@ public class OutputManagerCLI {
   public static void showRemoveCompanyResult(String idS) {
     //Print the details of the computer with id=idS
     if (StringValidation.isPositiveLong(idS)) {
-      if (companyDBService.removeById(new Long(idS))) {
+      if (companyService.removeById(new Long(idS))) {
         System.out
             .println("Your company and the attached computers were successfully removed from the DB.");
       } else {

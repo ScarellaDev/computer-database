@@ -163,11 +163,12 @@ public class StringValidation {
    * @return true if the dateSLate is later than the dateSOld, false otherwise.
    */
   public static boolean isLaterDate(final String dateSOld, final String dateSLate) {
-    if (dateSLate == null) {
-      return false;
-    }
-    if (dateSOld == null) {
+    if (dateSOld == null || dateSOld.isEmpty()) {
       return true;
+    }
+
+    if (dateSLate == null || dateSLate.isEmpty()) {
+      return false;
     }
 
     if (new Integer(dateSLate.substring(0, 4)) > new Integer(dateSOld.substring(0, 4))) {

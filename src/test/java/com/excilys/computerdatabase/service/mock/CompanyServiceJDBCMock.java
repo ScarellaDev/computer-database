@@ -2,25 +2,28 @@ package com.excilys.computerdatabase.service.mock;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.ICompanyDBService;
+import com.excilys.computerdatabase.service.ICompanyService;
 
 /**
 * Mock standard Service implementation to manage Company objects.
 *
 * @author Jeremy SCARELLA
 */
-public class CompanyServiceMock implements ICompanyDBService {
+public class CompanyServiceJDBCMock implements ICompanyService {
 
   /*
    * CONNECTION_MANAGER
    */
-  private static final ConnectionManager CM = ConnectionManager.INSTANCE;
+  private static final ConnectionManager CM     = ConnectionManager.INSTANCE;
 
   /*
   * Instance of ICompanyDao
@@ -33,9 +36,14 @@ public class CompanyServiceMock implements ICompanyDBService {
   private IComputerDao                   computerDao;
 
   /*
-   * Instance of CompanyServiceMock
+   * LOGGER
    */
-  public CompanyServiceMock(ICompanyDao companyDao, IComputerDao computerDao) {
+  private static final Logger            LOGGER = LoggerFactory.getLogger(CompanyServiceJDBCMock.class);
+
+  /*
+   * Instance of CompanyServiceJDBCMock
+   */
+  public CompanyServiceJDBCMock(ICompanyDao companyDao, IComputerDao computerDao) {
     this.companyDao = companyDao;
     this.computerDao = computerDao;
   }
@@ -45,18 +53,32 @@ public class CompanyServiceMock implements ICompanyDBService {
    * @param id : id of the company in the database.
    * @return The company that was found or null if there is no company for this id.
    */
-  @Override
   public Company getById(Long id) {
-    return companyDao.getById(id);
+    Company company = null;
+    try {
+      company = companyDao.getById(id);
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getById()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return company;
   }
 
   /**
    * Get the List of all the companies in the database.
    * @return List of all the companies in the database.
    */
-  @Override
   public List<Company> getAll() {
-    return companyDao.getAll();
+    List<Company> companies = null;
+    try {
+      companies = companyDao.getAll();
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getAll()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return companies;
   }
 
   /**
@@ -65,15 +87,16 @@ public class CompanyServiceMock implements ICompanyDBService {
    * @return true if DELETE query was successful
    */
   public Boolean removeById(Long id) {
+    CM.startTransaction();
     try {
-      CM.startTransactionConnection();
       computerDao.removeByCompanyId(id);
       companyDao.removeById(id);
-      CM.commitTransactionConnection();
+      CM.commit();
     } catch (PersistenceException e) {
-
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
     } finally {
-      CM.closeTransactionConnection();
+      CM.closeConnection();
     }
     return true;
   }
@@ -83,8 +106,15 @@ public class CompanyServiceMock implements ICompanyDBService {
    * @param page : a page containing the pageIndex and the max number of elements the page can have
    * @return A Page instance containing a sublist of companies
    */
-  @Override
   public Page<Company> getPagedList(final Page<Company> page) {
-    return companyDao.getPagedList(page);
+    Page<Company> newPage = null;
+    try {
+      newPage = companyDao.getPagedList(page);
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getPagedList()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return newPage;
   }
 }

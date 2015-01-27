@@ -9,32 +9,39 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
+import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.IComputerDBService;
+import com.excilys.computerdatabase.service.IComputerService;
 
 /**
 * Mock standard Service implementation to manage Computer objects.
 *
 * @author Jeremy SCARELLA
 */
-public class ComputerServiceMock implements IComputerDBService {
+public class ComputerServiceJDBCMock implements IComputerService {
+
+  /*
+   * CONNECTION_MANAGER
+   */
+  private static final ConnectionManager CM = ConnectionManager.INSTANCE;
 
   /*
   * Instance of IComputerDao
   */
-  private IComputerDao computerDao;
+  private IComputerDao                   computerDao;
 
   /*
-   * Instance of ComputerServiceMock
+   * Instance of ComputerServiceJDBCMock
    */
-  public ComputerServiceMock(IComputerDao computerDao) {
+  public ComputerServiceJDBCMock(IComputerDao computerDao) {
     this.computerDao = computerDao;
   }
 
   /*
    * LOGGER
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerServiceMock.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerServiceJDBCMock.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -42,7 +49,14 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return The computer that was found or null if there is no computer for this id.
    */
   public ComputerDto getById(Long id) {
-    Computer computer = computerDao.getById(id);
+    Computer computer = null;
+    try {
+      computer = computerDao.getById(id);
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getById()", e);
+    } finally {
+      CM.closeConnection();
+    }
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -51,7 +65,14 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return List of all the computers in the database.
    */
   public List<ComputerDto> getAll() {
-    List<Computer> computers = computerDao.getAll();
+    List<Computer> computers = null;
+    try {
+      computers = computerDao.getAll();
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getAll()", e);
+    } finally {
+      CM.closeConnection();
+    }
     return ComputerDtoConverter.toDto(computers);
   }
 
@@ -62,7 +83,17 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   public ComputerDto addByString(String[] params) {
-    Computer computer = computerDao.addByString(params);
+    Computer computer = null;
+    CM.startTransaction();
+    try {
+      computer = computerDao.addByString(params);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -72,8 +103,18 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   public ComputerDto addByComputer(Computer computer) {
-    computer = computerDao.addByComputer(computer);
-    return ComputerDtoConverter.toDto(computer);
+    Computer newComputer = null;
+    CM.startTransaction();
+    try {
+      newComputer = computerDao.addByComputer(computer);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return ComputerDtoConverter.toDto(newComputer);
   }
 
   /**
@@ -83,7 +124,17 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   public ComputerDto updateByString(String[] params) {
-    Computer computer = computerDao.updateByString(params);
+    Computer computer = null;
+    CM.startTransaction();
+    try {
+      computer = computerDao.updateByString(params);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -93,8 +144,18 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   public ComputerDto updateByComputer(Computer computer) {
-    computer = computerDao.updateByComputer(computer);
-    return ComputerDtoConverter.toDto(computer);
+    Computer newComputer = null;
+    CM.startTransaction();
+    try {
+      newComputer = computerDao.updateByComputer(computer);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return ComputerDtoConverter.toDto(newComputer);
   }
 
   /**
@@ -103,7 +164,17 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   public ComputerDto removeById(Long id) {
-    Computer computer = computerDao.removeById(id);
+    Computer computer = null;
+    CM.startTransaction();
+    try {
+      computer = computerDao.removeById(id);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
     return ComputerDtoConverter.toDto(computer);
   }
 
@@ -112,7 +183,16 @@ public class ComputerServiceMock implements IComputerDBService {
    * @param idList : the list of ids of the computers to remove.
    */
   public void removeByIdList(List<Long> idList) {
-    computerDao.removeByIdList(idList);
+    CM.startTransaction();
+    try {
+      computerDao.removeByIdList(idList);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
   }
 
   /**
@@ -121,8 +201,18 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   public ComputerDto removeByComputer(Computer computer) {
-    computer = computerDao.removeByComputer(computer);
-    return ComputerDtoConverter.toDto(computer);
+    Computer newComputer = null;
+    CM.startTransaction();
+    try {
+      newComputer = computerDao.removeByComputer(computer);
+      CM.commit();
+    } catch (PersistenceException e) {
+      CM.rollback();
+      LOGGER.warn("PersistenceException: during removeById()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return ComputerDtoConverter.toDto(newComputer);
   }
 
   /**
@@ -131,6 +221,14 @@ public class ComputerServiceMock implements IComputerDBService {
    * @return A Page instance containing a sublist of computers
    */
   public Page<ComputerDto> getPagedList(final Page<ComputerDto> page) {
-    return computerDao.getPagedList(page);
+    Page<ComputerDto> newPage = null;
+    try {
+      newPage = computerDao.getPagedList(page);
+    } catch (PersistenceException e) {
+      LOGGER.warn("PersistenceException: during getPagedList()", e);
+    } finally {
+      CM.closeConnection();
+    }
+    return newPage;
   }
 }

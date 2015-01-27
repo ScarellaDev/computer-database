@@ -84,7 +84,7 @@ public class ComputerDaoTest {
         .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
 
     CM.close(statement);
-    CM.close(connection);
+    CM.closeConnection();
   }
 
   /**
