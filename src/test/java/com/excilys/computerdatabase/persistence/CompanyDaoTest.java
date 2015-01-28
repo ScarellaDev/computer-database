@@ -122,30 +122,24 @@ public class CompanyDaoTest {
    */
   @Test
   public void delete() {
-    cm.startTransaction();
     cm.getConnection();
-    companyDao.removeById(2L);
-    cm.commit();
+    companyDao.removeById(2L);;
     cm.closeConnection();
     assertNull(companyDao.getById(2L));
   }
 
   @Test
   public void deleteInvalidId() {
-    cm.startTransaction();
     cm.getConnection();
     companyDao.removeById(-1L);
-    cm.commit();
     cm.closeConnection();
     assertEquals(list, companyDao.getAll());
   }
 
   @Test(expected = PersistenceException.class)
   public void deleteComputerLeft() {
-    cm.startTransaction();
     cm.getConnection();
     companyDao.removeById(1L);
-    cm.commit();
     cm.closeConnection();
   }
 }

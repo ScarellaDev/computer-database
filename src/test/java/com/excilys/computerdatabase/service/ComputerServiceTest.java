@@ -30,7 +30,6 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 
 /**
  * Test class for the ComputerService
@@ -41,17 +40,17 @@ import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 public class ComputerServiceTest {
 
   @InjectMocks
-  ComputerServiceJDBC computerService;
-  Page<ComputerDto>   page;
-  Page<ComputerDto>   pageReturned;
-  Page<ComputerDto>   wrongPNumber;
-  Page<ComputerDto>   wrongRPP;
+  IComputerService  computerService;
+  Page<ComputerDto> page;
+  Page<ComputerDto> pageReturned;
+  Page<ComputerDto> wrongPNumber;
+  Page<ComputerDto> wrongRPP;
 
-  IComputerDao        computerDao;
-  List<Computer>      list;
-  Company             c1;
-  Company             c2;
-  Computer            computer;
+  IComputerDao      computerDao;
+  List<Computer>    list;
+  Company           c1;
+  Company           c2;
+  Computer          computer;
 
   @Before
   public void init() {

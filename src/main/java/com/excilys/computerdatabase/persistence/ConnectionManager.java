@@ -33,9 +33,9 @@ public class ConnectionManager {
   private ThreadLocal<Connection> threadLocalConnection = null;
 
   /*
-   * Logger
+   * LOGGER
    */
-  private Logger                  logger                = LoggerFactory
+  private static final Logger     LOGGER                = LoggerFactory
                                                             .getLogger(ConnectionManager.class);
 
   /**
@@ -58,26 +58,11 @@ public class ConnectionManager {
       try {
         threadLocalConnection.set(mgrDataSource.getConnection());
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't get database connection", e);
+        LOGGER.warn("SQLException: couldn't get database connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
     }
     return threadLocalConnection.get();
-  }
-
-  /**
-  * Retrieve a SQL connection to the database with setAutoCommit(false).
-  * @throws SQLException : if a database access error occurs.
-  */
-  public void startTransaction() {
-    try {
-      Connection connection = getConnection();
-      connection.setAutoCommit(false);
-      connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-    } catch (SQLException e) {
-      logger.error("SQLException: couldn't start transaction");
-      throw new PersistenceException(e.getMessage(), e);
-    }
   }
 
   /**
@@ -90,7 +75,7 @@ public class ConnectionManager {
         getConnection().close();
         threadLocalConnection.remove();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close Connection", e);
+        LOGGER.warn("SQLException: couldn't close Connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -105,7 +90,7 @@ public class ConnectionManager {
       try {
         statement.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close Statement");
+        LOGGER.warn("SQLException: couldn't close Statement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -120,7 +105,7 @@ public class ConnectionManager {
       try {
         pStatement.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close PreparedStatement");
+        LOGGER.warn("SQLException: couldn't close PreparedStatement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -135,35 +120,7 @@ public class ConnectionManager {
       try {
         results.close();
       } catch (SQLException e) {
-        logger.warn("SQLException: couldn't close ResultSet");
-        throw new PersistenceException(e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
-   * Execute commit on connection if not null.
-   */
-  public void commit() {
-    if (getConnection() != null) {
-      try {
-        getConnection().commit();
-      } catch (SQLException e) {
-        logger.warn("SQLException: couldn't commit the Connection");
-        rollback();
-      }
-    }
-  }
-
-  /**
-   * Execute rollback on connection if not null.
-   */
-  public void rollback() {
-    if (getConnection() != null) {
-      try {
-        getConnection().rollback();
-      } catch (SQLException e) {
-        logger.warn("SQLException: couldn't rollback the Connection");
+        LOGGER.warn("SQLException: couldn't close ResultSet");
         throw new PersistenceException(e.getMessage(), e);
       }
     }

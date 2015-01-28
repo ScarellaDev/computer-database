@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
@@ -89,14 +90,13 @@ public class CompanyServiceJDBC implements ICompanyService {
    * @param id : id of the company to remove.
    * @return true if DELETE query was successful
    */
+  @Override
+  @Transactional
   public Boolean removeById(Long id) {
-    connectionManager.startTransaction();
     try {
       computerDao.removeByCompanyId(id);
       companyDao.removeById(id);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID FAIL");
     } finally {

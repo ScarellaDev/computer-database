@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
@@ -84,14 +85,12 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
+  @Transactional
   public ComputerDto addByComputer(Computer computer) {
     Computer newComputer = null;
-    connectionManager.startTransaction();
     try {
       newComputer = computerDao.addByComputer(computer);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during addByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
@@ -108,14 +107,12 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
+  @Transactional
   public ComputerDto updateByComputer(Computer computer) {
     Computer newComputer = null;
-    connectionManager.startTransaction();
     try {
       newComputer = computerDao.updateByComputer(computer);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during updateByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
@@ -132,14 +129,12 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param id : id of the computer to remove.
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
+  @Transactional
   public ComputerDto removeById(Long id) {
     Computer computer = null;
-    connectionManager.startTransaction();
     try {
       computer = computerDao.removeById(id);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL: "
           + ComputerDtoConverter.toDto(computer));
@@ -155,13 +150,11 @@ public class ComputerServiceJDBC implements IComputerService {
    * Remove a list of computers from the database using their ids.
    * @param idList : the list of ids of the computers to remove.
    */
+  @Transactional
   public void removeByIdList(List<Long> idList) {
-    connectionManager.startTransaction();
     try {
       computerDao.removeByIdList(idList);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeByIdList()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST FAIL");
     } finally {
@@ -175,14 +168,12 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param computer : instance of the computer that needs to be removed from the database. Must have an id at least. 
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
+  @Transactional
   public ComputerDto removeByComputer(Computer computer) {
     Computer newComputer = null;
-    connectionManager.startTransaction();
     try {
       newComputer = computerDao.removeByComputer(computer);
-      connectionManager.commit();
     } catch (PersistenceException e) {
-      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));

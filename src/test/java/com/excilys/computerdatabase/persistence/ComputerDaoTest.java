@@ -232,10 +232,8 @@ public class ComputerDaoTest {
 
   @Test
   public void DeleteCompanyInvalid() throws SQLException {
-    cm.startTransaction();
     cm.getConnection();
     computerDao.removeByCompanyId(-2L);
-    cm.commit();
     cm.closeConnection();
 
     assertEquals(list, computerDao.getAll());

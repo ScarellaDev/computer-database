@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
+import com.excilys.computerdatabase.service.IComputerService;
 
 /**
 * Controller managing HttpServletRequests on /deletecomputer URL
@@ -32,7 +32,7 @@ public class DeleteComputerController extends HttpServlet {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private ComputerServiceJDBC  computerServiceJDBC;
+  private IComputerService     computerServiceJDBC;
 
   /*
    * POSITIVE LONG PATTERN

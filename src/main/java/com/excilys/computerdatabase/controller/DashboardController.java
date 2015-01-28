@@ -14,7 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
+import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -27,13 +27,13 @@ import com.excilys.computerdatabase.validator.StringValidation;
 @WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
 
-  private static final long   serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
   /*
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private ComputerServiceJDBC computerServiceJDBC;
+  private IComputerService  computerServiceJDBC;
 
   /**
    * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one

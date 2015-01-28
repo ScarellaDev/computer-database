@@ -27,7 +27,6 @@ import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
 
 /**
  * Test class for the CompanyService
@@ -38,20 +37,20 @@ import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
 public class CompanyServiceTest {
 
   @InjectMocks
-  CompanyServiceJDBC companyService;
+  ICompanyService   companyService;
 
-  ICompanyDao        companyDao;
-  IComputerDao       computerDao;
-  ConnectionManager  connectionManager;
+  ICompanyDao       companyDao;
+  IComputerDao      computerDao;
+  ConnectionManager connectionManager;
 
-  Page<Company>      page;
-  Page<Company>      pageReturned;
-  Page<Company>      wrongPNumber;
-  Page<Company>      wrongRPP;
-  List<Computer>     computerList;
-  List<Company>      companyList;
-  Company            c1;
-  Company            c2;
+  Page<Company>     page;
+  Page<Company>     pageReturned;
+  Page<Company>     wrongPNumber;
+  Page<Company>     wrongRPP;
+  List<Computer>    computerList;
+  List<Company>     companyList;
+  Company           c1;
+  Company           c2;
 
   @Before
   public void init() {
