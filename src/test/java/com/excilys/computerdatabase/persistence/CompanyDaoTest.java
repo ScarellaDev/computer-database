@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
 
 /**
  * Test class for the CompanyDao
@@ -24,16 +24,17 @@ import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
  */
 public class CompanyDaoTest {
 
-  ICompanyDao   companyDao;
-  List<Company> list;
+  @Autowired
+  ICompanyDao       companyDao;
+  @Autowired
+  ConnectionManager cm;
+  List<Company>     list;
 
   @Before
   public void init() throws SQLException {
-    companyDao = new CompanyDaoSQL();
     list = new ArrayList<Company>();
     list.add(new Company(1L, "Apple Inc."));
     list.add(new Company(2L, "Thinking Machines"));
-    final ConnectionManager cm = new ConnectionManager();
     final Connection connection = cm.getConnection();
 
     final Statement stmt = connection.createStatement();
@@ -53,7 +54,7 @@ public class CompanyDaoTest {
 
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  1,'MacBook Pro 15.4 inch',null,null,1);");
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  2,'MacBook Pro','2006-01-10',null,1);");
-
+    cm.close(stmt);
     cm.closeConnection();
   }
 
@@ -121,7 +122,6 @@ public class CompanyDaoTest {
    */
   @Test
   public void delete() {
-    final ConnectionManager cm = new ConnectionManager();
     cm.startTransaction();
     cm.getConnection();
     companyDao.removeById(2L);
@@ -132,7 +132,6 @@ public class CompanyDaoTest {
 
   @Test
   public void deleteInvalidId() {
-    final ConnectionManager cm = new ConnectionManager();
     cm.startTransaction();
     cm.getConnection();
     companyDao.removeById(-1L);
@@ -143,7 +142,6 @@ public class CompanyDaoTest {
 
   @Test(expected = PersistenceException.class)
   public void deleteComputerLeft() {
-    final ConnectionManager cm = new ConnectionManager();
     cm.startTransaction();
     cm.getConnection();
     companyDao.removeById(1L);

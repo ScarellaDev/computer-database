@@ -63,17 +63,19 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 		</dependency>
-		<!-- /SPRING FRAMEWORK -->
-	
-		<!-- CONNECTION POOL -->
-		<!-- mysql-connector-java.jar -->
+		
+		<!-- spring-jdbc.jar -->
 		<dependency>
-			<groupId>com.jolbox</groupId>
-			<artifactId>bonecp</artifactId>
-			<version>${bonecp.version}</version>
-			<scope>compile</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
 		</dependency>
-		<!-- /CONNECTION POOL -->
+
+		<!-- spring-tx.jar -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+		<!-- /SPRING FRAMEWORK -->
 	
 		<!-- CONNECTOR -->
 		<!-- mysql-connector-java.jar -->

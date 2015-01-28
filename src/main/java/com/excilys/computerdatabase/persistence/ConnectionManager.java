@@ -6,16 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
 
 /**
 * Util class to create SQL database connections.
@@ -24,10 +21,11 @@ import com.jolbox.bonecp.BoneCPConfig;
 */
 @Component
 public class ConnectionManager {
+
   /*
-   * ConnectionPool
+   * Data Source Manager
    */
-  private BoneCP                  connectionPool        = null;
+  private DriverManagerDataSource mgrDataSource;
 
   /*
    * ThreadLocal<Connection>
@@ -40,50 +38,12 @@ public class ConnectionManager {
   private Logger                  logger                = LoggerFactory
                                                             .getLogger(ConnectionManager.class);
 
-  /*
-   * db.properties values
-   */
-  @Value("${DB_DRIVER}")
-  private String                  db_driver;
-  @Value("${DB_URL}")
-  private String                  db_url;
-  @Value("${DB_USERNAME}")
-  private String                  db_username;
-  @Value("${DB_PASSWORD}")
-  private String                  db_password;
-  @Value("${DB_MIN_CONNECTION_PER_PART}")
-  private int                     db_minConnection;
-  @Value("${DB_MAX_CONNECTION_PER_PART}")
-  private int                     db_maxConnection;
-  @Value("${DB_PARTITION_COUNT}")
-  private int                     db_nbPartition;
-
   /**
-  * Create the BoneCP with data from the database.properties file after it was created by Spring
+  * Initialise the ConnectionManager and the DataSource provided by Spring
   */
-  @PostConstruct
-  public void init() {
-    try {
-      // Load the Driver class
-      Class.forName(db_driver);
-    } catch (ClassNotFoundException e) {
-      throw new PersistenceException("ClassNotFoundException: MySQL JDBC driver not found", e);
-    }
-
-    final BoneCPConfig config = new BoneCPConfig();
-    config.setJdbcUrl(db_url);
-    config.setUser(db_username);
-    config.setPassword(db_password);
-    config.setMinConnectionsPerPartition(db_minConnection);
-    config.setMaxConnectionsPerPartition(db_maxConnection);
-    config.setPartitionCount(db_nbPartition);
-
-    try {
-      connectionPool = new BoneCP(config);
-    } catch (SQLException e) {
-      throw new PersistenceException("SQLException: error while creating the connection pool", e);
-    }
-
+  @Autowired
+  public ConnectionManager(DriverManagerDataSource mgrDataSource) {
+    this.mgrDataSource = mgrDataSource;
     threadLocalConnection = new ThreadLocal<Connection>();
   }
 
@@ -96,7 +56,7 @@ public class ConnectionManager {
     if (threadLocalConnection.get() == null) {
       // No connection available for current Thread
       try {
-        threadLocalConnection.set(connectionPool.getConnection());
+        threadLocalConnection.set(mgrDataSource.getConnection());
       } catch (SQLException e) {
         logger.warn("SQLException: couldn't get database connection", e);
         throw new PersistenceException(e.getMessage(), e);

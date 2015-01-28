@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
@@ -29,10 +30,13 @@ import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
  */
 public class ComputerDaoTest {
 
-  IComputerDao   computerDao;
-  List<Computer> list;
-  Company        apple    = new Company(1L, "Apple Inc.");
-  Company        thinking = new Company(2L, "Thinking Machines");
+  @Autowired
+  ConnectionManager cm;
+  @Autowired
+  IComputerDao      computerDao;
+  List<Computer>    list;
+  Company           apple    = new Company(1L, "Apple Inc.");
+  Company           thinking = new Company(2L, "Thinking Machines");
 
   @Before
   public void init() throws SQLException {
@@ -44,7 +48,6 @@ public class ComputerDaoTest {
     list.add(new Computer(3L, "CM-2a", null, null, thinking));
     list.add(new Computer(4L, "CM-200", null, null, thinking));
 
-    final ConnectionManager cm = new ConnectionManager();
     final Connection connection = cm.getConnection();
 
     final Statement stmt = connection.createStatement();
@@ -66,8 +69,9 @@ public class ComputerDaoTest {
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  2,'MacBook Pro','2006-01-10',null,1);");
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  3,'CM-2a',null,null,2);");
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  4,'CM-200',null,null,2);");
-    cm.closeConnection();
 
+    cm.close(stmt);
+    cm.closeConnection();
   }
 
   /*
@@ -228,7 +232,6 @@ public class ComputerDaoTest {
 
   @Test
   public void DeleteCompanyInvalid() throws SQLException {
-    final ConnectionManager cm = new ConnectionManager();
     cm.startTransaction();
     cm.getConnection();
     computerDao.removeByCompanyId(-2L);
