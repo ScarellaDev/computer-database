@@ -1,7 +1,9 @@
 package com.excilys.computerdatabase.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,12 +12,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.service.ICompanyService;
-import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
 import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
+import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Controller managing HttpServletRequests on /addcomputer URL
@@ -26,17 +31,28 @@ import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 @WebServlet("/addcomputer")
 public class AddComputerController extends HttpServlet {
 
-  private static final long       serialVersionUID = 1L;
+  private static final long   serialVersionUID = 1L;
 
   /*
-   * Instance of computerService
+   * Instance of ComputerServiceJDBC
    */
-  private static IComputerService computerService  = ComputerServiceJDBC.INSTANCE;
+  @Autowired
+  private ComputerServiceJDBC computerServiceJDBC;
 
   /*
-   * Instance of companyService
+   * Instance of CompanyServiceJDBC
    */
-  private static ICompanyService  companyService   = CompanyServiceJDBC.INSTANCE;
+  @Autowired
+  private CompanyServiceJDBC  companyServiceJDBC;
+
+  /**
+   * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
+   */
+  @Override
+  public void init() throws ServletException {
+    super.init();
+    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  }
 
   /**
    * Prints error messages
@@ -45,7 +61,7 @@ public class AddComputerController extends HttpServlet {
   protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
-    final List<Company> companies = companyService.getAll();
+    final List<Company> companies = companyServiceJDBC.getAll();
     httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
@@ -57,21 +73,30 @@ public class AddComputerController extends HttpServlet {
   }
 
   /**
-   * Add computer to database using HttpServletRequest params {name (required), introduced, discontinued, companyId}
+   * Add computer to database using HttpServletRequest params {name (httpRequired), introduced, discontinued, companyId}
    */
   @Override
   protected void doPost(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
-    final Computer computer = UtilControllerHttp.buildComputer(httpReq);
+    final Map<String, String> errorMap = new HashMap<String, String>();
 
-    if (computer != null) {
-      if (computerService.addByComputer(computer) != null) {
-        httpResp.sendRedirect("dashboard");
-      } else {
-        doGet(httpReq, httpResp);
-      }
+    final ComputerDto.Builder builder = ComputerDto.builder()
+        .name(httpReq.getParameter("name").trim())
+        .introduced(httpReq.getParameter("introduced").trim())
+        .discontinued(httpReq.getParameter("discontinued").trim());
+
+    if (StringValidation.isPositiveLong(httpReq.getParameter("companyId").trim())) {
+      builder.companyId(Long.valueOf(httpReq.getParameter("companyId").trim()));
+    }
+
+    final ComputerDto computerDto = builder.build();
+
+    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+      computerServiceJDBC.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      httpResp.sendRedirect("dashboard");
     } else {
+      httpReq.setAttribute("error", errorMap);
       doGet(httpReq, httpResp);
     }
   }

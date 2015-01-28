@@ -19,7 +19,9 @@ public class CommandLineInterface {
    * Start the CLI : infinite loop waiting for mainUserInput and executing the command matching the mainUserInput when received.
    */
   public void start() {
-    OutputManagerCLI.showMenu();
+    InputManagerCLI inputManagerCLI = new InputManagerCLI();
+    OutputManagerCLI outputManagerCLI = new OutputManagerCLI();
+    outputManagerCLI.showMenu();
     while (true) {
       mainUserInput = null;
       mainSc = new Scanner(System.in);
@@ -28,42 +30,42 @@ public class CommandLineInterface {
       if (mainUserInput.toLowerCase().startsWith("ls ")) {
         mainUserInput = mainUserInput.substring(3);
         if (mainUserInput.equals("computers")) {
-          OutputManagerCLI.showComputerPage();
+          outputManagerCLI.showComputerPage();
         } else if (mainUserInput.equals("companies")) {
-          OutputManagerCLI.showCompanyPage();
+          outputManagerCLI.showCompanyPage();
         } else {
           System.out.println("Non valid command. Please, try again.\r\n");
         }
       } else if (mainUserInput.toLowerCase().startsWith("3 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showComputer(mainUserInput);
+        outputManagerCLI.showComputer(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("show ")) {
         mainUserInput = mainUserInput.substring(5);
-        OutputManagerCLI.showComputer(mainUserInput);
+        outputManagerCLI.showComputer(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("4 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
+        outputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("add ")) {
         mainUserInput = mainUserInput.substring(4);
-        OutputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
+        outputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("5 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
+        outputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("update ")) {
         mainUserInput = mainUserInput.substring(7);
-        OutputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
+        outputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("6 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showRemoveComputerResult(mainUserInput);
+        outputManagerCLI.showRemoveComputerResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("remove computer ")) {
         mainUserInput = mainUserInput.substring(16);
-        OutputManagerCLI.showRemoveComputerResult(mainUserInput);
+        outputManagerCLI.showRemoveComputerResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("7 ")) {
         mainUserInput = mainUserInput.substring(2);
-        OutputManagerCLI.showRemoveCompanyResult(mainUserInput);
+        outputManagerCLI.showRemoveCompanyResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("remove company ")) {
         mainUserInput = mainUserInput.substring(15);
-        OutputManagerCLI.showRemoveCompanyResult(mainUserInput);
+        outputManagerCLI.showRemoveCompanyResult(mainUserInput);
       } else {
         Boolean help = false;
         if (mainUserInput.toLowerCase().startsWith("help ")) {
@@ -73,68 +75,68 @@ public class CommandLineInterface {
         switch (mainUserInput) {
           case "0":
             if (help) {
-              OutputManagerCLI.showHelp(0);
+              outputManagerCLI.showHelp(0);
             } else {
-              OutputManagerCLI.showMenu();
+              outputManagerCLI.showMenu();
             }
             break;
           case "1":
             if (help) {
-              OutputManagerCLI.showHelp(1);
+              outputManagerCLI.showHelp(1);
             } else {
-              OutputManagerCLI.showComputerPage();
+              outputManagerCLI.showComputerPage();
             }
             break;
           case "2":
             if (help) {
-              OutputManagerCLI.showHelp(2);
+              outputManagerCLI.showHelp(2);
             } else {
-              OutputManagerCLI.showCompanyPage();
+              outputManagerCLI.showCompanyPage();
             }
             break;
           case "3":
             if (help) {
-              OutputManagerCLI.showHelp(3);
+              outputManagerCLI.showHelp(3);
             } else {
-              InputManagerCLI.askParamsShow();
+              inputManagerCLI.askParamsShow();
             }
             break;
           case "4":
             if (help) {
-              OutputManagerCLI.showHelp(4);
+              outputManagerCLI.showHelp(4);
             } else {
-              InputManagerCLI.askParamsAdd();
+              inputManagerCLI.askParamsAdd();
             }
             break;
           case "5":
             if (help) {
-              OutputManagerCLI.showHelp(5);
+              outputManagerCLI.showHelp(5);
             } else {
-              InputManagerCLI.askParamsUpdate();
+              inputManagerCLI.askParamsUpdate();
             }
             break;
           case "6":
             if (help) {
-              OutputManagerCLI.showHelp(6);
+              outputManagerCLI.showHelp(6);
             } else {
-              InputManagerCLI.askParamsRemoveComputer();
+              inputManagerCLI.askParamsRemoveComputer();
             }
             break;
           case "7":
             if (help) {
-              OutputManagerCLI.showHelp(7);
+              outputManagerCLI.showHelp(7);
             } else {
-              InputManagerCLI.askParamsRemoveCompany();
+              inputManagerCLI.askParamsRemoveCompany();
             }
             break;
           case "menu":
-            OutputManagerCLI.showHelp(8);
+            outputManagerCLI.showHelp(8);
             break;
           case "ls":
             if (help) {
-              OutputManagerCLI.showHelp(9);
+              outputManagerCLI.showHelp(9);
             } else {
-              InputManagerCLI.askParamsLs();
+              inputManagerCLI.askParamsLs();
             }
             break;
           case "computers":
@@ -145,30 +147,30 @@ public class CommandLineInterface {
             break;
           case "show":
             if (help) {
-              OutputManagerCLI.showHelp(10);
+              outputManagerCLI.showHelp(10);
             } else {
-              InputManagerCLI.askParamsShow();
+              inputManagerCLI.askParamsShow();
             }
             break;
           case "add":
             if (help) {
-              OutputManagerCLI.showHelp(11);
+              outputManagerCLI.showHelp(11);
             } else {
-              InputManagerCLI.askParamsAdd();
+              inputManagerCLI.askParamsAdd();
             }
             break;
           case "update":
             if (help) {
-              OutputManagerCLI.showHelp(12);
+              outputManagerCLI.showHelp(12);
             } else {
-              InputManagerCLI.askParamsUpdate();
+              inputManagerCLI.askParamsUpdate();
             }
             break;
           case "remove":
             if (help) {
-              OutputManagerCLI.showHelp(13);
+              outputManagerCLI.showHelp(13);
             } else {
-              InputManagerCLI.askParamsRemove();
+              inputManagerCLI.askParamsRemove();
             }
             break;
           case "q":

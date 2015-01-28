@@ -155,34 +155,4 @@ public class StringValidation {
 
     return true;
   }
-
-  /**
-   * Check if a Date String represents a future date compared to the other.
-   * @param dateSOld : the String input Date that should be older.
-   * @param dateSLate : the String input Date that should be later.
-   * @return true if the dateSLate is later than the dateSOld, false otherwise.
-   */
-  public static boolean isLaterDate(final String dateSOld, final String dateSLate) {
-    if (dateSOld == null || dateSOld.isEmpty()) {
-      return true;
-    }
-
-    if (dateSLate == null || dateSLate.isEmpty()) {
-      return false;
-    }
-
-    if (new Integer(dateSLate.substring(0, 4)) > new Integer(dateSOld.substring(0, 4))) {
-      return true;
-    } else {
-      if (new Integer(dateSLate.substring(5, 7)) > new Integer(dateSOld.substring(5, 7))) {
-        return true;
-      } else {
-        if (new Integer(dateSLate.substring(8)) >= new Integer(dateSOld.substring(8))) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
 }

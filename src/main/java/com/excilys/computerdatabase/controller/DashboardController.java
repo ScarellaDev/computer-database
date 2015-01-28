@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
@@ -24,12 +26,23 @@ import com.excilys.computerdatabase.validator.StringValidation;
 */
 @WebServlet("/dashboard")
 public class DashboardController extends HttpServlet {
-  private static final long         serialVersionUID = 1L;
+
+  private static final long   serialVersionUID = 1L;
 
   /*
-   * Instance of computerService
+   * Instance of ComputerServiceJDBC
    */
-  private static IComputerService computerService  = ComputerServiceJDBC.INSTANCE;
+  @Autowired
+  private ComputerServiceJDBC computerServiceJDBC;
+
+  /**
+   * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
+   */
+  @Override
+  public void init() throws ServletException {
+    super.init();
+    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  }
 
   /**
    * Displays pages of computer lists from database using HttpServletRequest params {pageIndex, nbElementsPerPage}
@@ -87,7 +100,7 @@ public class DashboardController extends HttpServlet {
     }
 
     //Retrieve the list of computers to display
-    page = computerService.getPagedList(page);
+    page = computerServiceJDBC.getPagedList(page);
     httpReq.setAttribute("page", page);
 
     // Get the JSP dispatcher

@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyService;
-import com.excilys.computerdatabase.service.IComputerService;
-import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
-import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -17,15 +16,6 @@ import com.excilys.computerdatabase.validator.StringValidation;
 * @author Jeremy SCARELLA
 */
 public class InputManagerCLI {
-  /*
-   * Instance of computerService
-   */
-  private static IComputerService      computerService = ComputerServiceJDBC.INSTANCE;
-
-  /*
-   * Instance of companyService
-   */
-  private static ICompanyService       companyService  = CompanyServiceJDBC.INSTANCE;
 
   /*
    * Scanner sc : get the user input
@@ -37,13 +27,31 @@ public class InputManagerCLI {
   /*
    * Date FORMATTER : yyyy-MM-dd HH:mm:ss
    */
-  private static final DateTimeFormatter FORMATTER         = DateTimeFormatter
-                                                               .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final DateTimeFormatter FORMATTER = DateTimeFormatter
+                                                       .ofPattern("yyyy-MM-dd HH:mm:ss");
+
+  /**
+  * Instance of CompanyServiceJDBC for the access to the database
+  */
+  private ICompanyService                companyService;
+
+  /**
+   * Instance of OuputManagerCLI
+   */
+  private OutputManagerCLI               outputManagerCLI;
+
+  public InputManagerCLI() {
+    outputManagerCLI = new OutputManagerCLI();
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+        "applicationContext.xml");
+    companyService = (ICompanyService) context.getBean("companyServiceJDBC");
+    context.close();
+  }
 
   /**
    * Step by step input for the "ls" command.
    */
-  public static void askParamsLs() {
+  public void askParamsLs() {
     userInput = null;
     System.out
         .println("-> You entered the ls command, please enter the option you want to display:\r\n- 'computers'\r\n- 'companies'");
@@ -51,22 +59,22 @@ public class InputManagerCLI {
     userInput = sc.nextLine().trim().toLowerCase();
     switch (userInput) {
       case "computers":
-        OutputManagerCLI.showComputerPage();
+        outputManagerCLI.showComputerPage();
         break;
       case "ls computers":
-        OutputManagerCLI.showComputerPage();
+        outputManagerCLI.showComputerPage();
         break;
       case "1":
-        OutputManagerCLI.showComputerPage();
+        outputManagerCLI.showComputerPage();
         break;
       case "companies":
-        OutputManagerCLI.showCompanyPage();
+        outputManagerCLI.showCompanyPage();
         break;
       case "ls companies":
-        OutputManagerCLI.showCompanyPage();
+        outputManagerCLI.showCompanyPage();
         break;
       case "2":
-        OutputManagerCLI.showCompanyPage();
+        outputManagerCLI.showCompanyPage();
         break;
       default:
         System.out.println("Non valid command.\r\n-> ls command aborted");
@@ -77,7 +85,7 @@ public class InputManagerCLI {
   /**
    * Step by step input for the "show" command.
    */
-  public static void askParamsShow() {
+  public void askParamsShow() {
     System.out
         .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");;
     while (true) {
@@ -89,7 +97,7 @@ public class InputManagerCLI {
         return;
       } else {
         if (StringValidation.isPositiveLong(userInput)) {
-          OutputManagerCLI.showComputer(userInput);
+          outputManagerCLI.showComputer(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");
@@ -102,7 +110,7 @@ public class InputManagerCLI {
   /**
    * Step by step input for the "add" command.
    */
-  public static void askParamsAdd() {
+  public void askParamsAdd() {
     Computer.Builder builder = Computer.builder();
 
     //Get name
@@ -187,13 +195,13 @@ public class InputManagerCLI {
         }
       }
     }
-    OutputManagerCLI.showAddResult(builder.build());
+    outputManagerCLI.showAddResult(builder.build());
   }
 
   /**
    * Step by step input for the "update" command.
    */
-  public static void askParamsUpdate() {
+  public void askParamsUpdate() {
     Computer.Builder builder = Computer.builder();
 
     //Get id
@@ -299,13 +307,13 @@ public class InputManagerCLI {
         }
       }
     }
-    OutputManagerCLI.showUpdateResult(builder.build());
+    outputManagerCLI.showUpdateResult(builder.build());
   }
 
   /**
    * Step by step input for the "remove" command.
    */
-  public static void askParamsRemove() {
+  public void askParamsRemove() {
     userInput = null;
     System.out
         .println("-> You entered the remove command, please enter the option you want to display:\r\n- 'computer'\r\n- 'company'");
@@ -339,7 +347,7 @@ public class InputManagerCLI {
   /**
    * Step by step input for the "remove" command.
    */
-  public static void askParamsRemoveComputer() {
+  public void askParamsRemoveComputer() {
     System.out
         .println("-> You entered the remove computer command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");;
     while (true) {
@@ -351,7 +359,7 @@ public class InputManagerCLI {
         return;
       } else {
         if (StringValidation.isPositiveLong(userInput)) {
-          OutputManagerCLI.showRemoveComputerResult(userInput);
+          outputManagerCLI.showRemoveComputerResult(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");
@@ -364,7 +372,7 @@ public class InputManagerCLI {
   /**
    * Step by step input for the "remove" command.
    */
-  public static void askParamsRemoveCompany() {
+  public void askParamsRemoveCompany() {
     System.out
         .println("-> You entered the remove company command, please enter the id of the company you want to remove from the DB (or press enter to quit command):");;
     while (true) {
@@ -376,7 +384,7 @@ public class InputManagerCLI {
         return;
       } else {
         if (StringValidation.isPositiveLong(userInput)) {
-          OutputManagerCLI.showRemoveCompanyResult(userInput);
+          outputManagerCLI.showRemoveCompanyResult(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");

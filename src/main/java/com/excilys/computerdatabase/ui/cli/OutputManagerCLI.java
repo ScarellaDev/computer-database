@@ -1,17 +1,20 @@
 package com.excilys.computerdatabase.ui.cli;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
 import com.excilys.computerdatabase.service.IComputerService;
-import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
-import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
@@ -20,27 +23,36 @@ import com.excilys.computerdatabase.validator.StringValidation;
 * @author Jeremy SCARELLA
 */
 public class OutputManagerCLI {
-  /*
-   * Instance of computerService
-   */
-  private static IComputerService computerService = ComputerServiceJDBC.INSTANCE;
-
-  /*
-   * Instance of companyService
-   */
-  private static ICompanyService  companyService  = CompanyServiceJDBC.INSTANCE;
 
   /*
    * Scanner sc : get the user input
    * String userInput : save the user input
    */
-  private static Scanner          sc;
-  private static String           userInput;
+  private static Scanner   sc;
+  private static String    userInput;
+
+  /**
+  * Instance of ComputerServiceJDBC for the access to the database
+  */
+  private IComputerService computerService;
+
+  /**
+  * Instance of CompanyServiceJDBC for the access to the database
+  */
+  private ICompanyService  companyService;
+
+  public OutputManagerCLI() {
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+        "applicationContext.xml");
+    computerService = (IComputerService) context.getBean("computerServiceJDBC");
+    companyService = (ICompanyService) context.getBean("companyServiceJDBC");
+    context.close();
+  }
 
   /**
    * Display the main menu
    */
-  public static void showMenu() {
+  public void showMenu() {
     StringBuffer menu = new StringBuffer("* * * * * MENU * * * * *\r\n");
     menu.append("0. Show menu (cmd: 'menu')\r\n");
     menu.append("1. Show list of all computers (cmd: 'ls computers')\r\n");
@@ -58,7 +70,7 @@ public class OutputManagerCLI {
   /**
    * Display a page of twenty computers and allow navigation through pages.
    */
-  public static void showComputerPage() {
+  public void showComputerPage() {
     System.out.println("-> You entered the computer list navigation:");
     //Create a Page
     Page<ComputerDto> page = new Page<ComputerDto>();
@@ -195,7 +207,7 @@ public class OutputManagerCLI {
   /**
    * Display a list of all the computers in database.
    */
-  public static void showComputerList() {
+  public void showComputerList() {
     //Print computer list from DB
     List<ComputerDto> computersDto = new ArrayList<ComputerDto>();
     computersDto = computerService.getAll();
@@ -212,7 +224,7 @@ public class OutputManagerCLI {
   /**
    * Display a page of twenty computers and allow navigation through pages.
    */
-  public static void showCompanyPage() {
+  public void showCompanyPage() {
     System.out.println("-> You entered the company list navigation:");
 
     //Create a Page
@@ -349,7 +361,7 @@ public class OutputManagerCLI {
   /**
    * Display a list of all the companies in database.
    */
-  public static void showCompanyList() {
+  public void showCompanyList() {
     //Print company list from DB
     List<Company> companies = new ArrayList<Company>();
     companies = companyService.getAll();
@@ -367,7 +379,7 @@ public class OutputManagerCLI {
    * Display the details of a precise computer in the database.
    * @param idS : String representing the Long id of the selected computer.
    */
-  public static void showComputer(String idS) {
+  public void showComputer(String idS) {
     //Print the details of the computer with id=idS
 
     if (StringValidation.isPositiveLong(idS)) {
@@ -388,14 +400,52 @@ public class OutputManagerCLI {
    * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
    * Use the String "null" to skip a value.
    */
-  public static void showAddResult(String[] params) {
-    ComputerDto computerDto = null;
-    computerDto = computerService.addByString(params);
-    if (computerDto == null) {
-      System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+  public void showAddResult(String[] params) {
+    final Map<String, String> errorMap = new HashMap<String, String>();
+    final ComputerDto.Builder builder = ComputerDto.builder();
+    if (params.length > 0) {
+      if (!"null".equals(params[0].toLowerCase())) {
+        builder.name(params[0]);
+      }
+    }
+    if (params.length > 1) {
+      if (!"null".equals(params[1].toLowerCase())) {
+        builder.introduced(params[1]);
+      }
+    }
+    if (params.length > 2) {
+      if (!"null".equals(params[2].toLowerCase())) {
+        builder.discontinued(params[2]);
+      }
+    }
+    if (params.length > 3) {
+      if (!"null".equals(params[3].toLowerCase())) {
+        if (StringValidation.isPositiveLong(params[3])) {
+          Company company = companyService.getById(new Long(params[3]));
+          if (company != null) {
+            builder.companyId(company.getId());
+            builder.companyName(company.getName());
+          } else {
+            errorMap.put("eCompanyId", "Incorrect CompanyId: no existing Company with given Id");
+          }
+        }
+      }
+    }
+
+    ComputerDto computerDto = builder.build();
+
+    //Check computerDto
+    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+      ComputerDto newComputerDto = null;
+      newComputerDto = computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      if (newComputerDto == null) {
+        System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+      } else {
+        System.out.println("Your computer was successfully added to the DB :");
+        System.out.println(newComputerDto.toString());
+      }
     } else {
-      System.out.println("Your computer was successfully added to the DB :");
-      System.out.println(computerDto.toString());
+      System.out.println(errorMap.toString());
     }
   }
 
@@ -403,13 +453,20 @@ public class OutputManagerCLI {
    * Display the result of the "add" command.
    * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
    */
-  public static void showAddResult(Computer computer) {
-    ComputerDto computerDto = computerService.addByComputer(computer);
-    if (computerDto == null) {
-      System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+  public void showAddResult(Computer computer) {
+    //Check computerDto
+    final Map<String, String> errorMap = new HashMap<String, String>();
+    if (ComputerDtoConverter.validate(ComputerDtoConverter.toDto(computer), errorMap)) {
+      ComputerDto newComputerDto = null;
+      newComputerDto = computerService.addByComputer(computer);
+      if (newComputerDto == null) {
+        System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
+      } else {
+        System.out.println("Your computer was successfully added to the DB :");
+        System.out.println(newComputerDto.toString());
+      }
     } else {
-      System.out.println("Your computer was successfully added to the DB :");
-      System.out.println(computerDto.toString());
+      System.out.println(errorMap.toString());
     }
   }
 
@@ -418,13 +475,62 @@ public class OutputManagerCLI {
    * @param params : String table composed of "id" (mandatory), "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
    * All the attributes of the updated computer gets changed.
    */
-  public static void showUpdateResult(String[] params) {
-    ComputerDto computerDto = computerService.updateByString(params);
-    if (computerDto == null) {
-      System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+  public void showUpdateResult(String[] params) {
+    final Map<String, String> errorMap = new HashMap<String, String>();
+    final ComputerDto.Builder builder = ComputerDto.builder();
+    if (params.length > 0) {
+      if (StringValidation.isPositiveLong(params[0])) {
+        builder.id(new Long(params[0]));
+      } else {
+        errorMap.put("eId", "Incorrect Id: an id should be a positive integer");
+      }
+    }
+    if (params.length > 1) {
+      if (!"null".equals(params[1].toLowerCase())) {
+        builder.name(params[1]);
+      } else {
+        errorMap.put("eName", "Incorrect name");
+      }
+    }
+    if (params.length > 2) {
+      if (!"null".equals(params[2].toLowerCase())) {
+        builder.introduced(params[2]);
+      }
+    }
+    if (params.length > 3) {
+      if (!"null".equals(params[3].toLowerCase())) {
+        builder.discontinued(params[3]);
+      }
+    }
+    if (params.length > 4) {
+      if (!"null".equals(params[4].toLowerCase())) {
+        if (StringValidation.isPositiveLong(params[4])) {
+          Company company = companyService.getById(new Long(params[4]));
+          if (company != null) {
+            builder.companyId(company.getId());
+            builder.companyName(company.getName());
+          } else {
+            errorMap.put("eCompanyId", "Incorrect CompanyId: no existing Company with given Id");
+          }
+        }
+      }
+    }
+
+    ComputerDto computerDto = builder.build();
+
+    //Check computerDto
+    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+      ComputerDto newComputerDto = null;
+      newComputerDto = computerService.updateByComputer(ComputerDtoConverter
+          .toComputer(computerDto));
+      if (newComputerDto == null) {
+        System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+      } else {
+        System.out.println("Your computer was updated successfully in the DB :");
+        System.out.println(newComputerDto.toString());
+      }
     } else {
-      System.out.println("Your computer was updated successfully in the DB :");
-      System.out.println(computerDto.toString());
+      System.out.println(errorMap.toString());
     }
   }
 
@@ -432,13 +538,20 @@ public class OutputManagerCLI {
    * Display the result of the "update" command.
    * @param computer : instance of the computer that needs to be added to the database. Must have an id at least. 
    */
-  public static void showUpdateResult(Computer computer) {
-    ComputerDto computerDto = computerService.updateByComputer(computer);
-    if (computerDto == null) {
-      System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+  public void showUpdateResult(Computer computer) {
+    //Check computerDto
+    final Map<String, String> errorMap = new HashMap<String, String>();
+    if (ComputerDtoConverter.validate(ComputerDtoConverter.toDto(computer), errorMap)) {
+      ComputerDto newComputerDto = null;
+      newComputerDto = computerService.updateByComputer(computer);
+      if (newComputerDto == null) {
+        System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
+      } else {
+        System.out.println("Your computer was updated successfully in the DB :");
+        System.out.println(newComputerDto.toString());
+      }
     } else {
-      System.out.println("Your computer was updated successfully in the DB :");
-      System.out.println(computerDto.toString());
+      System.out.println(errorMap.toString());
     }
   }
 
@@ -446,7 +559,7 @@ public class OutputManagerCLI {
    * Display the result of the "remove computer" command.
    * @param idS : String representing the Long id of the computer to remove.
    */
-  public static void showRemoveComputerResult(String idS) {
+  public void showRemoveComputerResult(String idS) {
     //Print the details of the computer with id=idS
     if (StringValidation.isPositiveLong(idS)) {
       ComputerDto computerDto = computerService.removeById(new Long(idS));
@@ -465,7 +578,7 @@ public class OutputManagerCLI {
    * Display the result of the "remove company" command.
    * @param idS : String representing the Long id of the company to remove.
    */
-  public static void showRemoveCompanyResult(String idS) {
+  public void showRemoveCompanyResult(String idS) {
     //Print the details of the computer with id=idS
     if (StringValidation.isPositiveLong(idS)) {
       if (companyService.removeById(new Long(idS))) {
@@ -483,7 +596,7 @@ public class OutputManagerCLI {
    * Display the help for specific commands.
    * @param choice : the Integer corresponding to the selected command.
    */
-  public static void showHelp(int choice) {
+  public void showHelp(int choice) {
     switch (choice) {
       case 0:
         System.out

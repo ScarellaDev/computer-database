@@ -14,7 +14,8 @@ import org.junit.Test;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
-import com.excilys.computerdatabase.persistence.mock.CompanyDaoSQLMock;
+import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
 
 /**
  * Test class for the CompanyDao
@@ -22,89 +23,71 @@ import com.excilys.computerdatabase.persistence.mock.CompanyDaoSQLMock;
  * @author Jeremy SCARELLA
  */
 public class CompanyDaoTest {
-  /*
-   * Attributes
-   */
-  private ICompanyDao                    companyDao;
-  private List<Company>                  list;
-  private static final ConnectionManager CM = ConnectionManager.INSTANCE;
 
-  /**
-   * Test initialisation, creates two companies for testing and get a CompanyDaoSQLMock instance.
-   * @throws SQLException
-   */
+  ICompanyDao   companyDao;
+  List<Company> list;
+
   @Before
   public void init() throws SQLException {
-    companyDao = CompanyDaoSQLMock.INSTANCE;
+    companyDao = new CompanyDaoSQL();
     list = new ArrayList<Company>();
     list.add(new Company(1L, "Apple Inc."));
     list.add(new Company(2L, "Thinking Machines"));
+    final ConnectionManager cm = new ConnectionManager();
+    final Connection connection = cm.getConnection();
 
-    Connection connection = null;
-    Statement statement = null;
-    connection = CM.getConnection();
-    statement = connection.createStatement();
-    statement.execute("drop table if exists computer;");
-    statement.execute("drop table if exists company;");
+    final Statement stmt = connection.createStatement();
+    stmt.execute("drop table if exists computer;");
+    stmt.execute("drop table if exists company;");
+    stmt.execute("create table company (id bigint not null auto_increment, name varchar(255), "
+        + "constraint pk_company primary key (id));");
+    stmt.execute("create table computer (id bigint not null auto_increment,name varchar(255), "
+        + "introduced timestamp NULL, discontinued timestamp NULL,"
+        + "company_id bigint default NULL," + "constraint pk_computer primary key (id));");
+    stmt.execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
+        + " references company (id) on delete restrict on update restrict;");
+    stmt.execute("create index ix_computer_company_1 on computer (company_id);");
 
-    statement
-        .execute("create table company (id bigint not null auto_increment, name varchar(255), "
-            + "constraint pk_company primary key (id));");
-    statement
-        .execute("create table computer (id bigint not null auto_increment,name varchar(255), "
-            + "introduced timestamp NULL, discontinued timestamp NULL,"
-            + "company_id bigint default NULL," + "constraint pk_computer primary key (id));");
-    statement
-        .execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
-            + " references company (id) on delete restrict on update restrict;");
-    statement.execute("create index ix_computer_company_1 on computer (company_id);");
+    stmt.execute("insert into company (id,name) values (  1,'Apple Inc.');");
+    stmt.execute("insert into company (id,name) values (  2,'Thinking Machines');");
 
-    statement.execute("insert into company (id,name) values ( 1,'Apple Inc.');");
-    statement.execute("insert into company (id,name) values ( 2,'Thinking Machines');");
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  1,'MacBook Pro 15.4 inch',null,null,1);");
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  2,'MacBook Pro','2006-01-10',null,1);");
 
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 1,'MacBook Pro 15.4 inch',null,null,1);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 2,'MacBook Pro','2006-01-10',null,1);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 3,'CM-2a',null,null,2);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
-
-    CM.close(statement);
-    CM.closeConnection();
+    cm.closeConnection();
   }
 
-  /**
-   * Test the getById method. 
-   * @result Check if the companies retrieved from database are correct and that method returns null if no company found.
+  /*
+   * Tests of the getAll function
    */
   @Test
-  public void testGetById() {
-    assertEquals(new Company(1L, "Apple Inc."), companyDao.getById(1L));
-    assertEquals(new Company(2L, "Thinking Machines"), companyDao.getById(2L));
-    assertNull(companyDao.getById(-1L));
-    assertNull(companyDao.getById(3L));
-  }
-
-  /**
-   * Test the getAll method. 
-   * @result Check if the companies retrieved from database are correct.
-   */
-  @Test
-  public void testGetAll() {
+  public void getAll() {
     assertEquals(list, companyDao.getAll());
   }
 
-  /**
-   * Test the getPagedList method. 
-   * @result Check if the page retrieved from database is correct.
+  /*
+   * Tests of the getById function
+   */
+  @Test
+  public void getById() {
+    assertEquals(new Company(1L, "Apple Inc."), companyDao.getById(1L));
+  }
+
+  @Test
+  public void getByIdInvalid() {
+    assertNull(companyDao.getById(3L));
+    assertNull(companyDao.getById(-1L));
+  }
+
+  /*
+   * Tests of the getPagedList function
    */
   @Test
   public void getPagedList() {
     final Page<Company> page = new Page<Company>();
     page.setNbElementsPerPage(20);
     page.setPageIndex(1);
+
     final Page<Company> pageReturned = new Page<Company>();
     pageReturned.setNbElementsPerPage(20);
     pageReturned.setPageIndex(1);
@@ -112,5 +95,59 @@ public class CompanyDaoTest {
     pageReturned.setTotalNbPages(1);
     pageReturned.setList(list);
     assertEquals(pageReturned, companyDao.getPagedList(page));
+  }
+
+  @Test
+  public void getPagedListNull() {
+    assertNull(companyDao.getPagedList(null));
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidPageNumber() {
+    final Page<Company> page = new Page<Company>();
+    page.setPageIndex(-1);
+    companyDao.getPagedList(page);
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidResultsPerPage() {
+    final Page<Company> page = new Page<Company>();
+    page.setNbElementsPerPage(-1);
+    companyDao.getPagedList(page);
+  }
+
+  /*
+   * Tests of the delete function
+   */
+  @Test
+  public void delete() {
+    final ConnectionManager cm = new ConnectionManager();
+    cm.startTransaction();
+    cm.getConnection();
+    companyDao.removeById(2L);
+    cm.commit();
+    cm.closeConnection();
+    assertNull(companyDao.getById(2L));
+  }
+
+  @Test
+  public void deleteInvalidId() {
+    final ConnectionManager cm = new ConnectionManager();
+    cm.startTransaction();
+    cm.getConnection();
+    companyDao.removeById(-1L);
+    cm.commit();
+    cm.closeConnection();
+    assertEquals(list, companyDao.getAll());
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void deleteComputerLeft() {
+    final ConnectionManager cm = new ConnectionManager();
+    cm.startTransaction();
+    cm.getConnection();
+    companyDao.removeById(1L);
+    cm.commit();
+    cm.closeConnection();
   }
 }

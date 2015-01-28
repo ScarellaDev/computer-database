@@ -19,7 +19,8 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
-import com.excilys.computerdatabase.persistence.mock.ComputerDaoSQLMock;
+import com.excilys.computerdatabase.exception.PersistenceException;
+import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 
 /**
  * Test class for the ComputerDao
@@ -27,182 +28,226 @@ import com.excilys.computerdatabase.persistence.mock.ComputerDaoSQLMock;
  * @author Jeremy SCARELLA
  */
 public class ComputerDaoTest {
-  /*
-   * Attributes
-   */
-  private IComputerDao                   computerDao;
-  private List<Computer>                 listComputers;
-  private List<Company>                  listCompanies;
-  private static final ConnectionManager CM = ConnectionManager.INSTANCE;
 
-  /**
-   * Test initialisation, creates two companies and four computers for testing, get a ComputerDaoSQLMock instance.
-   * It also clears a mock DB and inserts the newly created computers in it. 
-   * @throws SQLException
-   */
+  IComputerDao   computerDao;
+  List<Computer> list;
+  Company        apple    = new Company(1L, "Apple Inc.");
+  Company        thinking = new Company(2L, "Thinking Machines");
+
   @Before
   public void init() throws SQLException {
-    listCompanies = new ArrayList<Company>();
-    listCompanies.add(new Company(1L, "Apple Inc."));
-    listCompanies.add(new Company(2L, "Thinking Machines"));
+    computerDao = new ComputerDaoSQL();
+    list = new ArrayList<Computer>();
+    list.add(new Computer(1L, "MacBook Pro 15.4 inch", null, null, apple));
+    list.add(new Computer(2L, "MacBook Pro", LocalDateTime.parse("2006-01-10 00:00:00"), null,
+        apple));
+    list.add(new Computer(3L, "CM-2a", null, null, thinking));
+    list.add(new Computer(4L, "CM-200", null, null, thinking));
 
-    computerDao = ComputerDaoSQLMock.INSTANCE;
-    listComputers = new ArrayList<Computer>();
-    listComputers.add(new Computer(1L, "MacBook Pro 15.4 inch", null, null, listCompanies.get(0)));
-    listComputers.add(new Computer(2L, "MacBook Pro", LocalDateTime.parse("2006-01-10T00:00:00"),
-        null, listCompanies.get(0)));
-    listComputers.add(new Computer(3L, "CM-2a", null, null, listCompanies.get(1)));
-    listComputers.add(new Computer(4L, "CM-5", LocalDateTime.parse("1991-01-01T00:00:00"), null,
-        listCompanies.get(1)));
+    final ConnectionManager cm = new ConnectionManager();
+    final Connection connection = cm.getConnection();
 
-    Connection connection = null;
-    Statement statement = null;
-    connection = CM.getConnection();
-    statement = connection.createStatement();
-    statement.execute("drop table if exists computer;");
-    statement.execute("drop table if exists company;");
-    statement
-        .execute("create table company (id bigint not null auto_increment, name varchar(255), "
-            + "constraint pk_company primary key (id));");
-    statement
-        .execute("create table computer (id bigint not null auto_increment,name varchar(255), "
-            + "introduced timestamp NULL, discontinued timestamp NULL,"
-            + "company_id bigint default NULL," + "constraint pk_computer primary key (id));");
-    statement
-        .execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
-            + " references company (id) on delete restrict on update restrict;");
-    statement.execute("create index ix_computer_company_1 on computer (company_id);");
-    statement.execute("insert into company (id,name) values ( 1,'Apple Inc.');");
-    statement.execute("insert into company (id,name) values ( 2,'Thinking Machines');");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 1,'MacBook Pro 15.4 inch',null,null,1);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 2,'MacBook Pro','2006-01-10',null,1);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 3,'CM-2a',null,null,2);");
-    statement
-        .execute("insert into computer (id,name,introduced,discontinued,company_id) values ( 4,'CM-5','1991-01-01',null,2);");
+    final Statement stmt = connection.createStatement();
+    stmt.execute("drop table if exists computer;");
+    stmt.execute("drop table if exists company;");
+    stmt.execute("create table company (id bigint not null auto_increment, name varchar(255), "
+        + "constraint pk_company primary key (id));");
+    stmt.execute("create table computer (id bigint not null auto_increment,name varchar(255), "
+        + "introduced timestamp NULL, discontinued timestamp NULL,"
+        + "company_id bigint default NULL," + "constraint pk_computer primary key (id));");
+    stmt.execute("alter table computer add constraint fk_computer_company_1 foreign key (company_id)"
+        + " references company (id) on delete restrict on update restrict;");
+    stmt.execute("create index ix_computer_company_1 on computer (company_id);");
 
-    CM.close(statement);
-    CM.closeConnection();
+    stmt.execute("insert into company (id,name) values (  1,'Apple Inc.');");
+    stmt.execute("insert into company (id,name) values (  2,'Thinking Machines');");
+
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  1,'MacBook Pro 15.4 inch',null,null,1);");
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  2,'MacBook Pro','2006-01-10',null,1);");
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  3,'CM-2a',null,null,2);");
+    stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  4,'CM-200',null,null,2);");
+    cm.closeConnection();
+
   }
 
-  /**
-   * Test the getById method. 
-   * @result Check if the computers retrieved from database are correct and that method returns null if no computer found.
+  /*
+   * Tests of the getAll function
    */
   @Test
-  public void testGetById() {
-    assertEquals(listComputers.get(0), computerDao.getById(1L));
-    assertEquals(listComputers.get(1), computerDao.getById(2L));
+  public void getAll() {
+    assertEquals(list, computerDao.getAll());
+  }
+
+  /*
+   * Tests of the getById function
+   */
+  @Test
+  public void getByIdValid() {
+    assertEquals(list.get(0), computerDao.getById(1L));
+  }
+
+  public void getByIdInvalid() {
+    assertNull(computerDao.getById(5L));
     assertNull(computerDao.getById(0L));
     assertNull(computerDao.getById(-1L));
-    assertNull(computerDao.getById(5L));
   }
 
-  /**
-   * Test the getAll method. 
-   * @result Check if the companies retrieved from database are correct.
-   */
-  @Test
-  public void testGetAll() {
-    assertEquals(listComputers, computerDao.getAll());
-  }
-
-  /**
-   * Test the addByString method.
-   * @result Check if the INSERT SQL statement is executed properly using a String table as parameter
-   */
-  @Test
-  public void testAddByString() {
-    Computer computer = Computer.builder().name("CM-6")
-        .introduced(LocalDateTime.parse("1992-01-01T00:00:00")).company(listCompanies.get(1))
-        .build();
-
-    String[] params = "CM-6 1992-01-01 null 2".split("\\s+");
-    computerDao.addByString(params);
-    computer.setId(5L);
-    assertEquals(computer, computerDao.getById(5L));
-  }
-
-  /**
-   * Test the addByComputer method.
-   * @result Check if the INSERT SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void testAddByComputer() {
-    Computer computer = Computer.builder().name("CM-6")
-        .introduced(LocalDateTime.parse("1992-01-01T00:00:00")).company(listCompanies.get(1))
-        .build();
-    computerDao.addByComputer(computer);
-    computer.setId(5L);
-    assertEquals(computer, computerDao.getById(5L));
-  }
-
-  /**
-   * Test the updateByString method.
-   * @result Check if the UPDATE SQL statement is executed properly using a String table as parameter
-   */
-  @Test
-  public void updateByString() {
-    Computer computer = Computer.builder().id(4L).name("CM-6")
-        .introduced(LocalDateTime.parse("1993-01-01T00:00:00")).build();
-
-    String[] params = ("4 CM-6 1993-01-01 null null").split("\\s+");
-    computerDao.updateByString(params);
-    assertEquals(computer, computerDao.getById(4L));
-  }
-
-  /**
-   * Test the updateByComputer method.
-   * @result Check if the UPDATE SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void updateByComputer() {
-    Computer computer = Computer.builder().id(4L).name("CM-6")
-        .introduced(LocalDateTime.parse("1993-01-01T00:00:00")).build();
-    computerDao.updateByComputer(computer);
-    assertEquals(computer, computerDao.getById(4L));
-  }
-
-  /**
-   * Test the removeById method.
-   * @result Check if the DELETE SQL statement is executed properly using a Long id as parameter
-   */
-  @Test
-  public void removeById() {
-    assertNotNull(computerDao.getById(4L));
-    computerDao.removeById(4L);
-    assertNull(computerDao.getById(4L));
-  }
-
-  /**
-   * Test the removeByComputer method.
-   * @result Check if the DELETE SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void removeByComputer() {
-    Computer computer = Computer.builder().id(4L).build();
-    assertNotNull(computerDao.getById(4L));
-    computerDao.removeByComputer(computer);
-    assertNull(computerDao.getById(4L));
-  }
-
-  /**
-   * Test the getPagedList method. 
-   * @result Check if the page retrieved from database is correct.
+  /*
+   * Tests of the getPagedList function
    */
   @Test
   public void getPagedList() {
     final Page<ComputerDto> page = new Page<ComputerDto>();
     page.setNbElementsPerPage(20);
     page.setPageIndex(1);
+
     final Page<ComputerDto> pageReturned = new Page<ComputerDto>();
     pageReturned.setNbElementsPerPage(20);
     pageReturned.setPageIndex(1);
-    pageReturned.setTotalNbElements(4);
+    pageReturned.setTotalNbElements(list.size());
     pageReturned.setTotalNbPages(1);
-    pageReturned.setList(ComputerDtoConverter.toDto(listComputers));
+    pageReturned.setList(ComputerDtoConverter.toDto(list));
+
     assertEquals(pageReturned, computerDao.getPagedList(page));
+  }
+
+  @Test
+  public void getPagedListNull() {
+    assertNull(computerDao.getPagedList(null));
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidOrder() {
+    final Page<ComputerDto> page = new Page<ComputerDto>();
+    page.setOrder("x");
+    computerDao.getPagedList(page);
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidPageNumber() {
+    final Page<ComputerDto> page = new Page<ComputerDto>();
+    page.setPageIndex(-1);
+    computerDao.getPagedList(page);
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidResultsPerPage() {
+    final Page<ComputerDto> page = new Page<ComputerDto>();
+    page.setNbElementsPerPage(-1);
+    computerDao.getPagedList(page);
+  }
+
+  /*
+   * Tests of the create function
+   */
+  @Test
+  public void create() {
+    final Computer computer = Computer.builder().name("test")
+        .introduced(LocalDateTime.parse("1993-01-10 00:00:00")).company(apple).build();
+
+    computerDao.addByComputer(computer);
+    computer.setId(5L);
+    assertEquals(computer, computerDao.getById(5L));
+  }
+
+  @Test
+  public void createNull() {
+    computerDao.addByComputer(null);
+    assertEquals(list, computerDao.getAll());
+  }
+
+  @Test
+  public void createEmptyComputer() {
+    computerDao.addByComputer(new Computer());
+    assertEquals(list, computerDao.getAll());
+  }
+
+  /*
+   * Tests of the update function
+   */
+  @Test
+  public void update() {
+    final Computer computer = Computer.builder().id(2L).name("test")
+        .introduced(LocalDateTime.parse("1993-01-12 00:00:00")).build();
+    computerDao.updateByComputer(computer);
+    assertEquals(computer, computerDao.getById(2L));
+  }
+
+  @Test
+  public void updateNull() {
+    computerDao.updateByComputer(null);
+    assertEquals(list, computerDao.getAll());
+  }
+
+  @Test
+  public void updateInvalidId() {
+    final Computer computer = new Computer();
+    computer.setId(-1L);
+    computerDao.updateByComputer(computer);
+    assertEquals(list, computerDao.getAll());
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void updateInvalidCompanyId() {
+    final Computer computer = new Computer();
+    computer.setId(1L);
+    computer.setCompany(new Company(-1L, ""));
+    computerDao.updateByComputer(computer);
+  }
+
+  /*
+   * Tests of the delete function
+   */
+  @Test
+  public void delete() {
+    assertNotNull(computerDao.getById(2L));
+    computerDao.removeById(2L);
+    assertNull(computerDao.getById(2L));
+  }
+
+  @Test
+  public void deleteInvalidId() {
+    computerDao.removeById(-1L);
+    assertEquals(list, computerDao.getAll());
+  }
+
+  /*
+   * Tests of the deleteByCompanyId function
+   */
+  //  @Test
+  //  public void deleteByCompanyId() throws SQLException {
+  //    final ConnectionManager cm = new ConnectionManager();
+  //    cm.startTransaction();
+  //    cm.getConnection();
+  //    computerDao.removeByCompanyId(2L);
+  //    cm.commit();
+  //    cm.closeConnection();
+  //
+  //    assertTrue(computerDao.getByCompanyId(2L).isEmpty());
+  //  }
+
+  @Test
+  public void DeleteCompanyInvalid() throws SQLException {
+    final ConnectionManager cm = new ConnectionManager();
+    cm.startTransaction();
+    cm.getConnection();
+    computerDao.removeByCompanyId(-2L);
+    cm.commit();
+    cm.closeConnection();
+
+    assertEquals(list, computerDao.getAll());
+  }
+
+  /*
+   * Test of the delete(List) function
+   */
+  @Test
+  public void multipleDelete() {
+    final List<Long> l = new ArrayList<Long>();
+    l.add(1L);
+    l.add(2L);
+    l.forEach(id -> assertNotNull(computerDao.getById(id)));
+    computerDao.removeByIdList(l);
+    l.forEach(id -> assertNull(computerDao.getById(id)));
   }
 }

@@ -6,11 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.util.AppSettings;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
@@ -19,13 +22,8 @@ import com.jolbox.bonecp.BoneCPConfig;
 *
 * @author Jeremy SCARELLA
 */
-public enum ConnectionManager {
-
-  /*
-   * Instance of ConnectionManager
-   */
-  INSTANCE;
-
+@Component
+public class ConnectionManager {
   /*
    * ConnectionPool
    */
@@ -37,30 +35,48 @@ public enum ConnectionManager {
   private ThreadLocal<Connection> threadLocalConnection = null;
 
   /*
-   * LOGGER
+   * Logger
    */
-  private static final Logger     LOGGER                = LoggerFactory
+  private Logger                  logger                = LoggerFactory
                                                             .getLogger(ConnectionManager.class);
 
-  /**
-  * Constructor. Load the MySQL JDBC Driver, sets the Connection Pool
-  */
-  private ConnectionManager() {
+  /*
+   * db.properties values
+   */
+  @Value("${DB_DRIVER}")
+  private String                  db_driver;
+  @Value("${DB_URL}")
+  private String                  db_url;
+  @Value("${DB_USERNAME}")
+  private String                  db_username;
+  @Value("${DB_PASSWORD}")
+  private String                  db_password;
+  @Value("${DB_MIN_CONNECTION_PER_PART}")
+  private int                     db_minConnection;
+  @Value("${DB_MAX_CONNECTION_PER_PART}")
+  private int                     db_maxConnection;
+  @Value("${DB_PARTITION_COUNT}")
+  private int                     db_nbPartition;
 
+  /**
+  * Create the BoneCP with data from the database.properties file after it was created by Spring
+  */
+  @PostConstruct
+  public void init() {
     try {
       // Load the Driver class
-      Class.forName(AppSettings.DB_DRIVER);
+      Class.forName(db_driver);
     } catch (ClassNotFoundException e) {
       throw new PersistenceException("ClassNotFoundException: MySQL JDBC driver not found", e);
     }
 
     final BoneCPConfig config = new BoneCPConfig();
-    config.setJdbcUrl(AppSettings.DB_URL);
-    config.setUser(AppSettings.DB_USERNAME);
-    config.setPassword(AppSettings.DB_PASSWORD);
-    config.setMinConnectionsPerPartition(3);
-    config.setMaxConnectionsPerPartition(10);
-    config.setPartitionCount(2);
+    config.setJdbcUrl(db_url);
+    config.setUser(db_username);
+    config.setPassword(db_password);
+    config.setMinConnectionsPerPartition(db_minConnection);
+    config.setMaxConnectionsPerPartition(db_maxConnection);
+    config.setPartitionCount(db_nbPartition);
 
     try {
       connectionPool = new BoneCP(config);
@@ -82,7 +98,7 @@ public enum ConnectionManager {
       try {
         threadLocalConnection.set(connectionPool.getConnection());
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't get database connection", e);
+        logger.warn("SQLException: couldn't get database connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -99,7 +115,7 @@ public enum ConnectionManager {
       connection.setAutoCommit(false);
       connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
     } catch (SQLException e) {
-      LOGGER.error("SQLException: couldn't start transaction");
+      logger.error("SQLException: couldn't start transaction");
       throw new PersistenceException(e.getMessage(), e);
     }
   }
@@ -114,7 +130,7 @@ public enum ConnectionManager {
         getConnection().close();
         threadLocalConnection.remove();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close Connection", e);
+        logger.warn("SQLException: couldn't close Connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -129,7 +145,7 @@ public enum ConnectionManager {
       try {
         statement.close();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close Statement");
+        logger.warn("SQLException: couldn't close Statement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -144,7 +160,7 @@ public enum ConnectionManager {
       try {
         pStatement.close();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close PreparedStatement");
+        logger.warn("SQLException: couldn't close PreparedStatement");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -159,7 +175,7 @@ public enum ConnectionManager {
       try {
         results.close();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't close ResultSet");
+        logger.warn("SQLException: couldn't close ResultSet");
         throw new PersistenceException(e.getMessage(), e);
       }
     }
@@ -173,7 +189,7 @@ public enum ConnectionManager {
       try {
         getConnection().commit();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't commit the Connection");
+        logger.warn("SQLException: couldn't commit the Connection");
         rollback();
       }
     }
@@ -187,7 +203,7 @@ public enum ConnectionManager {
       try {
         getConnection().rollback();
       } catch (SQLException e) {
-        LOGGER.warn("SQLException: couldn't rollback the Connection");
+        logger.warn("SQLException: couldn't rollback the Connection");
         throw new PersistenceException(e.getMessage(), e);
       }
     }

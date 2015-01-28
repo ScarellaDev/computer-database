@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
@@ -12,7 +14,6 @@ import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 import com.excilys.computerdatabase.service.IComputerService;
 
 /**
@@ -20,28 +21,25 @@ import com.excilys.computerdatabase.service.IComputerService;
 *
 * @author Jeremy SCARELLA
 */
-public enum ComputerServiceJDBC implements IComputerService {
+@Service
+public class ComputerServiceJDBC implements IComputerService {
 
   /*
-  * Instance of ComputerServiceImpl
-  */
-  INSTANCE;
-
-  /*
-   * CONNECTION_MANAGER
+   * Instance of ConnectionManager
    */
-  private static final ConnectionManager CM          = ConnectionManager.INSTANCE;
+  @Autowired
+  private ConnectionManager   connectionManager;
 
   /*
   * Instance of the IComputerDao
   */
-  private IComputerDao                   computerDao = ComputerDaoSQL.INSTANCE;
+  @Autowired
+  private IComputerDao        computerDao;
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER      = LoggerFactory
-                                                         .getLogger(ComputerServiceJDBC.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputerServiceJDBC.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -56,7 +54,7 @@ public enum ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("ComputerServiceJDBC - GET BY ID FAIL: " + ComputerDtoConverter.toDto(computer));
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER
         .debug("ComputerServiceJDBC - GET BY ID SUCCESS: " + ComputerDtoConverter.toDto(computer));
@@ -75,35 +73,10 @@ public enum ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("ComputerServiceJDBC - GET ALL FAIL");
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - GET ALL SUCCESS");
     return ComputerDtoConverter.toDto(computers);
-  }
-
-  /**
-   * Add a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * Use the String "null" to skip a value.
-   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
-   */
-  public ComputerDto addByString(String[] params) {
-    Computer computer = null;
-    CM.startTransaction();
-    try {
-      computer = computerDao.addByString(params);
-      CM.commit();
-    } catch (PersistenceException e) {
-      CM.rollback();
-      LOGGER.warn("PersistenceException: during addByString()", e);
-      LOGGER.debug("ComputerServiceJDBC - ADD BY STRING FAIL: "
-          + ComputerDtoConverter.toDto(computer));
-    } finally {
-      CM.closeConnection();
-    }
-    LOGGER.debug("ComputerServiceJDBC - ADD BY STRING SUCCESS: "
-        + ComputerDtoConverter.toDto(computer));
-    return ComputerDtoConverter.toDto(computer);
   }
 
   /**
@@ -113,46 +86,21 @@ public enum ComputerServiceJDBC implements IComputerService {
    */
   public ComputerDto addByComputer(Computer computer) {
     Computer newComputer = null;
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       newComputer = computerDao.addByComputer(computer);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during addByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
     return ComputerDtoConverter.toDto(newComputer);
-  }
-
-  /**
-   * Update a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * All the attributes of the updated computer gets changed.
-   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
-   */
-  public ComputerDto updateByString(String[] params) {
-    Computer computer = null;
-    CM.startTransaction();
-    try {
-      computer = computerDao.updateByString(params);
-      CM.commit();
-    } catch (PersistenceException e) {
-      CM.rollback();
-      LOGGER.warn("PersistenceException: during updateByString()", e);
-      LOGGER.debug("ComputerServiceJDBC - UPDATE BY STRING FAIL: "
-          + ComputerDtoConverter.toDto(computer));
-    } finally {
-      CM.closeConnection();
-    }
-    LOGGER.debug("ComputerServiceJDBC - UPDATE BY STRING SUCCESS: "
-        + ComputerDtoConverter.toDto(computer));
-    return ComputerDtoConverter.toDto(computer);
   }
 
   /**
@@ -162,17 +110,17 @@ public enum ComputerServiceJDBC implements IComputerService {
    */
   public ComputerDto updateByComputer(Computer computer) {
     Computer newComputer = null;
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       newComputer = computerDao.updateByComputer(computer);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during updateByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
@@ -186,17 +134,17 @@ public enum ComputerServiceJDBC implements IComputerService {
    */
   public ComputerDto removeById(Long id) {
     Computer computer = null;
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       computer = computerDao.removeById(id);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL: "
           + ComputerDtoConverter.toDto(computer));
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID SUCCESS: "
         + ComputerDtoConverter.toDto(computer));
@@ -208,16 +156,16 @@ public enum ComputerServiceJDBC implements IComputerService {
    * @param idList : the list of ids of the computers to remove.
    */
   public void removeByIdList(List<Long> idList) {
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       computerDao.removeByIdList(idList);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeByIdList()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST FAIL");
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST SUCCESS");
   }
@@ -229,17 +177,17 @@ public enum ComputerServiceJDBC implements IComputerService {
    */
   public ComputerDto removeByComputer(Computer computer) {
     Computer newComputer = null;
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       newComputer = computerDao.removeByComputer(computer);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
@@ -259,7 +207,7 @@ public enum ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST FAIL: " + newPage);
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;

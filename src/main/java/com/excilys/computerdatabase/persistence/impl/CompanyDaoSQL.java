@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
@@ -20,31 +22,26 @@ import com.excilys.computerdatabase.persistence.ICompanyDao;
 
 /**
 * Data Access Object for Company, SQL implementation.
-* Singleton
 * 
 * @author Jeremy SCARELLA
 */
-public enum CompanyDaoSQL implements ICompanyDao {
+@Repository
+public class CompanyDaoSQL implements ICompanyDao {
   /*
-  * Instance of CompanyDaoSQL
-  */
-  INSTANCE;
-
-  /*
-   * CONNECTION_MANAGER
+   * Instance of ConnectionManager
    */
-  private static final ConnectionManager CM            = ConnectionManager.INSTANCE;
+  @Autowired
+  private ConnectionManager   connectionManager;
 
   /*
    * Instance of CompanyRowMapperImpl
    */
-  private IRowMapper<Company>            companyMapper = new CompanyRowMapper();
+  private IRowMapper<Company> companyMapper = new CompanyRowMapper();
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER        = LoggerFactory
-                                                           .getLogger(CompanyDaoSQL.class);
+  private static final Logger LOGGER        = LoggerFactory.getLogger(CompanyDaoSQL.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -62,7 +59,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
     Company company = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       //Create the query
       statement = connection.createStatement();
@@ -78,8 +75,8 @@ public enum CompanyDaoSQL implements ICompanyDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(results);
-      CM.close(statement);
+      connectionManager.close(results);
+      connectionManager.close(statement);
     }
   }
 
@@ -93,7 +90,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
     ResultSet results = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       //Create the query
       statement = connection.createStatement();
@@ -104,7 +101,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -122,7 +119,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
     PreparedStatement statement = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPANY_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -134,7 +131,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
       LOGGER.error("SQLError in removeById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -156,7 +153,7 @@ public enum CompanyDaoSQL implements ICompanyDao {
     ResultSet selectResults = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       //Create & execute the counting query
       countStatement = connection.createStatement();
@@ -183,10 +180,10 @@ public enum CompanyDaoSQL implements ICompanyDao {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(countResults);
-      CM.close(selectResults);
-      CM.close(countStatement);
-      CM.close(selectStatement);
+      connectionManager.close(countResults);
+      connectionManager.close(selectResults);
+      connectionManager.close(countStatement);
+      connectionManager.close(selectStatement);
     }
   }
 }

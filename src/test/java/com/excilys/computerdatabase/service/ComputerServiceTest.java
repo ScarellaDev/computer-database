@@ -1,23 +1,36 @@
 package com.excilys.computerdatabase.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
+import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.dto.ComputerDtoConverter;
+import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.service.mock.ComputerServiceJDBCMock;
+import com.excilys.computerdatabase.service.impl.ComputerServiceJDBC;
 
 /**
  * Test class for the ComputerService
@@ -26,133 +39,244 @@ import com.excilys.computerdatabase.service.mock.ComputerServiceJDBCMock;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ComputerServiceTest {
-  /*
-   * Attributes
-   */
-  IComputerService   computerService;
-  private Long         computerId;
-  private Long         computerId2;
-  private Computer     computer;
-  private Computer     computer2;
-  private IComputerDao computerDao;
-  Page<ComputerDto>    page;
-  Page<ComputerDto>    pageReturned;
 
-  /**
-   * Test initialisation using Mockito, creates a mock ComputerDao and two instances of Computer.
-   */
+  @InjectMocks
+  ComputerServiceJDBC computerService;
+  Page<ComputerDto>   page;
+  Page<ComputerDto>   pageReturned;
+  Page<ComputerDto>   wrongPNumber;
+  Page<ComputerDto>   wrongRPP;
+
+  IComputerDao        computerDao;
+  List<Computer>      list;
+  Company             c1;
+  Company             c2;
+  Computer            computer;
+
   @Before
   public void init() {
     computerDao = mock(IComputerDao.class);
-    computer = Computer.builder().id(1L).name("CM-5").build();
-    computerId = computer.getId();
-    computer2 = Computer.builder().id(2L).name("CM-6").build();
-    computerId2 = computer2.getId();
+
+    c1 = new Company(1L, "company 1");
+    c2 = new Company(2L, "company 2");
+
+    list = new ArrayList<Computer>();
+    list.add(new Computer(1L, "ordi 1", null, null, c1));
+    list.add(new Computer(2L, "ordi 2", null, null, c1));
+    list.add(new Computer(3L, "ordi 3", null, null, c2));
 
     page = new Page<ComputerDto>();
-    page.setNbElementsPerPage(5);
-    page.setPageIndex(1);
-    pageReturned = new Page<ComputerDto>();
-    page.setNbElementsPerPage(5);
-    page.setPageIndex(1);
-    page.setTotalNbElements(20);
-    page.setList(new ArrayList<ComputerDto>());
 
-    when(computerDao.getAll()).thenReturn(new ArrayList<Computer>());
-    when(computerDao.getById(anyLong())).thenReturn(Computer.builder().id(1L).build());
+    pageReturned = new Page<ComputerDto>();
+    page.setTotalNbElements(list.size());
+    page.setList(ComputerDtoConverter.toDto(list));
+
+    wrongPNumber = new Page<ComputerDto>();
+    wrongPNumber.setPageIndex(-1);
+
+    wrongRPP = new Page<ComputerDto>();
+    wrongRPP.setNbElementsPerPage(-1);
+
+    computer = new Computer(4L, "ordi 4", null, null, c1);
+
+    when(computerDao.getAll()).thenReturn(list);
     when(computerDao.getPagedList(page)).thenReturn(pageReturned);
 
-    computerService = new ComputerServiceJDBCMock(computerDao);
+    doAnswer(new Answer<Computer>() {
+      @Override
+      public Computer answer(final InvocationOnMock invocation) {
+        final long l = (Long) invocation.getArguments()[0];
+        if (l > 0 && l < list.size()) {
+          return list.get((int) l - 1);
+        }
+        return null;
+      }
+    }).when(computerDao).getById(anyLong());
+
+    doAnswer(new Answer<Computer>() {
+
+      @Override
+      public Computer answer(final InvocationOnMock invocation) {
+        final Computer computer = (Computer) invocation.getArguments()[0];
+        if (computer != null) {
+          list.add(computer);
+        }
+        return null;
+      }
+    }).when(computerDao).addByComputer(any(Computer.class));
+
+    doAnswer(new Answer<Computer>() {
+
+      @Override
+      public Computer answer(final InvocationOnMock invocation) {
+        final Computer computer = (Computer) invocation.getArguments()[0];
+        if (computer != null && computer.getId() > 0 && computer.getId() < list.size()) {
+          if (computer.getCompany() != null
+              && (computer.getCompany().getId() < 0 || computer.getCompany().getId() > 2)) {
+            throw new PersistenceException("ComputerServiceTest Exception");
+          }
+          list.set(computer.getId().intValue() - 1, computer);
+        }
+        return null;
+      }
+
+    }).when(computerDao).updateByComputer(any(Computer.class));
+
+    doAnswer(new Answer<Computer>() {
+
+      @Override
+      public Computer answer(final InvocationOnMock invocation) {
+        final long l = (Long) invocation.getArguments()[0];
+        list.removeIf(c -> c.getId() == l);
+        return null;
+      }
+
+    }).when(computerDao).removeById(anyLong());
+
+    doAnswer(new Answer<Computer>() {
+
+      @Override
+      public Computer answer(final InvocationOnMock invocation) {
+        @SuppressWarnings("unchecked")
+        final List<Long> l = (List<Long>) invocation.getArguments()[0];
+        list.removeIf(c -> l.contains(c.getId()));
+        return null;
+      }
+
+    }).when(computerDao).removeByIdList(Matchers.anyListOf(Long.class));
+
+    when(computerDao.getPagedList(page)).thenReturn(pageReturned);
+    doThrow(PersistenceException.class).when(computerDao).getPagedList(wrongPNumber);
+    doThrow(PersistenceException.class).when(computerDao).getPagedList(wrongRPP);
+
+    MockitoAnnotations.initMocks(this);
   }
 
-  /**
-   * Test the getById method. 
-   * @result Check if the computers retrieved from database are correct and that method returns null if no computer found.
+  /*
+   * Test getAll function
    */
   @Test
-  public void testGetById() {
-    assertEquals(Computer.builder().id(1L).build(), computerService.getById(1L));
+  public void getAll() {
+    assertEquals(list, computerService.getAll());
   }
 
-  /**
-   * Test the getAll method. 
-   * @result Check if the companies retrieved from database are correct.
+  /*
+   * Tests getById function
    */
   @Test
-  public void testGetAll() {
-    assertEquals(new ArrayList<Computer>(), computerService.getAll());
+  public void getById() {
+    assertEquals(list.get(0), computerService.getById(1L));
   }
 
-  /**
-   * Test the addByString method.
-   * @result Check if the INSERT SQL statement is executed properly using a String table as parameter
-   */
   @Test
-  public void testAddByString() {
-    String[] params = "CM-4 1992-01-01 null null".split("\\s+");
-
-    computerService.addByString(params);
-    verify(computerDao).addByString(params);
+  public void getByIdInvalid() {
+    assertNull(computerService.getById(-1L));
+    assertNull(computerService.getById(5L));
   }
 
-  /**
-   * Test the addByComputer method.
-   * @result Check if the INSERT SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void testAddByComputer() {
-    computerService.addByComputer(computer);
-    verify(computerDao).addByComputer(computer);
-  }
-
-  /**
-   * Test the updateByString method.
-   * @result Check if the UPDATE SQL statement is executed properly using a String table as parameter
-   */
-  @Test
-  public void updateByString() {
-    String[] params = (computerId.toString() + " CM-7 1994-01-01 null null").split("\\s+");
-
-    computerService.updateByString(params);
-    verify(computerDao).updateByString(params);
-  }
-
-  /**
-   * Test the updateByComputer method.
-   * @result Check if the UPDATE SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void updateByComputer() {
-    computerService.updateByComputer(computer);
-    verify(computerDao).updateByComputer(computer);
-  }
-
-  /**
-   * Test the removeById method.
-   * @result Check if the DELETE SQL statement is executed properly using a Long id as parameter
-   */
-  @Test
-  public void removeById() {
-    computerService.removeById(computerId);
-    verify(computerDao).removeById(computerId);
-  }
-
-  /**
-   * Test the removeByComputer method.
-   * @result Check if the DELETE SQL statements are executed properly using a Computer instance as parameter
-   */
-  @Test
-  public void removeByComputer() {
-    computerService.removeByComputer(Computer.builder().id(computerId2).build());
-    verify(computerDao).removeByComputer(Computer.builder().id(computerId2).build());
-  }
-
-  /**
-   * Test the getPagedList method. 
-   * @result Check if the page retrieved from database is correct.
+  /*
+   * Tests getPagedList
    */
   @Test
   public void getPagedList() {
     assertEquals(pageReturned, computerService.getPagedList(page));
+  }
+
+  @Test
+  public void getPagedListNull() {
+    assertNull(computerService.getPagedList(null));
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidPageNumber() {
+    computerService.getPagedList(wrongPNumber);
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void invalidResultsPerPage() {
+    computerService.getPagedList(wrongRPP);
+  }
+
+  /*
+   * Tests of create function
+   */
+  @Test
+  public void create() {
+    computerService.addByComputer(computer);
+    assertEquals(computer, list.get(3));
+  }
+
+  @Test
+  public void createNull() {
+    computerDao.addByComputer(null);
+    assertEquals(list, computerService.getAll());
+  }
+
+  @Test
+  public void createEmptyComputer() {
+    computerDao.addByComputer(new Computer());
+    assertEquals(list, computerService.getAll());
+  }
+
+  /*
+   * Tests of update function
+   */
+  @Test
+  public void update() {
+    computerService.updateByComputer(computer);
+    assertEquals(list, computerService.getAll());
+  }
+
+  @Test
+  public void updateNull() {
+    computerDao.updateByComputer(null);
+    assertEquals(list, computerService.getAll());
+  }
+
+  @Test
+  public void updateInvalidId() {
+    final Computer computer = new Computer();
+    computer.setId(-1L);
+    computerDao.updateByComputer(computer);
+    assertEquals(list, computerService.getAll());
+  }
+
+  @Test(expected = PersistenceException.class)
+  public void updateInvalidCompanyId() {
+    final Computer computer = new Computer();
+    computer.setId(1L);
+    computer.setCompany(new Company(-1L, ""));
+    computerDao.updateByComputer(computer);
+  }
+
+  /*
+   * Tests of the delete() function
+   */
+  @Test
+  public void delete() {
+    final int x = computerService.getAll().size();
+    computerService.removeById(3L);
+    assertEquals(x - 1, list.size());
+  }
+
+  @Test
+  public void deleteInvalidId() {
+    final int x = computerService.getAll().size();
+    computerDao.removeById(-1L);
+    computerDao.removeById(4L);
+    assertEquals(x, list.size());
+  }
+
+  /*
+   * Test of the delete(List) function
+   */
+  @Test
+  public void multipleDelete() {
+    final List<Long> l = new ArrayList<Long>();
+    l.add(1L);
+    l.add(2L);
+    l.forEach(id -> assertNotNull(computerDao.getById(id)));
+    computerService.removeByIdList(l);
+    l.forEach(id -> assertNull(computerDao.getById(id)));
   }
 }

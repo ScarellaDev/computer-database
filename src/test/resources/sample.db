@@ -1,5 +1,8 @@
 #replace the file name "sample.db"  by "db.properties" and fill information below
-db.driver=
-db.url=
-db.username=
-db.password=
+DB_DRIVER=
+DB_URL=
+DB_USERNAME=
+DB_PASSWORD=
+DB_MIN_CONNECTION_PER_PART=
+DB_MAX_CONNECTION_PER_PART=
+DB_PARTITION_COUNT=

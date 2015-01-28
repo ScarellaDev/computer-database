@@ -27,27 +27,11 @@ public interface IComputerDao {
   List<Computer> getAll();
 
   /**
-   * Add a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * Use the String "null" to skip a value.
-   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
-   */
-  Computer addByString(String[] params);
-
-  /**
    * Add a computer in the database using a Computer instance.
    * @param computer : instance of the computer that needs to be added to the database. Must have a name at least. 
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   Computer addByComputer(Computer computer);
-
-  /**
-   * Update a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * All the attributes of the updated computer are changed.
-   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
-   */
-  Computer updateByString(String[] params);
 
   /**
    * Update a computer in the database using a Computer instance.

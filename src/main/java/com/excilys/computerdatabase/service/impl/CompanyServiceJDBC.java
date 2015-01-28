@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
@@ -11,8 +13,6 @@ import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.persistence.impl.CompanyDaoSQL;
-import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 import com.excilys.computerdatabase.service.ICompanyService;
 
 /**
@@ -20,33 +20,30 @@ import com.excilys.computerdatabase.service.ICompanyService;
 *
 * @author Jeremy SCARELLA
 */
-public enum CompanyServiceJDBC implements ICompanyService {
-
+@Service
+public class CompanyServiceJDBC implements ICompanyService {
   /*
-  * Instance of CompanyServiceImpl
-  */
-  INSTANCE;
-
-  /*
-   * CONNECTION_MANAGER
+   * Instance of ConnectionManager
    */
-  private static final ConnectionManager CM          = ConnectionManager.INSTANCE;
+  @Autowired
+  private ConnectionManager   connectionManager;
 
   /*
-  * Instance of the ICompanyDao
+  * Instance of ICompanyDao
   */
-  private ICompanyDao                    companyDao  = CompanyDaoSQL.INSTANCE;
+  @Autowired
+  private ICompanyDao         companyDao;
 
   /*
-  * Instance of the ICompanyDao
+  * Instance of ICompanyDao
   */
-  private IComputerDao                   computerDao = ComputerDaoSQL.INSTANCE;
+  @Autowired
+  private IComputerDao        computerDao;
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER      = LoggerFactory
-                                                         .getLogger(CompanyServiceJDBC.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompanyServiceJDBC.class);
 
   /**
    * Get the company in the database corresponding to the id in parameter.
@@ -62,7 +59,7 @@ public enum CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("CompanyServiceJDBC - GET BY ID FAIL: " + company);
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET BY ID SUCCESS: " + company);
     return company;
@@ -81,7 +78,7 @@ public enum CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("CompanyServiceJDBC - GET ALL FAIL");
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET ALL SUCCESS");
     return companies;
@@ -93,17 +90,17 @@ public enum CompanyServiceJDBC implements ICompanyService {
    * @return true if DELETE query was successful
    */
   public Boolean removeById(Long id) {
-    CM.startTransaction();
+    connectionManager.startTransaction();
     try {
       computerDao.removeByCompanyId(id);
       companyDao.removeById(id);
-      CM.commit();
+      connectionManager.commit();
     } catch (PersistenceException e) {
-      CM.rollback();
+      connectionManager.rollback();
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID FAIL");
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID SUCCESS");
     return true;
@@ -123,7 +120,7 @@ public enum CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST FAIL: " + newPage);
     } finally {
-      CM.closeConnection();
+      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;

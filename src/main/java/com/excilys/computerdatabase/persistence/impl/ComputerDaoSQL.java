@@ -6,15 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
@@ -28,42 +26,26 @@ import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
 * Data Access Object for Computer, SQL implementation.
-* Singleton
 * 
 * @author Jeremy SCARELLA
 */
-public enum ComputerDaoSQL implements IComputerDao {
+@Repository
+public class ComputerDaoSQL implements IComputerDao {
   /*
-  * Instance of ComputerDaoSQL
-  */
-  INSTANCE;
-
-  /*
-   * CONNECTION_MANAGER
+   * Instance of ConnectionManager
    */
-  private static final ConnectionManager CM                  = ConnectionManager.INSTANCE;
+  @Autowired
+  private ConnectionManager    connectionManager;
 
   /*
    * Instance of ComputerRowMapperImpl
    */
-  private IRowMapper<Computer>           computerRowMapper   = new ComputerRowMapper();
-
-  /*
-  * CONSTANT List of the companies that are in the database (cache)
-  */
-  private static final List<Company>     COMPANIES           = CompanyDaoSQL.INSTANCE.getAll();
-
-  /*
-   * DATE TIME FORMATTER
-   */
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-                                                                 .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private IRowMapper<Computer> computerRowMapper = new ComputerRowMapper();
 
   /*
    * LOGGER
    */
-  private static final Logger            LOGGER              = LoggerFactory
-                                                                 .getLogger(ComputerDaoSQL.class);
+  private static final Logger  LOGGER            = LoggerFactory.getLogger(ComputerDaoSQL.class);
 
   /**
    * Get the computer in the database corresponding to the id in parameter.
@@ -81,7 +63,7 @@ public enum ComputerDaoSQL implements IComputerDao {
     ResultSet results = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       //Query the database
       statement = connection.createStatement();
@@ -96,8 +78,8 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in getById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(results);
-      CM.close(statement);
+      connectionManager.close(results);
+      connectionManager.close(statement);
     }
   }
 
@@ -112,7 +94,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Query the database to get all the computers
       statement = connection.createStatement();
       results = statement.executeQuery(UtilDaoSQL.COMPUTER_SELECT_QUERY);
@@ -121,123 +103,8 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in getAll()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(results);
-      CM.close(statement);
-    }
-  }
-
-  /**
-   * Add a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "name" (mandatory), "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * Use the String "null" to skip a value.
-   * @return An instance of the computer that was added to the database or null if the INSERT did not work.
-   */
-  public Computer addByString(String[] params) {
-    if (params == null) {
-      return null;
-    }
-
-    Connection connection = null;
-    PreparedStatement statement = null;
-    ResultSet results = null;
-
-    if (params.length > 0) {
-      if (params.length < 5) {
-        String name;
-        if (params[0].toLowerCase().equals("null") || StringValidation.isEmpty(params[0])) {
-          return null;
-        } else {
-          name = params[0];
-        }
-
-        LocalDateTime introducedL;
-        if (params.length > 1 && !params[1].toLowerCase().equals("null")
-            && StringValidation.isDate(params[1])) {
-          StringBuffer introducedS = new StringBuffer(params[1]);
-          introducedS.append(" 00:00:00");
-          try {
-            introducedL = LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER);
-          } catch (DateTimeParseException e) {
-            return null;
-          }
-        } else {
-          introducedL = null;
-        }
-
-        LocalDateTime discontinuedL;
-        if (params.length > 2 && !params[2].toLowerCase().equals("null")
-            && StringValidation.isDate(params[2])
-            && StringValidation.isLaterDate(params[1], params[2])) {
-          StringBuffer discontinuedS = new StringBuffer(params[2]);
-          discontinuedS.append(" 00:00:00");
-          try {
-            discontinuedL = LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER);
-          } catch (DateTimeParseException e) {
-            return null;
-          }
-        } else {
-          discontinuedL = null;
-        }
-
-        Long companyId;
-        if (params.length > 3 && !params[3].toLowerCase().equals("null")
-            && StringValidation.isPositiveLong(params[3])) {
-          companyId = new Long(params[3]);
-        } else {
-          companyId = null;
-        }
-
-        try {
-          //Get a connection to the database
-          connection = CM.getConnection();
-          //Create the query
-          statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
-              Statement.RETURN_GENERATED_KEYS);
-          statement.setString(1, name);
-          if (introducedL == null) {
-            statement.setNull(2, java.sql.Types.TIMESTAMP);
-          } else {
-            statement.setTimestamp(2, Timestamp.valueOf(introducedL));
-          }
-          if (discontinuedL == null) {
-            statement.setNull(3, java.sql.Types.TIMESTAMP);
-          } else {
-            statement.setTimestamp(3, Timestamp.valueOf(discontinuedL));
-          }
-          if (companyId == null) {
-            statement.setNull(4, java.sql.Types.BIGINT);
-          } else {
-            statement.setLong(4, companyId);
-          }
-
-          //Execute the query
-          statement.executeUpdate();
-          results = statement.getGeneratedKeys();
-          if (results != null && results.next()) {
-            Long id = results.getLong(1);
-            Computer.Builder builder = Computer.builder();
-            builder.id(id);
-            builder.name(name);
-            builder.introduced(introducedL);
-            builder.discontinued(discontinuedL);
-            if (companyId != null) {
-              builder.company(COMPANIES.get(companyId.intValue() - 1));
-            }
-            return builder.build();
-          } else {
-            return null;
-          }
-        } catch (SQLException e) {
-          LOGGER.error("SQLError in addByString() with params = " + params);
-          throw new PersistenceException(e.getMessage(), e);
-        } finally {
-          CM.close(statement);
-        }
-      } else {
-        throw new PersistenceException("Too many arguments passed (max = 4)");
-      }
-    } else {
-      throw new PersistenceException("Not enough arguments passed (min = 1)");
+      connectionManager.close(results);
+      connectionManager.close(statement);
     }
   }
 
@@ -257,7 +124,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_INSERT_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -292,72 +159,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in addByComputer() with computer = " + computer);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
-    }
-  }
-
-  /**
-   * Update a computer in the database using a table of Strings as parameters.
-   * @param params : String table composed of "id" (mandatory), "name", "introduced" (date format: yyyy-MM-dd), discontinued (date format: yyyy-MM-dd), "companyId".
-   * All the attributes of the updated computer are changed.
-   * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
-   */
-  public Computer updateByString(String[] params) {
-    if (params == null) {
-      return null;
-    }
-
-    if (params.length > 1) {
-      if (params.length < 6) {
-
-        Computer.Builder builder = Computer.builder();
-
-        if (StringValidation.isPositiveLong(params[0])) {
-          builder.id(new Long(params[0]));
-        } else {
-          return null;
-        }
-
-        if (!params[1].toLowerCase().equals("null") && !StringValidation.isEmpty(params[1])) {
-          builder.name(params[1]);
-        } else {
-          return null;
-        }
-
-        if (params.length > 2 && !params[2].toLowerCase().equals("null")
-            && StringValidation.isDate(params[2])) {
-          StringBuffer introducedS = new StringBuffer(params[2]);
-          introducedS.append(" 00:00:00");
-          try {
-            builder.introduced(LocalDateTime.parse(introducedS, DATE_TIME_FORMATTER));
-          } catch (DateTimeParseException e) {
-            return null;
-          }
-        }
-
-        if (params.length > 3 && !params[3].toLowerCase().equals("null")
-            && StringValidation.isDate(params[3])
-            && StringValidation.isLaterDate(params[2], params[3])) {
-          StringBuffer discontinuedS = new StringBuffer(params[3]);
-          discontinuedS.append(" 00:00:00");
-          try {
-            builder.discontinued(LocalDateTime.parse(discontinuedS, DATE_TIME_FORMATTER));
-          } catch (DateTimeParseException e) {
-            return null;
-          }
-        }
-
-        if (params.length > 4 && !params[4].toLowerCase().equals("null")
-            && StringValidation.isPositiveLong(params[4])) {
-          builder.company(COMPANIES.get(new Long(params[4]).intValue() - 1));
-        }
-
-        return updateByComputer(builder.build());
-      } else {
-        throw new PersistenceException("Too many arguments passed (max = 5)");
-      }
-    } else {
-      throw new PersistenceException("Not enough arguments passed (min = 2)");
+      connectionManager.close(statement);
     }
   }
 
@@ -376,7 +178,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection to the database
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_UPDATE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -409,7 +211,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in updateByComputer() with computer = " + computer);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -431,7 +233,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -444,7 +246,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in removeById() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -461,7 +263,7 @@ public enum ComputerDaoSQL implements IComputerDao {
     PreparedStatement statement = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_WHERE_COMPANY_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -473,7 +275,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in removeByCompanyId() with id = " + id);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -492,7 +294,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       for (Long id : idList) {
         //Create the query
@@ -505,7 +307,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in removeByIdList()");
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -524,7 +326,7 @@ public enum ComputerDaoSQL implements IComputerDao {
 
     try {
       //Get a connection
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
       //Create the query
       statement = connection.prepareStatement(UtilDaoSQL.COMPUTER_DELETE_QUERY,
           Statement.RETURN_GENERATED_KEYS);
@@ -537,7 +339,7 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in removeByComputer() with id = " + computer.getId());
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(statement);
+      connectionManager.close(statement);
     }
   }
 
@@ -559,7 +361,7 @@ public enum ComputerDaoSQL implements IComputerDao {
     ResultSet selectResults = null;
 
     try {
-      connection = CM.getConnection();
+      connection = connectionManager.getConnection();
 
       //Create & execute the counting query
       if (StringValidation.isEmpty(page.getSearch())) {
@@ -605,10 +407,10 @@ public enum ComputerDaoSQL implements IComputerDao {
       LOGGER.error("SQLError in getPagedList() with page = " + page);
       throw new PersistenceException(e.getMessage(), e);
     } finally {
-      CM.close(countResults);
-      CM.close(selectResults);
-      CM.close(countStatement);
-      CM.close(selectStatement);
+      connectionManager.close(countResults);
+      connectionManager.close(selectResults);
+      connectionManager.close(countStatement);
+      connectionManager.close(selectStatement);
     }
   }
 }
