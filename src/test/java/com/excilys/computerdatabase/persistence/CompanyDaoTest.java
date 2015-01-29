@@ -123,7 +123,7 @@ public class CompanyDaoTest {
   @Test
   public void delete() {
     cm.getConnection();
-    companyDao.removeById(2L);;
+    companyDao.removeById(2L);
     cm.closeConnection();
     assertNull(companyDao.getById(2L));
   }

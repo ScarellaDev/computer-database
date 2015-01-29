@@ -17,13 +17,15 @@ public final class Company {
    * Constructors
    * 
    */
-  public Company() {}
+  public Company() {
+
+  }
 
   /**
   * @param id
   * @param name
   */
-  public Company(Long id, String name) {
+  public Company(final Long id, final String name) {
     super();
     this.id = id;
     this.name = name;
@@ -47,7 +49,7 @@ public final class Company {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -75,20 +77,21 @@ public final class Company {
   /*
    * Builder static class
    */
-  public static class Builder {
+  public static final class Builder {
     Company company;
 
     private Builder() {
       company = new Company();
     }
 
-    public Builder id(Long id) {
-      if (id != null)
+    public Builder id(final Long id) {
+      if (id != null) {
         this.company.id = id;
+      }
       return this;
     }
 
-    public Builder name(String name) {
+    public Builder name(final String name) {
       this.company.name = name;
       return this;
     }
@@ -109,15 +112,15 @@ public final class Company {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(final Long id) {
     this.id = id;
   }
 
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 }

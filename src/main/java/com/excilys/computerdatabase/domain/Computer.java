@@ -22,7 +22,9 @@ public class Computer {
    * Constructors
    * 
    */
-  public Computer() {}
+  public Computer() {
+
+  }
 
   /**
   * @param id
@@ -31,8 +33,8 @@ public class Computer {
   * @param discontinued
   * @param company
   */
-  public Computer(Long id, String name, LocalDateTime introduced, LocalDateTime discontinued,
-      Company company) {
+  public Computer(final Long id, final String name, final LocalDateTime introduced,
+      final LocalDateTime discontinued, final Company company) {
     super();
     this.id = id;
     this.name = name;
@@ -63,7 +65,7 @@ public class Computer {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -109,35 +111,36 @@ public class Computer {
   /*
    * Builder static class
    */
-  public static class Builder {
+  public static final class Builder {
     Computer computer;
 
     private Builder() {
       computer = new Computer();
     }
 
-    public Builder id(Long id) {
-      if (id != null)
+    public Builder id(final Long id) {
+      if (id != null) {
         this.computer.id = id;
+      }
       return this;
     }
 
-    public Builder name(String name) {
+    public Builder name(final String name) {
       this.computer.name = name;
       return this;
     }
 
-    public Builder introduced(LocalDateTime introduced) {
+    public Builder introduced(final LocalDateTime introduced) {
       this.computer.introduced = introduced;
       return this;
     }
 
-    public Builder discontinued(LocalDateTime discontinued) {
+    public Builder discontinued(final LocalDateTime discontinued) {
       this.computer.discontinued = discontinued;
       return this;
     }
 
-    public Builder company(Company company) {
+    public Builder company(final Company company) {
       this.computer.company = company;
       return this;
     }
@@ -158,16 +161,17 @@ public class Computer {
     return id;
   }
 
-  public void setId(Long id) {
-    if (id != null)
+  public void setId(final Long id) {
+    if (id != null) {
       this.id = id;
+    }
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 
@@ -175,7 +179,7 @@ public class Computer {
     return introduced;
   }
 
-  public void setIntroduced(LocalDateTime introduced) {
+  public void setIntroduced(final LocalDateTime introduced) {
     this.introduced = introduced;
   }
 
@@ -183,7 +187,7 @@ public class Computer {
     return discontinued;
   }
 
-  public void setDiscontinued(LocalDateTime discontinued) {
+  public void setDiscontinued(final LocalDateTime discontinued) {
     this.discontinued = discontinued;
   }
 
@@ -191,7 +195,7 @@ public class Computer {
     return company;
   }
 
-  public void setCompany(Company company) {
+  public void setCompany(final Company company) {
     this.company = company;
   }
 }

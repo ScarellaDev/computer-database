@@ -33,7 +33,7 @@ public class DashboardController extends HttpServlet {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private IComputerService  computerServiceJDBC;
+  private IComputerService  computerService;
 
   /**
    * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
@@ -78,13 +78,13 @@ public class DashboardController extends HttpServlet {
     }
 
     //Get search parameter
-    String search = httpReq.getParameter("search");
+    final String search = httpReq.getParameter("search");
     if (search != null) {
       page.setSearch(search.trim());
     }
 
     //Get sort & order parameters
-    String sort = httpReq.getParameter("sort");
+    final String sort = httpReq.getParameter("sort");
     Integer sortId;
     if (StringValidation.isPositiveInt(sort)) {
       sortId = new Integer(httpReq.getParameter("sort"));
@@ -93,14 +93,14 @@ public class DashboardController extends HttpServlet {
     }
     page.setSort(sortId);
 
-    String order = httpReq.getParameter("order");
+    final String order = httpReq.getParameter("order");
     if (order != null
         && (order.compareToIgnoreCase("ASC") == 0 || order.compareToIgnoreCase("DESC") == 0)) {
       page.setOrder(order.toUpperCase());
     }
 
     //Retrieve the list of computers to display
-    page = computerServiceJDBC.getPagedList(page);
+    page = computerService.getPagedList(page);
     httpReq.setAttribute("page", page);
 
     // Get the JSP dispatcher

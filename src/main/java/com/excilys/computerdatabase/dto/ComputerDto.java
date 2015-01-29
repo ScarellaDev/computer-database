@@ -21,7 +21,9 @@ public class ComputerDto {
    * Constructors
    * 
    */
-  public ComputerDto() {}
+  public ComputerDto() {
+
+  }
 
   /**
   * @param id
@@ -31,8 +33,8 @@ public class ComputerDto {
   * @param company
   * @param companyName
   */
-  public ComputerDto(long id, String name, String introduced, String discontinued, long company,
-      String companyName) {
+  public ComputerDto(final long id, final String name, final String introduced,
+      final String discontinued, final long company, final String companyName) {
     super();
     this.id = id;
     this.name = name;
@@ -66,7 +68,7 @@ public class ComputerDto {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -77,7 +79,7 @@ public class ComputerDto {
       return false;
     }
 
-    ComputerDto other = (ComputerDto) obj;
+    final ComputerDto other = (ComputerDto) obj;
     if (companyId != other.companyId) {
       return false;
     }

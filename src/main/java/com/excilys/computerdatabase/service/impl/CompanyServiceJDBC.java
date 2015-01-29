@@ -52,13 +52,14 @@ public class CompanyServiceJDBC implements ICompanyService {
    * @return The company that was found or null if there is no company for this id.
    */
   @Override
-  public Company getById(Long id) {
+  public Company getById(final Long id) {
     Company company = null;
     try {
       company = companyDao.getById(id);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("CompanyServiceJDBC - GET BY ID FAIL: " + company);
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -75,9 +76,10 @@ public class CompanyServiceJDBC implements ICompanyService {
     List<Company> companies = null;
     try {
       companies = companyDao.getAll();
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("CompanyServiceJDBC - GET ALL FAIL");
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -92,13 +94,14 @@ public class CompanyServiceJDBC implements ICompanyService {
    */
   @Override
   @Transactional
-  public Boolean removeById(Long id) {
+  public Boolean removeById(final Long id) {
     try {
       computerDao.removeByCompanyId(id);
       companyDao.removeById(id);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID FAIL");
+      return false;
     } finally {
       connectionManager.closeConnection();
     }
@@ -116,9 +119,10 @@ public class CompanyServiceJDBC implements ICompanyService {
     Page<Company> newPage = null;
     try {
       newPage = companyDao.getPagedList(page);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST FAIL: " + newPage);
+      return null;
     } finally {
       connectionManager.closeConnection();
     }

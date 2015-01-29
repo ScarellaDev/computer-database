@@ -47,13 +47,14 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param id : id of the computer in the database.
    * @return The computer that was found or null if there is no computer for this id.
    */
-  public ComputerDto getById(Long id) {
+  public ComputerDto getById(final Long id) {
     Computer computer = null;
     try {
       computer = computerDao.getById(id);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("ComputerServiceJDBC - GET BY ID FAIL: " + ComputerDtoConverter.toDto(computer));
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -70,9 +71,10 @@ public class ComputerServiceJDBC implements IComputerService {
     List<Computer> computers = null;
     try {
       computers = computerDao.getAll();
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("ComputerServiceJDBC - GET ALL FAIL");
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -86,14 +88,15 @@ public class ComputerServiceJDBC implements IComputerService {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   @Transactional
-  public ComputerDto addByComputer(Computer computer) {
+  public ComputerDto addByComputer(final Computer computer) {
     Computer newComputer = null;
     try {
       newComputer = computerDao.addByComputer(computer);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during addByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -108,14 +111,15 @@ public class ComputerServiceJDBC implements IComputerService {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   @Transactional
-  public ComputerDto updateByComputer(Computer computer) {
+  public ComputerDto updateByComputer(final Computer computer) {
     Computer newComputer = null;
     try {
       newComputer = computerDao.updateByComputer(computer);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during updateByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -127,23 +131,21 @@ public class ComputerServiceJDBC implements IComputerService {
   /**
    * Remove a computer from the database using its id.
    * @param id : id of the computer to remove.
-   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   * @return True if the computer was removed from the database, false otherwise.
    */
   @Transactional
-  public ComputerDto removeById(Long id) {
-    Computer computer = null;
+  public Boolean removeById(final Long id) {
     try {
-      computer = computerDao.removeById(id);
-    } catch (PersistenceException e) {
+      computerDao.removeById(id);
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during removeById()", e);
-      LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL: "
-          + ComputerDtoConverter.toDto(computer));
+      LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL");
+      return false;
     } finally {
       connectionManager.closeConnection();
     }
-    LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID SUCCESS: "
-        + ComputerDtoConverter.toDto(computer));
-    return ComputerDtoConverter.toDto(computer);
+    LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID SUCCESS");
+    return true;
   }
 
   /**
@@ -151,12 +153,13 @@ public class ComputerServiceJDBC implements IComputerService {
    * @param idList : the list of ids of the computers to remove.
    */
   @Transactional
-  public void removeByIdList(List<Long> idList) {
+  public void removeByIdList(final List<Long> idList) {
     try {
       computerDao.removeByIdList(idList);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during removeByIdList()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST FAIL");
+      return;
     } finally {
       connectionManager.closeConnection();
     }
@@ -169,14 +172,15 @@ public class ComputerServiceJDBC implements IComputerService {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   @Transactional
-  public ComputerDto removeByComputer(Computer computer) {
+  public ComputerDto removeByComputer(final Computer computer) {
     Computer newComputer = null;
     try {
       newComputer = computerDao.removeByComputer(computer);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during removeByComputer()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
+      return null;
     } finally {
       connectionManager.closeConnection();
     }
@@ -194,9 +198,10 @@ public class ComputerServiceJDBC implements IComputerService {
     Page<ComputerDto> newPage = null;
     try {
       newPage = computerDao.getPagedList(page);
-    } catch (PersistenceException e) {
+    } catch (final PersistenceException e) {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST FAIL: " + newPage);
+      return null;
     } finally {
       connectionManager.closeConnection();
     }

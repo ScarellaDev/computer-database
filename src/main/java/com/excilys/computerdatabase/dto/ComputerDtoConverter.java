@@ -34,8 +34,12 @@ public class ComputerDtoConverter {
     }
 
     final Computer.Builder builder = Computer.builder();
-    builder.id(computerDto.getId()).name(computerDto.getName());
-
+    if (computerDto.getId() >= 0) {
+      builder.id(computerDto.getId());
+    }
+    if (computerDto.getName() != null) {
+      builder.name(computerDto.getName());
+    }
     if (computerDto.getIntroduced() != null && !computerDto.getIntroduced().trim().isEmpty()) {
       builder.introduced(LocalDateTime.parse(computerDto.getIntroduced() + " 00:00:00",
           DATE_TIME_FORMATTER));
@@ -74,8 +78,12 @@ public class ComputerDtoConverter {
     }
 
     final ComputerDto.Builder builder = ComputerDto.builder();
-    builder.id(computer.getId()).name(computer.getName());
-
+    if (computer.getId() != null) {
+      builder.id(computer.getId());
+    }
+    if (computer.getName() != null) {
+      builder.name(computer.getName());
+    }
     if (computer.getIntroduced() != null && !computer.getIntroduced().toString().trim().isEmpty()) {
       builder.introduced(computer.getIntroduced().toString().substring(0, 10));
     }

@@ -19,8 +19,8 @@ public class CommandLineInterface {
    * Start the CLI : infinite loop waiting for mainUserInput and executing the command matching the mainUserInput when received.
    */
   public void start() {
-    InputManagerCLI inputManagerCLI = new InputManagerCLI();
-    OutputManagerCLI outputManagerCLI = new OutputManagerCLI();
+    final InputManagerCLI inputManagerCLI = new InputManagerCLI();
+    final OutputManagerCLI outputManagerCLI = new OutputManagerCLI();
     outputManagerCLI.showMenu();
     while (true) {
       mainUserInput = null;

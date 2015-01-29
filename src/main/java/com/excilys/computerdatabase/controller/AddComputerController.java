@@ -37,13 +37,13 @@ public class AddComputerController extends HttpServlet {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private IComputerService  computerServiceJDBC;
+  private IComputerService  iComputerService;
 
   /*
    * Instance of CompanyServiceJDBC
    */
   @Autowired
-  private ICompanyService   companyServiceJDBC;
+  private ICompanyService   companyService;
 
   /**
    * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
@@ -61,7 +61,7 @@ public class AddComputerController extends HttpServlet {
   protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
       throws ServletException, IOException {
 
-    final List<Company> companies = companyServiceJDBC.getAll();
+    final List<Company> companies = companyService.getAll();
     httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
@@ -93,7 +93,7 @@ public class AddComputerController extends HttpServlet {
     final ComputerDto computerDto = builder.build();
 
     if (ComputerDtoConverter.validate(computerDto, errorMap)) {
-      computerServiceJDBC.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      iComputerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
       httpResp.sendRedirect("dashboard");
     } else {
       httpReq.setAttribute("error", errorMap);

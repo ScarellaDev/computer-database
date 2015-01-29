@@ -42,7 +42,7 @@ public class InputManagerCLI {
 
   public InputManagerCLI() {
     outputManagerCLI = new OutputManagerCLI();
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+    final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
         "applicationContext.xml");
     companyService = (ICompanyService) context.getBean("companyServiceJDBC");
     context.close();
@@ -87,7 +87,7 @@ public class InputManagerCLI {
    */
   public void askParamsShow() {
     System.out
-        .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");;
+        .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -111,7 +111,7 @@ public class InputManagerCLI {
    * Step by step input for the "add" command.
    */
   public void askParamsAdd() {
-    Computer.Builder builder = Computer.builder();
+    final Computer.Builder builder = Computer.builder();
 
     //Get name
     System.out
@@ -141,7 +141,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isDate(userInput)) {
-          StringBuffer introducedS = new StringBuffer(userInput);
+          final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
           break;
@@ -164,7 +164,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isDate(userInput)) {
-          StringBuffer discontinuedS = new StringBuffer(userInput);
+          final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
           break;
@@ -202,7 +202,7 @@ public class InputManagerCLI {
    * Step by step input for the "update" command.
    */
   public void askParamsUpdate() {
-    Computer.Builder builder = Computer.builder();
+    final Computer.Builder builder = Computer.builder();
 
     //Get id
     System.out
@@ -253,7 +253,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isDate(userInput)) {
-          StringBuffer introducedS = new StringBuffer(userInput);
+          final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
           break;
@@ -276,7 +276,7 @@ public class InputManagerCLI {
         break;
       } else {
         if (StringValidation.isDate(userInput)) {
-          StringBuffer discontinuedS = new StringBuffer(userInput);
+          final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
           break;
@@ -349,7 +349,7 @@ public class InputManagerCLI {
    */
   public void askParamsRemoveComputer() {
     System.out
-        .println("-> You entered the remove computer command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");;
+        .println("-> You entered the remove computer command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);
@@ -374,7 +374,7 @@ public class InputManagerCLI {
    */
   public void askParamsRemoveCompany() {
     System.out
-        .println("-> You entered the remove company command, please enter the id of the company you want to remove from the DB (or press enter to quit command):");;
+        .println("-> You entered the remove company command, please enter the id of the company you want to remove from the DB (or press enter to quit command):");
     while (true) {
       userInput = null;
       sc = new Scanner(System.in);

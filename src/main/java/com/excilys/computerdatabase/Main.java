@@ -8,8 +8,8 @@ import com.excilys.computerdatabase.ui.cli.CommandLineInterface;
 * @author Jeremy SCARELLA
 */
 public class Main {
-  public static void main(String[] args) {
-    CommandLineInterface cli = new CommandLineInterface();
+  public static void main(final String[] args) {
+    final CommandLineInterface cli = new CommandLineInterface();
     cli.start();
   }
 }

@@ -43,9 +43,9 @@ public interface IComputerDao {
   /**
    * Remove a computer from the database using its id.
    * @param id : id of the computer to remove.
-   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
+   * @return True if the computer was removed from the database, false otherwise.
    */
-  Computer removeById(Long id);
+  Boolean removeById(Long id);
 
   /**
    * Remove all computers attached to the companyId given as parameter from the database.

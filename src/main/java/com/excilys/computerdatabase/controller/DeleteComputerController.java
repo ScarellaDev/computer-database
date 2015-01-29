@@ -32,7 +32,7 @@ public class DeleteComputerController extends HttpServlet {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private IComputerService     computerServiceJDBC;
+  private IComputerService     computerService;
 
   /*
    * POSITIVE LONG PATTERN
@@ -56,12 +56,12 @@ public class DeleteComputerController extends HttpServlet {
       throws ServletException, IOException {
 
     //Get the String containing the Ids of the computers to delete
-    String selection = httpReq.getParameter("selection");
+    final String selection = httpReq.getParameter("selection");
 
     //Create a matcher to find the positives longs in the String
-    Matcher m = POSITIVE_LONG_PATTERN.matcher(selection);
+    final Matcher m = POSITIVE_LONG_PATTERN.matcher(selection);
 
-    List<Long> idList = new ArrayList<Long>();
+    final List<Long> idList = new ArrayList<Long>();
 
     //For each long found, delete the computer
     while (m.find()) {
@@ -71,7 +71,7 @@ public class DeleteComputerController extends HttpServlet {
     if (idList.isEmpty()) {
       return;
     }
-    computerServiceJDBC.removeByIdList(idList);
+    computerService.removeByIdList(idList);
 
     httpResp.sendRedirect("dashboard");
   }

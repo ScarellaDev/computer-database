@@ -21,7 +21,6 @@ import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.impl.ComputerDaoSQL;
 
 /**
  * Test class for the ComputerDao
@@ -40,7 +39,6 @@ public class ComputerDaoTest {
 
   @Before
   public void init() throws SQLException {
-    computerDao = new ComputerDaoSQL();
     list = new ArrayList<Computer>();
     list.add(new Computer(1L, "MacBook Pro 15.4 inch", null, null, apple));
     list.add(new Computer(2L, "MacBook Pro", LocalDateTime.parse("2006-01-10 00:00:00"), null,

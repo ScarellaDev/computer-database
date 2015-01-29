@@ -187,7 +187,7 @@ public class Page<T> {
     return pageIndex;
   }
 
-  public void setPageIndex(Integer pageIndex) {
+  public void setPageIndex(final Integer pageIndex) {
     this.pageIndex = pageIndex;
   }
 
@@ -195,7 +195,7 @@ public class Page<T> {
     return list;
   }
 
-  public void setList(List<T> list) {
+  public void setList(final List<T> list) {
     this.list = list;
   }
 
@@ -203,7 +203,7 @@ public class Page<T> {
     return nbElementsPerPage;
   }
 
-  public void setNbElementsPerPage(Integer nbElementsPerPage) {
+  public void setNbElementsPerPage(final Integer nbElementsPerPage) {
     this.nbElementsPerPage = nbElementsPerPage;
   }
 
@@ -211,7 +211,7 @@ public class Page<T> {
     return totalNbElements;
   }
 
-  public void setTotalNbElements(Integer totalNbElements) {
+  public void setTotalNbElements(final Integer totalNbElements) {
     this.totalNbElements = totalNbElements;
   }
 
@@ -219,7 +219,7 @@ public class Page<T> {
     return totalNbPages;
   }
 
-  public void setTotalNbPages(Integer totalNbPages) {
+  public void setTotalNbPages(final Integer totalNbPages) {
     this.totalNbPages = totalNbPages;
   }
 
@@ -227,7 +227,7 @@ public class Page<T> {
     return search;
   }
 
-  public void setSearch(String search) {
+  public void setSearch(final String search) {
     this.search = search;
   }
 
@@ -235,7 +235,7 @@ public class Page<T> {
     return sort;
   }
 
-  public void setSort(Integer sort) {
+  public void setSort(final Integer sort) {
     this.sort = sort;
   }
 
@@ -243,7 +243,7 @@ public class Page<T> {
     return order;
   }
 
-  public void setOrder(String order) {
+  public void setOrder(final String order) {
     this.order = order;
   }
 

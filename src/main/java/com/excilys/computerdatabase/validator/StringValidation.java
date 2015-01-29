@@ -5,7 +5,7 @@ package com.excilys.computerdatabase.validator;
 *
 * @author Jeremy SCARELLA
 */
-public class StringValidation {
+public final class StringValidation {
 
   /*
    * REGEX_DELIMITER
@@ -71,6 +71,13 @@ public class StringValidation {
   * Regex expression for a positive int
   */
   private static final String POSITIVE_INT_PATTERN  = "\\d{1,9}";
+
+  /*
+   * Private Constructor
+   */
+  private StringValidation() {
+
+  }
 
   /**
   * Check if a String as the format of a positive int

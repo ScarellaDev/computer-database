@@ -4,6 +4,18 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 id="WebApp_ID" version="3.0">
 	<display-name>computer-database</display-name>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:applicationContext.xml</param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	
 	<welcome-file-list>
 		<welcome-file>dashboard</welcome-file>
 	</welcome-file-list>
@@ -22,16 +34,5 @@ id="WebApp_ID" version="3.0">
 		<error-code>500</error-code>
 		<location>/WEB-INF/views/500.jsp</location>
 	</error-page>
-	
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:applicationContext.xml</param-value>
-	</context-param>
-	
-	<listener>
-		<listener-class>
-			org.springframework.web.context.ContextLoaderListener
-		</listener-class>
-	</listener>
 	
 </web-app>

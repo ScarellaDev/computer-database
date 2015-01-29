@@ -13,6 +13,11 @@ public enum UtilDaoSQL {
   public static final String COMPUTER_SELECT_QUERY               = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company_name FROM computer c LEFT JOIN company ON company.id=c.company_id";
 
   /*
+   * SELECT query for company table
+   */
+  public static final String COMPUTER_SELECT_WITH_ID_QUERY       = "SELECT c.id, c.name, c.introduced, c.discontinued, company_id, company.name as company_name FROM computer c LEFT JOIN company ON company.id=c.company_id WHERE c.id=?;";
+
+  /*
    * INSERT query for computer table
    */
   public static final String COMPUTER_INSERT_QUERY               = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?)";
@@ -20,7 +25,7 @@ public enum UtilDaoSQL {
   /*
    * UPDATE query for computer table
    */
-  public static final String COMPUTER_UPDATE_QUERY               = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id =? WHERE id = ?";
+  public static final String COMPUTER_UPDATE_QUERY               = "UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?";
 
   /*
    * DELETE query for computer table
@@ -48,9 +53,19 @@ public enum UtilDaoSQL {
   public static final String COMPANY_SELECT_QUERY                = "SELECT * FROM company";
 
   /*
+  * SELECT query for company table
+  */
+  public static final String COMPANY_LIMITED_SELECT_QUERY        = "SELECT * FROM company LIMIT ? OFFSET ?;";
+
+  /*
+   * SELECT query for company table
+   */
+  public static final String COMPANY_SELECT_WITH_ID_QUERY        = "SELECT * FROM company WHERE company.id=?;";
+
+  /*
    * DELETE query for company table
    */
-  public static final String COMPANY_DELETE_QUERY                = "DELETE company FROM company WHERE id = ?";
+  public static final String COMPANY_DELETE_QUERY                = "DELETE company FROM company WHERE id = ?;";
 
   /*
    * COUNT query for company table

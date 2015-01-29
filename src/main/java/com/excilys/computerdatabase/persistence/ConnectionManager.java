@@ -42,7 +42,7 @@ public class ConnectionManager {
   * Initialise the ConnectionManager and the DataSource provided by Spring
   */
   @Autowired
-  public ConnectionManager(DriverManagerDataSource mgrDataSource) {
+  public ConnectionManager(final DriverManagerDataSource mgrDataSource) {
     this.mgrDataSource = mgrDataSource;
     threadLocalConnection = new ThreadLocal<Connection>();
   }
@@ -57,7 +57,7 @@ public class ConnectionManager {
       // No connection available for current Thread
       try {
         threadLocalConnection.set(mgrDataSource.getConnection());
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOGGER.warn("SQLException: couldn't get database connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
@@ -74,7 +74,7 @@ public class ConnectionManager {
         getConnection().setAutoCommit(true);
         getConnection().close();
         threadLocalConnection.remove();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOGGER.warn("SQLException: couldn't close Connection", e);
         throw new PersistenceException(e.getMessage(), e);
       }
@@ -85,11 +85,11 @@ public class ConnectionManager {
    * Close Statement if it is not null.
    * @param statement
    */
-  public void close(Statement statement) {
+  public void close(final Statement statement) {
     if (statement != null) {
       try {
         statement.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOGGER.warn("SQLException: couldn't close Statement");
         throw new PersistenceException(e.getMessage(), e);
       }
@@ -100,11 +100,11 @@ public class ConnectionManager {
    * Close PreparedStatement if it is not null.
    * @param pStatement
    */
-  public void close(PreparedStatement pStatement) {
+  public void close(final PreparedStatement pStatement) {
     if (pStatement != null) {
       try {
         pStatement.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOGGER.warn("SQLException: couldn't close PreparedStatement");
         throw new PersistenceException(e.getMessage(), e);
       }
@@ -115,11 +115,11 @@ public class ConnectionManager {
    * Close ResultSet if it is not null.
    * @param results
    */
-  public void close(ResultSet results) {
+  public void close(final ResultSet results) {
     if (results != null) {
       try {
         results.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOGGER.warn("SQLException: couldn't close ResultSet");
         throw new PersistenceException(e.getMessage(), e);
       }

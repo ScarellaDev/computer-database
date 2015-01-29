@@ -37,13 +37,13 @@ public class EditComputerController extends HttpServlet {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private IComputerService  computerServiceJDBC;
+  private IComputerService  computerService;
 
   /*
    * Instance of CompanyServiceJDBC
    */
   @Autowired
-  private ICompanyService   companyServiceJDBC;
+  private ICompanyService   companyService;
 
   /**
    * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
@@ -65,11 +65,11 @@ public class EditComputerController extends HttpServlet {
     if (StringValidation.isPositiveLong(idS)) {
       id = Long.valueOf(httpReq.getParameter("id"));
 
-      final ComputerDto computerDto = computerServiceJDBC.getById(id);
+      final ComputerDto computerDto = computerService.getById(id);
       httpReq.setAttribute("computer", computerDto);
     }
 
-    final List<Company> companies = companyServiceJDBC.getAll();
+    final List<Company> companies = companyService.getAll();
     httpReq.setAttribute("companies", companies);
 
     // Get the JSP dispatcher
@@ -94,7 +94,7 @@ public class EditComputerController extends HttpServlet {
         .discontinued(httpReq.getParameter("discontinued").trim());
 
     if (StringValidation.isPositiveLong(httpReq.getParameter("id").trim())) {
-      builder.id((Long.valueOf(httpReq.getParameter("id").trim())));
+      builder.id(Long.valueOf(httpReq.getParameter("id").trim()));
     } else {
       errorMap.put("eId", "Incorrect id : an id should be a positive integer");
     }
@@ -106,7 +106,7 @@ public class EditComputerController extends HttpServlet {
     final ComputerDto computerDto = builder.build();
 
     if (ComputerDtoConverter.validate(computerDto, errorMap)) {
-      computerServiceJDBC.updateByComputer(ComputerDtoConverter.toComputer(computerDto));
+      computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto));
       httpResp.sendRedirect("dashboard");
     } else {
       httpReq.setAttribute("error", errorMap);
