@@ -56,12 +56,6 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 		
-		<!-- spring-web.jar -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		
 		<!-- spring-jdbc.jar -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -72,6 +66,18 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
+		</dependency>
+		
+		<!-- spring-web.jar -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		
+		<!-- spring-webmvc.jar -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
 		</dependency>
 		<!-- /SPRING FRAMEWORK -->
 	

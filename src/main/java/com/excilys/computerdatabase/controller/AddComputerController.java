@@ -1,103 +1,78 @@
 package com.excilys.computerdatabase.controller;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
 import com.excilys.computerdatabase.service.IComputerService;
-import com.excilys.computerdatabase.validator.StringValidation;
 
 /**
-* Controller managing HttpServletRequests on /addcomputer URL
+* Controller managing the /addcomputer URL
 * Used to add computers to the database through the webapp
 *
 * @author Jeremy SCARELLA
 */
-@WebServlet("/addcomputer")
-public class AddComputerController extends HttpServlet {
-
-  private static final long serialVersionUID = 1L;
-
-  /*
-   * Instance of ComputerServiceJDBC
-   */
-  @Autowired
-  private IComputerService  iComputerService;
+@Controller
+@RequestMapping("/addcomputer")
+public class AddComputerController {
 
   /*
-   * Instance of CompanyServiceJDBC
+   * Instance of ComputerService
    */
   @Autowired
-  private ICompanyService   companyService;
+  private IComputerService computerService;
 
-  /**
-   * Override of the init() method of GenericServlet in order to link the Servlet context to the Spring one
+  /*
+   * Instance of CompanyService
    */
-  @Override
-  public void init() throws ServletException {
-    super.init();
-    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  @Autowired
+  private ICompanyService  companyService;
+
+  @RequestMapping(method = RequestMethod.GET)
+  protected String doGet(final ModelMap map) {
+    // The view requires the list of all companies
+    map.addAttribute("companies", companyService.getAll());
+    return "addcomputer";
   }
 
   /**
-   * Prints error messages
+   * Add computer to database
    */
-  @Override
-  protected void doGet(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
-      throws ServletException, IOException {
-
-    final List<Company> companies = companyService.getAll();
-    httpReq.setAttribute("companies", companies);
-
-    // Get the JSP dispatcher
-    final RequestDispatcher dispatcher = httpReq
-        .getRequestDispatcher("WEB-INF/views/addcomputer.jsp");
-
-    // Forward the httpRequest
-    dispatcher.forward(httpReq, httpResp);
-  }
-
-  /**
-   * Add computer to database using HttpServletRequest params {name (httpRequired), introduced, discontinued, companyId}
-   */
-  @Override
-  protected void doPost(final HttpServletRequest httpReq, final HttpServletResponse httpResp)
-      throws ServletException, IOException {
+  @RequestMapping(method = RequestMethod.POST)
+  protected String doPost(final ComputerDto computerDto, final ModelMap map) {
 
     final Map<String, String> errorMap = new HashMap<String, String>();
 
-    final ComputerDto.Builder builder = ComputerDto.builder()
-        .name(httpReq.getParameter("name").trim())
-        .introduced(httpReq.getParameter("introduced").trim())
-        .discontinued(httpReq.getParameter("discontinued").trim());
+    // Storing given values in case something goes wrong and we need to display it back to the user
+    map.addAttribute("newName", computerDto.getName());
+    map.addAttribute("newIntroduced", computerDto.getIntroduced());
+    map.addAttribute("newDiscontinued", computerDto.getDiscontinued());
+    map.addAttribute("newCompanyId", computerDto.getCompanyId());
 
-    if (StringValidation.isPositiveLong(httpReq.getParameter("companyId").trim())) {
-      builder.companyId(Long.valueOf(httpReq.getParameter("companyId").trim()));
+    Company company = null;
+    final Long companyId = computerDto.getCompanyId();
+    if (companyId > 0) {
+      company = companyService.getById(companyId);
+      if (company == null) {
+        errorMap.put("eCompanyId", "Incorrect companyId : an id should be a positive integer");
+      }
     }
 
-    final ComputerDto computerDto = builder.build();
-
     if (ComputerDtoConverter.validate(computerDto, errorMap)) {
-      iComputerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
-      httpResp.sendRedirect("dashboard");
+      computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      return "redirect:/dashboard";
     } else {
-      httpReq.setAttribute("error", errorMap);
-      doGet(httpReq, httpResp);
+      map.addAttribute("error", errorMap);
+      return doGet(map);
     }
   }
 }
