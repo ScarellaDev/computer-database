@@ -15,7 +15,8 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
 import com.excilys.computerdatabase.service.IComputerService;
-import com.excilys.computerdatabase.validator.StringValidation;
+import com.excilys.computerdatabase.validator.ComputerDtoValidator;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
 * Class managing the outputs of the CLI.
@@ -105,7 +106,7 @@ public class OutputManagerCLI {
         } else {
           System.out.println("Warning: last page reached!");
         }
-      } else if (StringValidation.isPositiveLong(userInput)) {
+      } else if (StringValidator.isPositiveLong(userInput)) {
         final Integer index = new Integer(userInput);
         if (index < 1 || index > page.getTotalNbPages()) {
           System.out.println("Non valid page number.");
@@ -259,7 +260,7 @@ public class OutputManagerCLI {
         } else {
           System.out.println("Warning: last page reached!");
         }
-      } else if (StringValidation.isPositiveLong(userInput)) {
+      } else if (StringValidator.isPositiveLong(userInput)) {
         final Integer index = new Integer(userInput);
         if (index < 1 || index > page.getTotalNbPages()) {
           System.out.println("Non valid page number.");
@@ -382,7 +383,7 @@ public class OutputManagerCLI {
   public void showComputer(final String idS) {
     //Print the details of the computer with id=idS
 
-    if (StringValidation.isPositiveLong(idS)) {
+    if (StringValidator.isPositiveLong(idS)) {
       final ComputerDto computerDto = computerService.getById(new Long(idS));
       if (computerDto == null) {
         System.out.println("MySQL Error: computer not found.\r\n");
@@ -420,7 +421,7 @@ public class OutputManagerCLI {
     }
     if (params.length > 3) {
       if (!"null".equals(params[3].toLowerCase())) {
-        if (StringValidation.isPositiveLong(params[3])) {
+        if (StringValidator.isPositiveLong(params[3])) {
           final Company company = companyService.getById(new Long(params[3]));
           if (company != null) {
             builder.companyId(company.getId());
@@ -435,7 +436,7 @@ public class OutputManagerCLI {
     final ComputerDto computerDto = builder.build();
 
     //Check computerDto
-    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+    if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
       newComputerDto = computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
       if (newComputerDto == null) {
@@ -456,7 +457,7 @@ public class OutputManagerCLI {
   public void showAddResult(final Computer computer) {
     //Check computerDto
     final Map<String, String> errorMap = new HashMap<String, String>();
-    if (ComputerDtoConverter.validate(ComputerDtoConverter.toDto(computer), errorMap)) {
+    if (ComputerDtoValidator.isValid(ComputerDtoConverter.toDto(computer), errorMap)) {
       ComputerDto newComputerDto = null;
       newComputerDto = computerService.addByComputer(computer);
       if (newComputerDto == null) {
@@ -479,7 +480,7 @@ public class OutputManagerCLI {
     final Map<String, String> errorMap = new HashMap<String, String>();
     final ComputerDto.Builder builder = ComputerDto.builder();
     if (params.length > 0) {
-      if (StringValidation.isPositiveLong(params[0])) {
+      if (StringValidator.isPositiveLong(params[0])) {
         builder.id(new Long(params[0]));
       } else {
         errorMap.put("eId", "Incorrect Id: an id should be a positive integer");
@@ -504,7 +505,7 @@ public class OutputManagerCLI {
     }
     if (params.length > 4) {
       if (!"null".equals(params[4].toLowerCase())) {
-        if (StringValidation.isPositiveLong(params[4])) {
+        if (StringValidator.isPositiveLong(params[4])) {
           final Company company = companyService.getById(new Long(params[4]));
           if (company != null) {
             builder.companyId(company.getId());
@@ -519,7 +520,7 @@ public class OutputManagerCLI {
     final ComputerDto computerDto = builder.build();
 
     //Check computerDto
-    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+    if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
       newComputerDto = computerService.updateByComputer(ComputerDtoConverter
           .toComputer(computerDto));
@@ -541,7 +542,7 @@ public class OutputManagerCLI {
   public void showUpdateResult(final Computer computer) {
     //Check computerDto
     final Map<String, String> errorMap = new HashMap<String, String>();
-    if (ComputerDtoConverter.validate(ComputerDtoConverter.toDto(computer), errorMap)) {
+    if (ComputerDtoValidator.isValid(ComputerDtoConverter.toDto(computer), errorMap)) {
       ComputerDto newComputerDto = null;
       newComputerDto = computerService.updateByComputer(computer);
       if (newComputerDto == null) {
@@ -561,7 +562,7 @@ public class OutputManagerCLI {
    */
   public void showRemoveComputerResult(final String idS) {
     //Print the details of the computer with id=idS
-    if (StringValidation.isPositiveLong(idS)) {
+    if (StringValidator.isPositiveLong(idS)) {
       if (computerService.removeById(new Long(idS))) {
         System.out.println("Your computer was successfully removed from the DB :");
       } else {
@@ -578,7 +579,7 @@ public class OutputManagerCLI {
    */
   public void showRemoveCompanyResult(final String idS) {
     //Print the details of the computer with id=idS
-    if (StringValidation.isPositiveLong(idS)) {
+    if (StringValidator.isPositiveLong(idS)) {
       if (companyService.removeById(new Long(idS))) {
         System.out
             .println("Your company and the attached computers were successfully removed from the DB.");

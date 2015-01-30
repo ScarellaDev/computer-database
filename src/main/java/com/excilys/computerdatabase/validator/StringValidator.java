@@ -1,19 +1,21 @@
 package com.excilys.computerdatabase.validator;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
 * Validation class to check the String inputs entered by the user in the CLI.
 *
 * @author Jeremy SCARELLA
 */
-public final class StringValidation {
+public final class StringValidator {
 
   /*
    * REGEX_DELIMITER
    */
-  private static final String REGEX_DELIMITER       = "(\\.|-|\\/)";
+  private static final String REGEX_DELIMITER       = "([-])";
 
   /*
-   * REGEX_DATE_EN : yyyy-MM-dd (allowed separators = '.' || '-' || '/')
+   * REGEX_DATE_EN : yyyy-MM-dd
    */
   private static final String REGEX_DATE_EN         = "(" + "((\\d{4})" + REGEX_DELIMITER
                                                         + "(0[13578]|10|12)" + REGEX_DELIMITER
@@ -38,7 +40,7 @@ public final class StringValidation {
                                                         + REGEX_DELIMITER + "(29))" + ")";
 
   /*
-   * REGEX_DATE_FR : dd-MM-yyyy (allowed separators = '.' || '-' || '/')
+   * REGEX_DATE_FR : dd-MM-yyyy
    */
   private static final String REGEX_DATE_FR         = "(" + "((0[1-9]|[12][0-9]|3[01])"
                                                         + REGEX_DELIMITER + "(0[13578]|10|12)"
@@ -75,7 +77,7 @@ public final class StringValidation {
   /*
    * Private Constructor
    */
-  private StringValidation() {
+  private StringValidator() {
 
   }
 
@@ -85,7 +87,7 @@ public final class StringValidation {
   * @return true if the format if correct
   */
   public static boolean isPositiveInt(final String intS) {
-    if (intS == null || intS.trim().isEmpty()) {
+    if (isEmpty(intS)) {
       return false;
     }
     if (!intS.matches(POSITIVE_INT_PATTERN)) {
@@ -100,7 +102,7 @@ public final class StringValidation {
   * @return True if the format if correct
   */
   public static boolean isPositiveLong(final String longS) {
-    if (longS == null || longS.trim().isEmpty()) {
+    if (isEmpty(longS)) {
       return false;
     }
     if (!longS.matches(POSITIVE_LONG_PATTERN)) {
@@ -115,13 +117,7 @@ public final class StringValidation {
   * @return true if it  is empty
   */
   public static boolean isEmpty(final String str) {
-    if (str == null) {
-      return true;
-    }
-    if (str.trim().isEmpty()) {
-      return true;
-    }
-    if ("".equals(str.trim())) {
+    if (!StringUtils.isNotBlank(str)) {
       return true;
     }
     if ("null".equals(str.trim().toLowerCase())) {
@@ -136,25 +132,22 @@ public final class StringValidation {
    * @return true if the input matches a Date, false otherwise.
    */
   public static boolean isDate(final String dateS) {
-    if (dateS == null || dateS.trim().isEmpty()) {
+    if (isEmpty(dateS)) {
       return false;
     }
     if (!dateS.matches(REGEX_DATE_EN)) {
       return false;
     }
 
+    final int year = new Integer(dateS.substring(0, 4));
     //TIMESTAMP has a range of '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC
-    if (new Integer(dateS.substring(0, 4)) < 1970) {
+    if (year < 1970 || year > 2038) {
       return false;
-    }
-    if (new Integer(dateS.substring(0, 4)) > 2038) {
-      return false;
-    }
-    if (new Integer(dateS.substring(0, 4)) == 2038) {
+    } else if (year == 2038) {
       if (new Integer(dateS.substring(5, 7)) > 1) {
         return false;
       } else {
-        if (new Integer(dateS.substring(8)) > 19) {
+        if (new Integer(dateS.substring(8, 10)) > 19) {
           return false;
         }
       }

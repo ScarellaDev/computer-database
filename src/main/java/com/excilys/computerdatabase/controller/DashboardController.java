@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,12 @@ public class DashboardController {
       @RequestParam(value = "search", required = false, defaultValue = "")
       final String search, @RequestParam(value = "sort", required = false, defaultValue = "0")
       final Integer sort, @RequestParam(value = "order", required = false, defaultValue = "ASC")
-      final String order) {
+      final String order, @ModelAttribute("message")
+      final String message, @ModelAttribute("errormessage")
+      final String errormessage) {
+
+    map.addAttribute("message", message);
+    map.addAttribute("errormessage", errormessage);
 
     Page<ComputerDto> page = new Page<ComputerDto>();
 

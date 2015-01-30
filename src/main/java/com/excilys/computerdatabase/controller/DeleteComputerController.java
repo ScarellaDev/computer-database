@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.excilys.computerdatabase.service.IComputerService;
 
@@ -37,7 +38,8 @@ public class DeleteComputerController {
    * Remove computer(s) from the database
    */
   @RequestMapping(method = RequestMethod.POST)
-  protected String doPost(String selection) {
+  protected String doPost(@RequestParam("selection")
+  final String selection) {
 
     //Create a matcher to find the positives longs in the String
     final Matcher m = POSITIVE_LONG_PATTERN.matcher(selection);

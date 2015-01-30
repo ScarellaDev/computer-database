@@ -1,15 +1,17 @@
 package com.excilys.computerdatabase.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
@@ -37,9 +39,21 @@ public class AddComputerController {
   @Autowired
   private ICompanyService  companyService;
 
+  /*
+   * Validator settings
+   */
+  @Autowired
+  @Qualifier("computerDtoValidator")
+  private Validator        computerDtoValidator;
+
+  @InitBinder
+  private void initBinder(final WebDataBinder binder) {
+    binder.setValidator(computerDtoValidator);
+  }
+
   @RequestMapping(method = RequestMethod.GET)
   protected String doGet(final ModelMap map) {
-    // The view requires the list of all companies
+    map.addAttribute("computerDto", new ComputerDto());
     map.addAttribute("companies", companyService.getAll());
     return "addcomputer";
   }
@@ -48,31 +62,15 @@ public class AddComputerController {
    * Add computer to database
    */
   @RequestMapping(method = RequestMethod.POST)
-  protected String doPost(final ComputerDto computerDto, final ModelMap map) {
-
-    final Map<String, String> errorMap = new HashMap<String, String>();
-
-    // Storing given values in case something goes wrong and we need to display it back to the user
-    map.addAttribute("newName", computerDto.getName());
-    map.addAttribute("newIntroduced", computerDto.getIntroduced());
-    map.addAttribute("newDiscontinued", computerDto.getDiscontinued());
-    map.addAttribute("newCompanyId", computerDto.getCompanyId());
-
-    Company company = null;
-    final Long companyId = computerDto.getCompanyId();
-    if (companyId > 0) {
-      company = companyService.getById(companyId);
-      if (company == null) {
-        errorMap.put("eCompanyId", "Incorrect companyId : an id should be a positive integer");
-      }
-    }
-
-    if (ComputerDtoConverter.validate(computerDto, errorMap)) {
+  protected String doPost(final ModelMap map, @Validated
+  final ComputerDto computerDto, final BindingResult result) {
+    if (!result.hasErrors()) {
       computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      map.addAttribute("message", "Successfully added " + computerDto.toString());
       return "redirect:/dashboard";
     } else {
-      map.addAttribute("error", errorMap);
-      return doGet(map);
+      map.addAttribute("companies", companyService.getAll());
+      return "addcomputer";
     }
   }
 }

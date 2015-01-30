@@ -8,7 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyService;
-import com.excilys.computerdatabase.validator.StringValidation;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
 * Class managing the inputs of the CLI.
@@ -96,7 +96,7 @@ public class InputManagerCLI {
         System.out.println("-> show command aborted");
         return;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           outputManagerCLI.showComputer(userInput);
           break;
         } else {
@@ -120,7 +120,7 @@ public class InputManagerCLI {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (StringValidation.isEmpty(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> add command aborted");
         return;
       } else {
@@ -140,7 +140,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isDate(userInput)) {
+        if (StringValidator.isDate(userInput)) {
           final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -163,7 +163,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isDate(userInput)) {
+        if (StringValidator.isDate(userInput)) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -186,7 +186,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -216,7 +216,7 @@ public class InputManagerCLI {
         System.out.println("-> update command aborted");
         return;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           builder.id(new Long(userInput));
           break;
         } else {
@@ -232,7 +232,7 @@ public class InputManagerCLI {
       userInput = null;
       sc = new Scanner(System.in);
       userInput = sc.nextLine().trim().toLowerCase();
-      if (StringValidation.isEmpty(userInput) || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput) || "null".equals(userInput)) {
         System.out.println("Non valid name (cannot be empty or set to 'null')");
         continue;
       } else {
@@ -252,7 +252,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isDate(userInput)) {
+        if (StringValidator.isDate(userInput)) {
           final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -275,7 +275,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isDate(userInput)) {
+        if (StringValidator.isDate(userInput)) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -298,7 +298,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           builder.company(companyService.getById(new Long(userInput)));
           break;
         } else {
@@ -358,7 +358,7 @@ public class InputManagerCLI {
         System.out.println("-> remove computer command aborted");
         return;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           outputManagerCLI.showRemoveComputerResult(userInput);
           break;
         } else {
@@ -383,7 +383,7 @@ public class InputManagerCLI {
         System.out.println("-> remove company command aborted");
         return;
       } else {
-        if (StringValidation.isPositiveLong(userInput)) {
+        if (StringValidator.isPositiveLong(userInput)) {
           outputManagerCLI.showRemoveCompanyResult(userInput);
           break;
         } else {

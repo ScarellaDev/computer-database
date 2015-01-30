@@ -3,12 +3,11 @@ package com.excilys.computerdatabase.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.validator.StringValidation;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
 * Converter class between Computer objects and ComputerDto objects
@@ -37,18 +36,18 @@ public class ComputerDtoConverter {
     if (computerDto.getId() >= 0) {
       builder.id(computerDto.getId());
     }
-    if (computerDto.getName() != null) {
+    if (!StringValidator.isEmpty(computerDto.getName())) {
       builder.name(computerDto.getName());
     }
-    if (computerDto.getIntroduced() != null && !computerDto.getIntroduced().trim().isEmpty()) {
+    if (StringValidator.isDate(computerDto.getIntroduced())) {
       builder.introduced(LocalDateTime.parse(computerDto.getIntroduced() + " 00:00:00",
           DATE_TIME_FORMATTER));
     }
-    if (computerDto.getDiscontinued() != null && !computerDto.getDiscontinued().trim().isEmpty()) {
+    if (StringValidator.isDate(computerDto.getDiscontinued())) {
       builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued() + " 00:00:00",
           DATE_TIME_FORMATTER));
     }
-    if (computerDto.getCompanyId() != 0) {
+    if (computerDto.getCompanyId() > 0) {
       builder.company(new Company(computerDto.getCompanyId(), computerDto.getCompanyName()));
     }
     return builder.build();
@@ -64,7 +63,14 @@ public class ComputerDtoConverter {
       return null;
     }
 
-    return computerDtos.stream().map(c -> toComputer(c)).collect(Collectors.toList());
+    final List<Computer> computers = computerDtos.stream().map(computerDto -> {
+      final Computer computer = ComputerDtoConverter.toComputer(computerDto);
+      if (computer != null) {
+        return computer;
+      }
+      return null;
+    }).collect(Collectors.toList());
+    return computers;
   }
 
   /**
@@ -84,11 +90,12 @@ public class ComputerDtoConverter {
     if (computer.getName() != null) {
       builder.name(computer.getName());
     }
-    if (computer.getIntroduced() != null && !computer.getIntroduced().toString().trim().isEmpty()) {
+    if (computer.getIntroduced() != null
+        && !StringValidator.isEmpty(computer.getIntroduced().toString())) {
       builder.introduced(computer.getIntroduced().toString().substring(0, 10));
     }
     if (computer.getDiscontinued() != null
-        && !computer.getDiscontinued().toString().trim().isEmpty()) {
+        && !StringValidator.isEmpty(computer.getDiscontinued().toString())) {
       builder.discontinued(computer.getDiscontinued().toString().substring(0, 10));
     }
     if (computer.getCompany() != null) {
@@ -111,55 +118,13 @@ public class ComputerDtoConverter {
       return null;
     }
 
-    return computers.stream().map(c -> toDto(c)).collect(Collectors.toList());
-  }
-
-  /**
-   * Validates a ComputerDto and populates an errorMap if some variables are not okay
-   * @param computerDto : the ComputerDto to check
-   * @param errorMap : the errorMap to populate
-   * @return true if the ComputerDto is valid, false otherwise
-   */
-  public static boolean validate(final ComputerDto computerDto, final Map<String, String> errorMap) {
-    if (computerDto == null) {
-      return false;
-    }
-
-    if (computerDto.getId() < 0) {
-      errorMap.put("eId", "Incorrect id : an id should be a positive integer");
-    }
-
-    if (StringValidation.isEmpty(computerDto.getName())) {
-      errorMap.put("eName",
-          "Incorrect name : a name can't be empty or only spaces or set to 'null'");
-    }
-
-    if (computerDto.getIntroduced() != null && !computerDto.getIntroduced().isEmpty()) {
-      if (!StringValidation.isDate(computerDto.getIntroduced())) {
-        errorMap
-            .put(
-                "eDateI",
-                "Incorrect introduced date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC) or shoulb be left empty");
+    final List<ComputerDto> computerDtos = computers.stream().map(computer -> {
+      final ComputerDto computerDto = ComputerDtoConverter.toDto(computer);
+      if (computerDto != null) {
+        return computerDto;
       }
-    }
-
-    if (computerDto.getDiscontinued() != null && !computerDto.getDiscontinued().isEmpty()) {
-      if (!StringValidation.isDate(computerDto.getDiscontinued())) {
-        errorMap
-            .put(
-                "eDateD",
-                "Incorrect discontinued date : the field must be at the yyyy-MM-dd format (within a range of '1970-01-01' UTC to '2038-01-19' UTC) or should be left empty");
-      }
-    }
-
-    if (computerDto.getCompanyId() < 0) {
-      errorMap.put("eCompanyId", "Incorrect CompanyId: an id should be a positive integer");
-    }
-
-    //Return the computer instance if there was no error
-    if (!errorMap.isEmpty()) {
-      return false;
-    }
-    return true;
+      return null;
+    }).collect(Collectors.toList());
+    return computerDtos;
   }
 }

@@ -10,9 +10,11 @@
 
 	<context:component-scan base-package="com.excilys.computerdatabase.persistence" />
 	<context:component-scan base-package="com.excilys.computerdatabase.service" />
+	<context:component-scan base-package="com.excilys.computerdatabase.validator" />
 	
+	<!-- Declares support for general annotations such as @Required, @Autowired, @PostConstruct -->
 	<context:annotation-config />
-	
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:db.properties</value>
@@ -26,6 +28,7 @@
 		<property name="password" value="${DB_PASSWORD}"></property>
 	</bean>
 	
+	<!-- Declares support for @Transactional annotation -->
 	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 	
 	 <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

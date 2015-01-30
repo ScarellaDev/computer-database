@@ -34,13 +34,13 @@ public class ComputerDto {
   * @param companyName
   */
   public ComputerDto(final long id, final String name, final String introduced,
-      final String discontinued, final long company, final String companyName) {
+      final String discontinued, final long companyId, final String companyName) {
     super();
     this.id = id;
     this.name = name;
     this.introduced = introduced;
     this.discontinued = discontinued;
-    this.companyId = company;
+    this.companyId = companyId;
     this.companyName = companyName;
   }
 

@@ -30,6 +30,7 @@ pageEncoding="UTF-8"%>
 		</form>
 		
 		<div class="container" style="margin-top: 10px;">
+		
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -73,6 +74,8 @@ pageEncoding="UTF-8"%>
 					</c:forEach>
 				</tbody>
 			</table>
+			<c:if test="${not empty message}"><div class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
+			<c:if test="${not empty errormessage}"><div class="alert alert-error text-center"><c:out value="${errormessage}"/></div></c:if>
 		</div>
 	</section>
 	

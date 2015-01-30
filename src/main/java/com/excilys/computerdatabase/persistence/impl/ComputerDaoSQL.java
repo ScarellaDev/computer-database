@@ -21,7 +21,7 @@ import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.exception.PersistenceException;
 import com.excilys.computerdatabase.mapper.ComputerRowMapper;
 import com.excilys.computerdatabase.persistence.IComputerDao;
-import com.excilys.computerdatabase.validator.StringValidation;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
 * Data Access Object for Computer, SQL implementation.
@@ -99,7 +99,7 @@ public class ComputerDaoSQL implements IComputerDao {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   public Computer addByComputer(final Computer computer) {
-    if (computer == null || StringValidation.isEmpty(computer.getName())) {
+    if (computer == null || StringValidator.isEmpty(computer.getName())) {
       return null;
     }
 
@@ -137,7 +137,7 @@ public class ComputerDaoSQL implements IComputerDao {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   public Computer updateByComputer(final Computer computer) {
-    if (computer == null || computer.getId() < 0 || StringValidation.isEmpty(computer.getName())) {
+    if (computer == null || computer.getId() < 0 || StringValidator.isEmpty(computer.getName())) {
       return null;
     }
 
@@ -260,7 +260,7 @@ public class ComputerDaoSQL implements IComputerDao {
     final String search = page.getSearch() + "%";
     try {
       //Create & execute the counting query
-      if (StringValidation.isEmpty(page.getSearch())) {
+      if (StringValidator.isEmpty(page.getSearch())) {
         page.setTotalNbElements(jdbcTemplate.queryForObject(UtilDaoSQL.COMPUTER_COUNT_QUERY,
             Integer.class));
       } else {
@@ -279,7 +279,7 @@ public class ComputerDaoSQL implements IComputerDao {
     List<Computer> computers = null;
     try {
       //Create & execute the selecting query
-      if (StringValidation.isEmpty(page.getSearch())) {
+      if (StringValidator.isEmpty(page.getSearch())) {
         selectQuery.append(" ORDER BY ").append(Page.getColumnNames()[page.getSort()]).append(" ")
             .append(page.getOrder()).append(" LIMIT ? OFFSET ?;");
 
