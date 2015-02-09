@@ -67,18 +67,10 @@ public class CompanyDaoSQL implements ICompanyDao {
       throw new PersistenceException(e.getMessage(), e);
     }
 
-    if (companies == null) {
+    if (companies.isEmpty()) {
       return null;
     } else {
-      if (companies.size() == 1) {
-        return companies.get(0);
-      } else if (companies.size() == 0) {
-        return null;
-      } else {
-        LOGGER.error("There was more than 1 company with id={} in the database", id);
-        throw new PersistenceException("There was more than 1 company with id=" + id
-            + " in the database");
-      }
+      return companies.get(0);
     }
   }
 

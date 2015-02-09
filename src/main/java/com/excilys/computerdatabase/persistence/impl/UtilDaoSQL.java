@@ -1,5 +1,11 @@
 package com.excilys.computerdatabase.persistence.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.Computer;
+
 public enum UtilDaoSQL {
 
   /*
@@ -71,4 +77,39 @@ public enum UtilDaoSQL {
    * COUNT query for company table
    */
   public static final String COMPANY_COUNT_QUERY                 = "SELECT COUNT(id) AS total FROM company";
+
+  /**
+   * Method converting LocaleDateTime to Timestamp
+   * @param date : LocaleDateTime to convert
+   * @return Timestamp value of date or null
+   */
+  public static Timestamp toTimestamp(LocalDateTime date) {
+    if (date == null) {
+      return null;
+    } else {
+      return Timestamp.valueOf(date);
+    }
+  }
+
+  /**
+   * Method retrieving id of Object
+   * @param obj : object which id is being retrieved
+   * @return a Long id or null
+   */
+  public static Long getCompanyId(Object obj) {
+    if (obj == null) {
+      return null;
+    } else if (obj instanceof Computer) {
+      Company company = ((Computer) obj).getCompany();
+      if (company == null) {
+        return null;
+      } else {
+        return company.getId();
+      }
+    } else if (obj instanceof Company) {
+      return ((Company) obj).getId();
+    } else {
+      return null;
+    }
+  }
 }

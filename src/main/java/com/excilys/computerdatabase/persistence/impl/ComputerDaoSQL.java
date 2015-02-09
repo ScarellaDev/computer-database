@@ -1,7 +1,5 @@
 package com.excilys.computerdatabase.persistence.impl;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
@@ -74,18 +71,10 @@ public class ComputerDaoSQL implements IComputerDao {
       throw new PersistenceException(e.getMessage(), e);
     }
 
-    if (computers == null) {
+    if (computers.isEmpty()) {
       return null;
     } else {
-      if (computers.size() == 1) {
-        return computers.get(0);
-      } else if (computers.size() == 0) {
-        return null;
-      } else {
-        LOGGER.error("There was more than 1 computer with id={} in the database", id);
-        throw new PersistenceException("There was more than 1 computer with id=" + id
-            + " in the database");
-      }
+      return computers.get(0);
     }
   }
 
@@ -112,24 +101,9 @@ public class ComputerDaoSQL implements IComputerDao {
       return null;
     }
 
-    Timestamp introducedT = null;
-    final LocalDateTime introduced = computer.getIntroduced();
-    Timestamp discontinuedT = null;
-    final LocalDateTime discontinued = computer.getDiscontinued();
-    Long companyId = null;
-    final Company company = computer.getCompany();
-
-    if (introduced != null) {
-      introducedT = Timestamp.valueOf(introduced);
-    }
-    if (discontinued != null) {
-      discontinuedT = Timestamp.valueOf(discontinued);
-    }
-    if (company != null) {
-      companyId = company.getId();
-    }
-
-    final Object[] args = new Object[] { computer.getName(), introducedT, discontinuedT, companyId };
+    final Object[] args = new Object[] { computer.getName(),
+        UtilDaoSQL.toTimestamp(computer.getIntroduced()),
+        UtilDaoSQL.toTimestamp(computer.getDiscontinued()), UtilDaoSQL.getCompanyId(computer) };
 
     try {
       jdbcTemplate.update(UtilDaoSQL.COMPUTER_INSERT_QUERY, args);
@@ -150,24 +124,9 @@ public class ComputerDaoSQL implements IComputerDao {
       return null;
     }
 
-    Timestamp introducedT = null;
-    final LocalDateTime introduced = computer.getIntroduced();
-    Timestamp discontinuedT = null;
-    final LocalDateTime discontinued = computer.getDiscontinued();
-    Long companyId = null;
-    final Company company = computer.getCompany();
-
-    if (introduced != null) {
-      introducedT = Timestamp.valueOf(introduced);
-    }
-    if (discontinued != null) {
-      discontinuedT = Timestamp.valueOf(discontinued);
-    }
-    if (company != null) {
-      companyId = company.getId();
-    }
-
-    final Object[] args = new Object[] { computer.getName(), introducedT, discontinuedT, companyId,
+    final Object[] args = new Object[] { computer.getName(),
+        UtilDaoSQL.toTimestamp(computer.getIntroduced()),
+        UtilDaoSQL.toTimestamp(computer.getDiscontinued()), UtilDaoSQL.getCompanyId(computer),
         computer.getId() };
 
     try {
