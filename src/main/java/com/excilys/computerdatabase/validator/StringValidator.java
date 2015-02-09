@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.GenericValidator;
 
 /**
 * Validation class to check the String inputs entered by the user in the CLI.
@@ -12,67 +13,49 @@ public final class StringValidator {
   /*
    * REGEX_DELIMITER
    */
-  private static final String REGEX_DELIMITER       = "([-])";
+  private static final String REGEX_DELIMITER = "([-])";
 
   /*
    * REGEX_DATE_EN : yyyy-MM-dd
    */
-  private static final String REGEX_DATE_EN         = "(" + "((\\d{4})" + REGEX_DELIMITER
-                                                        + "(0[13578]|10|12)" + REGEX_DELIMITER
-                                                        + "(0[1-9]|[12][0-9]|3[01]))"
-                                                        + "|((\\d{4})" + REGEX_DELIMITER
-                                                        + "(0[469]|11)" + REGEX_DELIMITER
-                                                        + "([0][1-9]|[12][0-9]|30))" + "|((\\d{4})"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER
-                                                        + "(0[1-9]|1[0-9]|2[0-8]))"
-                                                        + "|(([02468][048]00)" + REGEX_DELIMITER
-                                                        + "(02)" + REGEX_DELIMITER + "(29))"
-                                                        + "|(([13579][26]00)" + REGEX_DELIMITER
-                                                        + "(02)" + REGEX_DELIMITER + "(29))"
-                                                        + "|(([0-9][0-9][0][48])" + REGEX_DELIMITER
-                                                        + "(02)" + REGEX_DELIMITER + "(29))"
-                                                        + "|(([0-9][0-9][2468][048])"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "(29))"
-                                                        + "|(([0-9][0-9][13579][26])"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "(29))" + ")";
+  private static final String REGEX_DATE_EN   = "(" + "((\\d{4})" + REGEX_DELIMITER
+                                                  + "(0[13578]|10|12)" + REGEX_DELIMITER
+                                                  + "(0[1-9]|[12][0-9]|3[01]))" + "|((\\d{4})"
+                                                  + REGEX_DELIMITER + "(0[469]|11)"
+                                                  + REGEX_DELIMITER + "([0][1-9]|[12][0-9]|30))"
+                                                  + "|((\\d{4})" + REGEX_DELIMITER + "(02)"
+                                                  + REGEX_DELIMITER + "(0[1-9]|1[0-9]|2[0-8]))"
+                                                  + "|(([02468][048]00)" + REGEX_DELIMITER + "(02)"
+                                                  + REGEX_DELIMITER + "(29))" + "|(([13579][26]00)"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "(29))" + "|(([0-9][0-9][0][48])"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "(29))" + "|(([0-9][0-9][2468][048])"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "(29))" + "|(([0-9][0-9][13579][26])"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "(29))" + ")";
 
   /*
    * REGEX_DATE_FR : dd-MM-yyyy
    */
-  private static final String REGEX_DATE_FR         = "(" + "((0[1-9]|[12][0-9]|3[01])"
-                                                        + REGEX_DELIMITER + "(0[13578]|10|12)"
-                                                        + REGEX_DELIMITER + "(\\d{4}))"
-                                                        + "|(([0][1-9]|[12][0-9]|30)"
-                                                        + REGEX_DELIMITER + "(0[469]|11)"
-                                                        + REGEX_DELIMITER + "(\\d{4}))"
-                                                        + "|((0[1-9]|1[0-9]|2[0-8])"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "(\\d{4}))" + "|((29)"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "([02468][048]00))"
-                                                        + "|((29)" + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "([13579][26]00))"
-                                                        + "|((29)" + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER + "([0-9][0-9][0][48]))"
-                                                        + "|((29)" + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER
-                                                        + "([0-9][0-9][2468][048]))" + "|((29)"
-                                                        + REGEX_DELIMITER + "(02)"
-                                                        + REGEX_DELIMITER
-                                                        + "([0-9][0-9][13579][26]))" + ")";
-
-  /**
-  * Regex expression for a positive long
-  */
-  private static final String POSITIVE_LONG_PATTERN = "\\d{1,19}";
-
-  /**
-  * Regex expression for a positive int
-  */
-  private static final String POSITIVE_INT_PATTERN  = "\\d{1,9}";
+  private static final String REGEX_DATE_FR   = "(" + "((0[1-9]|[12][0-9]|3[01])" + REGEX_DELIMITER
+                                                  + "(0[13578]|10|12)" + REGEX_DELIMITER
+                                                  + "(\\d{4}))" + "|(([0][1-9]|[12][0-9]|30)"
+                                                  + REGEX_DELIMITER + "(0[469]|11)"
+                                                  + REGEX_DELIMITER + "(\\d{4}))"
+                                                  + "|((0[1-9]|1[0-9]|2[0-8])" + REGEX_DELIMITER
+                                                  + "(02)" + REGEX_DELIMITER + "(\\d{4}))"
+                                                  + "|((29)" + REGEX_DELIMITER + "(02)"
+                                                  + REGEX_DELIMITER + "([02468][048]00))"
+                                                  + "|((29)" + REGEX_DELIMITER + "(02)"
+                                                  + REGEX_DELIMITER + "([13579][26]00))" + "|((29)"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "([0-9][0-9][0][48]))" + "|((29)"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "([0-9][0-9][2468][048]))" + "|((29)"
+                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
+                                                  + "([0-9][0-9][13579][26]))" + ")";
 
   /*
    * Private Constructor
@@ -90,9 +73,13 @@ public final class StringValidator {
     if (isEmpty(intS)) {
       return false;
     }
-    if (!intS.matches(POSITIVE_INT_PATTERN)) {
+    if (!GenericValidator.isInt(intS)) {
       return false;
     }
+    if (new Integer(intS) < 0) {
+      return false;
+    }
+
     return true;
   }
 
@@ -105,9 +92,13 @@ public final class StringValidator {
     if (isEmpty(longS)) {
       return false;
     }
-    if (!longS.matches(POSITIVE_LONG_PATTERN)) {
+    if (!GenericValidator.isLong(longS)) {
       return false;
     }
+    if (new Long(longS) < 0) {
+      return false;
+    }
+
     return true;
   }
 
