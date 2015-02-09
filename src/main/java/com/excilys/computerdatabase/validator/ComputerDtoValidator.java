@@ -19,38 +19,38 @@ public class ComputerDtoValidator implements Validator {
   @Override
   public void validate(final Object target, final Errors errors) {
     if (target == null) {
-      errors.reject("null-object");
+      errors.reject("error-null-object");
       return;
     }
     if (!(target instanceof ComputerDto)) {
-      errors.reject("wrong-type");
+      errors.reject("error-wrong-type");
       return;
     }
 
     final ComputerDto computerDto = (ComputerDto) target;
 
     if (computerDto.getId() < 0) {
-      errors.rejectValue("id", "computer-id");
+      errors.rejectValue("id", "error-computer-id");
     }
 
     if (StringValidator.isEmpty(computerDto.getName())) {
-      errors.rejectValue("name", "computer-name");
+      errors.rejectValue("name", "error-computer-name");
     }
 
     if (!StringValidator.isEmpty(computerDto.getIntroduced())) {
       if (!StringValidator.isDate(computerDto.getIntroduced())) {
-        errors.rejectValue("introduced", "computer-date");
+        errors.rejectValue("introduced", "error-computer-date");
       }
     }
 
     if (!StringValidator.isEmpty(computerDto.getDiscontinued())) {
       if (!StringValidator.isDate(computerDto.getDiscontinued())) {
-        errors.rejectValue("discontinued", "computer-date");
+        errors.rejectValue("discontinued", "error-computer-date");
       }
     }
 
     if (computerDto.getCompanyId() < 0) {
-      errors.rejectValue("companyId", "company-id");
+      errors.rejectValue("companyId", "error-company-id");
     }
   }
 

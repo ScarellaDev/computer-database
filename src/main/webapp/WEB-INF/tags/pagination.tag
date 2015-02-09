@@ -8,12 +8,13 @@
 <%@ attribute name="search" required="true" %>
 
 
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="h" tagdir="/WEB-INF/tags" %>
 
 <ul class="pagination">
 	<c:if test="${pageIndex > 1}">
-		<li><h:link target="${target}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}">First</h:link></li>
+		<li><h:link target="${target}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}"><spring:message code="pagination-first"/></h:link></li>
 		<li><h:link target="${target}" pageIndex="${pageIndex-1}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}">&laquo;</h:link></li>
 	</c:if>
 	<c:if test="${pageIndex-2 > 0}">
@@ -36,7 +37,7 @@
 	</c:forEach>
 	<c:if test="${pageIndex < totalNbPages}">
 		<li><h:link target="${target}" pageIndex="${pageIndex+1}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}">&raquo;</h:link></li>
-		<li><h:link target="${target}" pageIndex="${totalNbPages}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}">Last</h:link></li>
+		<li><h:link target="${target}" pageIndex="${totalNbPages}" nbElementsPerPage="${nbElementsPerPage}" search="${search}" sort="${sort}" order="${order}"><spring:message code="pagination-last"/></h:link></li>
 	</c:if>
 </ul>
 

@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="com.excilys.computerdatabase.domain.*"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="h" %>
@@ -7,20 +7,20 @@ pageEncoding="UTF-8"%>
 
 	<section id="main">
 		<div class="container">
-			<h1 id="homeTitle">${page.totalNbElements} Computers found</h1>
+			<h1 id="homeTitle">${page.totalNbElements} <spring:message code="title-dashboard"/></h1>
 			<div id="actions" class="form-horizontal">
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
 						<input type="search" id="search" name="search"
-						class="form-control" placeholder="Search name" /> <input
-						type="submit" id="searchsubmit" value="Filter by name"
+						class="form-control" placeholder="<spring:message code="search-placeholder"/>" /> <input
+						type="submit" id="searchsubmit" value="<spring:message code="button-filter"/>"
 						class="btn btn-primary" />
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addcomputer" href="addcomputer">Add</a>
+					<a class="btn btn-success" id="addcomputer" href="addcomputer"><spring:message code="button-add"/></a>
 					<a class="btn btn-danger" id="deletecomputer" href="#"
-					onclick="$.fn.toggleEditMode();">Delete</a>
+					onclick="$.fn.toggleEditMode();"><spring:message code="button-delete"/></a>
 				</div>
 			</div>
 		</div>
@@ -43,19 +43,19 @@ pageEncoding="UTF-8"%>
 						class="fa fa-trash-o fa-lg"></i>
 						</a>
 						</span></th>
-						<%String[][] columns = {{"1","Computer name"}, {"2", "Introduced date"},
-						{"3", "Discontinued date"}, {"4","Company name"}};
+						<%String[][] columns = {{"1","computer-name"}, {"2", "computer-introduced"},
+						{"3", "computer-discontinued"}, {"4","computer-company"}};
 						pageContext.setAttribute("columns", columns);%>
 						<c:forEach items="${columns}" var="col">
 							<c:choose>
 								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"ASC\") }">
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="desc">${col[1]}</h:link></th>
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="desc"><spring:message code="${col[1]}"/></h:link></th>
 								</c:when>
 								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"DESC\") }">
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc">${col[1]}</h:link></th>
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc"><spring:message code="${col[1]}"/></h:link></th>
 								</c:when>
 								<c:otherwise>
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc">${col[1]}</h:link></th>
+									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc"><spring:message code="${col[1]}"/></h:link></th>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>	
