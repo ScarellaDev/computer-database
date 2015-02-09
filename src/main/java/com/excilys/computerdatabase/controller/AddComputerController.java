@@ -53,8 +53,8 @@ public class AddComputerController {
 
   @RequestMapping(method = RequestMethod.GET)
   protected String doGet(final ModelMap map) {
-    map.addAttribute("computerDto", new ComputerDto());
     map.addAttribute("companies", companyService.getAll());
+    map.addAttribute("computerDto", new ComputerDto());
     return "addcomputer";
   }
 

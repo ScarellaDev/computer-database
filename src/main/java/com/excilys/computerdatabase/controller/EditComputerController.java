@@ -56,9 +56,8 @@ public class EditComputerController {
   protected String doGet(final ModelMap map, @RequestParam("id")
   final Long id) {
     if (id != null) {
-      map.addAttribute("computer", computerService.getById(id));
       map.addAttribute("companies", companyService.getAll());
-      map.addAttribute("computerDto", new ComputerDto());
+      map.addAttribute("computerDto", computerService.getById(id));
     }
     return "editcomputer";
   }

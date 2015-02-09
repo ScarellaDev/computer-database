@@ -19,27 +19,27 @@ pageEncoding="UTF-8"%>
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <div class="label label-default pull-right">
-                        id: ${computer.id}
+                        id: ${computerDto.id}
                     </div>
                     <h1>Edit Computer</h1>
 
                     <form:form id="form" action="editcomputer" method="POST" commandName="computerDto">
-                        <form:input type="hidden" path="id" value="${computer.id}"/>
+                        <form:input type="hidden" path="id" value="${computerDto.id}"/>
                         <form:errors path="id" cssClass="error"/>
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName">Computer name</label>
-                                <form:input path="name" type="text" class="form-control" id="name"  placeholder="name" value="${computer.name}" required="required"/>
+                                <form:input path="name" type="text" class="form-control" id="name"  placeholder="name" value="${computerDto.name}" required="required"/>
                             	<form:errors path="name" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label>
-                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="yyyy-MM-dd" value="${computer.introduced}"/>
+                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="yyyy-MM-dd" value="${computerDto.introduced}"/>
                             	<form:errors path="introduced" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label>
-                                <form:input path="discontinued" type="date" class="form-control" id="discontinued" placeholder="yyyy-MM-dd" value="${computer.discontinued}"/>
+                                <form:input path="discontinued" type="date" class="form-control" id="discontinued" placeholder="yyyy-MM-dd" value="${computerDto.discontinued}"/>
                             	<form:errors path="discontinued" cssClass="error"/>
                             </div>
                             <div class="form-group">
@@ -48,7 +48,7 @@ pageEncoding="UTF-8"%>
                                     <option value="0">--</option>
                                    	<c:forEach items="${companies}" var="company">
                                    	<c:choose>
-                                   		<c:when test="${company.id == computer.companyId}">
+                                   		<c:when test="${company.id == computerDto.companyId}">
                                    			<option value="${company.id}" selected="selected">${company.name}</option>
                                  		</c:when>
                                    		<c:otherwise>
