@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +33,13 @@ import com.excilys.computerdatabase.validator.StringValidator;
 @Repository
 public class ComputerDaoSQL implements IComputerDao {
   /*
+   * LOGGER
+   */
+  private static final Logger LOGGER         = LoggerFactory.getLogger(ComputerDaoSQL.class);
+
+  /*
    * Instance of JdbcTemplate
    */
-  @Autowired
   private JdbcTemplate        jdbcTemplate;
 
   /*
@@ -42,9 +48,12 @@ public class ComputerDaoSQL implements IComputerDao {
   private RowMapper<Computer> computerMapper = new ComputerRowMapper();
 
   /*
-   * LOGGER
+   * Link jdbcTemplate to DataSource
    */
-  private static final Logger LOGGER         = LoggerFactory.getLogger(ComputerDaoSQL.class);
+  @Autowired
+  public void setDataSource(final DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+  }
 
   /**
    * Get the computer in the database corresponding to the id in parameter.

@@ -2,6 +2,8 @@ package com.excilys.computerdatabase.persistence.impl;
 
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,13 @@ import com.excilys.computerdatabase.persistence.ICompanyDao;
 @Repository
 public class CompanyDaoSQL implements ICompanyDao {
   /*
+   * LOGGER
+   */
+  private static final Logger LOGGER        = LoggerFactory.getLogger(CompanyDaoSQL.class);
+
+  /*
    * Instance of JdbcTemplate
    */
-  @Autowired
   private JdbcTemplate        jdbcTemplate;
 
   /*
@@ -35,9 +41,12 @@ public class CompanyDaoSQL implements ICompanyDao {
   private RowMapper<Company>  companyMapper = new CompanyRowMapper();
 
   /*
-   * LOGGER
+   * Link jdbcTemplate to DataSource
    */
-  private static final Logger LOGGER        = LoggerFactory.getLogger(CompanyDaoSQL.class);
+  @Autowired
+  public void setDataSource(final DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+  }
 
   /**
    * Get the company in the database corresponding to the id in parameter.
