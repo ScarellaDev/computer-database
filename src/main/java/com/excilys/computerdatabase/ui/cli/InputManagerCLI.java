@@ -140,7 +140,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidator.isDate(userInput)) {
+        if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -163,7 +163,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidator.isDate(userInput)) {
+        if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
@@ -252,7 +252,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidator.isDate(userInput)) {
+        if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer introducedS = new StringBuffer(userInput);
           introducedS.append(" 00:00:00");
           builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
@@ -275,7 +275,7 @@ public class InputManagerCLI {
           || "null".equals(userInput)) {
         break;
       } else {
-        if (StringValidator.isDate(userInput)) {
+        if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
           discontinuedS.append(" 00:00:00");
           builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));

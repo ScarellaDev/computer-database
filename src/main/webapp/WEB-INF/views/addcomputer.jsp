@@ -30,12 +30,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="computer-introduced"/></label>
-                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="yyyy-MM-dd"/>
+                                <spring:message code="date-placeholder" var="placeholderdate"/>
+                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="${placeholderdate}"/>
                             	<form:errors path="introduced" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="computer-discontinued"/></label>
-                                <form:input path="discontinued" class="form-control" id="discontinued" placeholder="yyyy-MM-dd"/>
+                                <form:input path="discontinued" class="form-control" id="discontinued" placeholder="${placeholderdate}"/>
                             	<form:errors path="discontinued" cssClass="error"/>
                             </div>
                             <div class="form-group">

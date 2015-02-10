@@ -35,12 +35,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="computer-introduced"/></label>
-                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="yyyy-MM-dd" value="${computerDto.introduced}"/>
+                                <spring:message code="date-placeholder" var="placeholderdate"/>
+                                <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="${placeholderdate}" value="${computerDto.introduced}"/>
                             	<form:errors path="introduced" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="computer-discontinued"/></label>
-                                <form:input path="discontinued" type="date" class="form-control" id="discontinued" placeholder="yyyy-MM-dd" value="${computerDto.discontinued}"/>
+                                <form:input path="discontinued" type="date" class="form-control" id="discontinued" placeholder="${placeholderdate}" value="${computerDto.discontinued}"/>
                             	<form:errors path="discontinued" cssClass="error"/>
                             </div>
                             <div class="form-group">

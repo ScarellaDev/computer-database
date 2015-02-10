@@ -1,5 +1,8 @@
 package com.excilys.computerdatabase.validator;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 
@@ -9,53 +12,6 @@ import org.apache.commons.validator.GenericValidator;
 * @author Jeremy SCARELLA
 */
 public final class StringValidator {
-
-  /*
-   * REGEX_DELIMITER
-   */
-  private static final String REGEX_DELIMITER = "([-])";
-
-  /*
-   * REGEX_DATE_EN : yyyy-MM-dd
-   */
-  private static final String REGEX_DATE_EN   = "(" + "((\\d{4})" + REGEX_DELIMITER
-                                                  + "(0[13578]|10|12)" + REGEX_DELIMITER
-                                                  + "(0[1-9]|[12][0-9]|3[01]))" + "|((\\d{4})"
-                                                  + REGEX_DELIMITER + "(0[469]|11)"
-                                                  + REGEX_DELIMITER + "([0][1-9]|[12][0-9]|30))"
-                                                  + "|((\\d{4})" + REGEX_DELIMITER + "(02)"
-                                                  + REGEX_DELIMITER + "(0[1-9]|1[0-9]|2[0-8]))"
-                                                  + "|(([02468][048]00)" + REGEX_DELIMITER + "(02)"
-                                                  + REGEX_DELIMITER + "(29))" + "|(([13579][26]00)"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "(29))" + "|(([0-9][0-9][0][48])"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "(29))" + "|(([0-9][0-9][2468][048])"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "(29))" + "|(([0-9][0-9][13579][26])"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "(29))" + ")";
-
-  /*
-   * REGEX_DATE_FR : dd-MM-yyyy
-   */
-  private static final String REGEX_DATE_FR   = "(" + "((0[1-9]|[12][0-9]|3[01])" + REGEX_DELIMITER
-                                                  + "(0[13578]|10|12)" + REGEX_DELIMITER
-                                                  + "(\\d{4}))" + "|(([0][1-9]|[12][0-9]|30)"
-                                                  + REGEX_DELIMITER + "(0[469]|11)"
-                                                  + REGEX_DELIMITER + "(\\d{4}))"
-                                                  + "|((0[1-9]|1[0-9]|2[0-8])" + REGEX_DELIMITER
-                                                  + "(02)" + REGEX_DELIMITER + "(\\d{4}))"
-                                                  + "|((29)" + REGEX_DELIMITER + "(02)"
-                                                  + REGEX_DELIMITER + "([02468][048]00))"
-                                                  + "|((29)" + REGEX_DELIMITER + "(02)"
-                                                  + REGEX_DELIMITER + "([13579][26]00))" + "|((29)"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "([0-9][0-9][0][48]))" + "|((29)"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "([0-9][0-9][2468][048]))" + "|((29)"
-                                                  + REGEX_DELIMITER + "(02)" + REGEX_DELIMITER
-                                                  + "([0-9][0-9][13579][26]))" + ")";
 
   /*
    * Private Constructor
@@ -120,25 +76,27 @@ public final class StringValidator {
   /**
    * Validation of a String to see if it matches a Date.
    * @param dateS : the String input entered by the user as a Date.
+   * @param dateFormat : the format of the Date pattern used
    * @return true if the input matches a Date, false otherwise.
    */
-  public static boolean isDate(final String dateS) {
+  public static boolean isDate(final String dateS, final String dateFormat) {
     if (isEmpty(dateS)) {
       return false;
     }
-    if (!dateS.matches(REGEX_DATE_EN)) {
+    if (!GenericValidator.isDate(dateS, dateFormat, false)) {
       return false;
     }
 
-    final int year = new Integer(dateS.substring(0, 4));
+    final LocalDate date = LocalDate.parse(dateS, DateTimeFormatter.ofPattern(dateFormat));
+    final int year = date.getYear();
     //TIMESTAMP has a range of '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC
     if (year < 1970 || year > 2038) {
       return false;
     } else if (year == 2038) {
-      if (new Integer(dateS.substring(5, 7)) > 1) {
+      if (date.getMonthValue() > 1) {
         return false;
       } else {
-        if (new Integer(dateS.substring(8, 10)) > 19) {
+        if (date.getDayOfMonth() > 19) {
           return false;
         }
       }

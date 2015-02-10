@@ -438,7 +438,8 @@ public class OutputManagerCLI {
     //Check computerDto
     if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      newComputerDto = computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
+          "yyyy-MM-dd 00:00:00"));
       if (newComputerDto == null) {
         System.out.println("MySQL Error: your computer could not be added to the DB.\r\n");
       } else {
@@ -522,8 +523,8 @@ public class OutputManagerCLI {
     //Check computerDto
     if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.updateByComputer(ComputerDtoConverter
-          .toComputer(computerDto));
+      newComputerDto = computerService.updateByComputer(ComputerDtoConverter.toComputer(
+          computerDto, "yyyy-MM-dd 00:00:00"));
       if (newComputerDto == null) {
         System.out.println("MySQL Error: your computer could not be updated in the DB.\r\n");
       } else {

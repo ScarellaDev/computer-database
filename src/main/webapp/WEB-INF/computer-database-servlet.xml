@@ -15,6 +15,7 @@
         <mvc:annotation-driven />
         
         <context:component-scan base-package="com.excilys.computerdatabase.controller" />
+        <context:component-scan base-package="com.excilys.computerdatabase.validator" />
         
         <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         	<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />

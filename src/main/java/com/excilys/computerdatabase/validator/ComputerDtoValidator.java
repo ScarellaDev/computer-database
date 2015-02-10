@@ -2,6 +2,9 @@ package com.excilys.computerdatabase.validator;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -16,6 +19,16 @@ public class ComputerDtoValidator implements Validator {
     return ComputerDto.class.isAssignableFrom(clazz);
   }
 
+  /*
+   * MessageSourceAccessor
+   */
+  private MessageSourceAccessor messageSourceAccessor;
+
+  @Autowired
+  public void setMessageSource(final MessageSource messageSource) {
+    this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
+  }
+
   @Override
   public void validate(final Object target, final Errors errors) {
     if (target == null) {
@@ -28,6 +41,7 @@ public class ComputerDtoValidator implements Validator {
     }
 
     final ComputerDto computerDto = (ComputerDto) target;
+    final String dateFormat = messageSourceAccessor.getMessage("date-format");
 
     if (computerDto.getId() < 0) {
       errors.rejectValue("id", "error-computer-id");
@@ -38,13 +52,13 @@ public class ComputerDtoValidator implements Validator {
     }
 
     if (!StringValidator.isEmpty(computerDto.getIntroduced())) {
-      if (!StringValidator.isDate(computerDto.getIntroduced())) {
+      if (!StringValidator.isDate(computerDto.getIntroduced(), dateFormat)) {
         errors.rejectValue("introduced", "error-computer-date");
       }
     }
 
     if (!StringValidator.isEmpty(computerDto.getDiscontinued())) {
-      if (!StringValidator.isDate(computerDto.getDiscontinued())) {
+      if (!StringValidator.isDate(computerDto.getDiscontinued(), dateFormat)) {
         errors.rejectValue("discontinued", "error-computer-date");
       }
     }
@@ -68,7 +82,7 @@ public class ComputerDtoValidator implements Validator {
     }
 
     if (!StringValidator.isEmpty(computerDto.getIntroduced())) {
-      if (!StringValidator.isDate(computerDto.getIntroduced())) {
+      if (!StringValidator.isDate(computerDto.getIntroduced(), "yyyy-MM-dd")) {
         errorMap
             .put(
                 "eDateI",
@@ -77,7 +91,7 @@ public class ComputerDtoValidator implements Validator {
     }
 
     if (!StringValidator.isEmpty(computerDto.getDiscontinued())) {
-      if (!StringValidator.isDate(computerDto.getDiscontinued())) {
+      if (!StringValidator.isDate(computerDto.getDiscontinued(), "yyyy-MM-dd")) {
         errorMap
             .put(
                 "eDateD",

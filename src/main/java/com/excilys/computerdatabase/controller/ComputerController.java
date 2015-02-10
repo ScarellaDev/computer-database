@@ -153,7 +153,8 @@ public class ComputerController {
   protected String addComputer(final ModelMap map, @Validated
   final ComputerDto computerDto, final BindingResult result) {
     if (!result.hasErrors()) {
-      computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
+      computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
+          messageSourceAccessor.getMessage("date-format")));
 
       map.addAttribute("message",
           messageSourceAccessor.getMessage("success-add") + computerDto.toString());
@@ -200,7 +201,8 @@ public class ComputerController {
     }
 
     if (!result.hasErrors()) {
-      computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto));
+      computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto,
+          messageSourceAccessor.getMessage("date-format")));
 
       map.addAttribute("message",
           messageSourceAccessor.getMessage("success-edit") + computerDto.toString());

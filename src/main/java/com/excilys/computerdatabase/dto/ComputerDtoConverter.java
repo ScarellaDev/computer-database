@@ -16,18 +16,12 @@ import com.excilys.computerdatabase.validator.StringValidator;
 */
 public class ComputerDtoConverter {
 
-  /*
-   * DATE TIME FORMATTER
-   */
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-                                                                 .ofPattern("yyyy-MM-dd HH:mm:ss");
-
   /**
   * Converts a ComputerDto to a Computer
   * @param computerDto : ComputerDto to convert to Computer
   * @return a Computer
   */
-  public static Computer toComputer(final ComputerDto computerDto) {
+  public static Computer toComputer(final ComputerDto computerDto, final String dateFormat) {
     if (computerDto == null) {
       return null;
     }
@@ -39,13 +33,13 @@ public class ComputerDtoConverter {
     if (!StringValidator.isEmpty(computerDto.getName())) {
       builder.name(computerDto.getName());
     }
-    if (StringValidator.isDate(computerDto.getIntroduced())) {
+    if (StringValidator.isDate(computerDto.getIntroduced(), dateFormat)) {
       builder.introduced(LocalDateTime.parse(computerDto.getIntroduced() + " 00:00:00",
-          DATE_TIME_FORMATTER));
+          DateTimeFormatter.ofPattern(dateFormat + " HH:mm:ss")));
     }
-    if (StringValidator.isDate(computerDto.getDiscontinued())) {
+    if (StringValidator.isDate(computerDto.getDiscontinued(), dateFormat)) {
       builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued() + " 00:00:00",
-          DATE_TIME_FORMATTER));
+          DateTimeFormatter.ofPattern(dateFormat + " HH:mm:ss")));
     }
     if (computerDto.getCompanyId() > 0) {
       builder.company(new Company(computerDto.getCompanyId(), computerDto.getCompanyName()));
@@ -58,13 +52,14 @@ public class ComputerDtoConverter {
   * @param computerDtos : ComputerDto List to convert to Computer List
   * @return a Computer List
   */
-  public static List<Computer> toComputer(final List<ComputerDto> computerDtos) {
+  public static List<Computer> toComputer(final List<ComputerDto> computerDtos,
+      final String dateFormat) {
     if (computerDtos == null) {
       return null;
     }
 
     final List<Computer> computers = computerDtos.stream().map(computerDto -> {
-      final Computer computer = ComputerDtoConverter.toComputer(computerDto);
+      final Computer computer = ComputerDtoConverter.toComputer(computerDto, dateFormat);
       if (computer != null) {
         return computer;
       }
