@@ -5,6 +5,11 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="h" %>
 <jsp:include page="includes/header.jsp" />
 
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>	
+	<script>var alertMessage="<spring:message code='alert.message' javaScriptEscape='true'/>"</script>
+	<script src="js/dashboard.js"></script>
+
 	<section id="main">
 		<div class="container">
 			<h1 id="homeTitle">${page.totalNbElements} <spring:message code="title-dashboard"/></h1>
@@ -75,7 +80,7 @@
 				</tbody>
 			</table>
 			<c:if test="${not empty message}"><div class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
-			<c:if test="${not empty errormessage}"><div class="alert alert-error text-center"><c:out value="${errormessage}"/></div></c:if>
+			<c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
 		</div>
 	</section>
 	
@@ -84,10 +89,6 @@
 			<h:pagination target="dashboard" pageIndex="${page.pageIndex}" totalNbPages="${page.totalNbPages}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${page.sort.toString()}" order="${page.order}"/>
 		</div>
 	</footer>
-	
-	<script src="js/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/dashboard.js"></script>
 	
 	</body>
 </html>

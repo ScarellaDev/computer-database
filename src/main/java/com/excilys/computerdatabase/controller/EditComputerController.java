@@ -2,6 +2,8 @@ package com.excilys.computerdatabase.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -52,14 +54,32 @@ public class EditComputerController {
     binder.setValidator(computerDtoValidator);
   }
 
+  /*
+   * MessageSourceAccessor
+   */
+  private MessageSourceAccessor messageSourceAccessor;
+
+  @Autowired
+  public void setMessageSource(final MessageSource messageSource) {
+    this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
+  }
+
   @RequestMapping(method = RequestMethod.GET)
   protected String doGet(final ModelMap map, @RequestParam("id")
   final Long id) {
     if (id != null) {
-      map.addAttribute("companies", companyService.getAll());
-      map.addAttribute("computerDto", computerService.getById(id));
+      ComputerDto computerDto = computerService.getById(id);
+      if (computerDto != null) {
+        map.addAttribute("companies", companyService.getAll());
+        map.addAttribute("computerDto", computerDto);
+        return "editcomputer";
+      } else {
+        map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-edit-selection"));
+        return "redirect:/dashboard";
+      }
     }
-    return "editcomputer";
+    map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-edit-false-selection"));
+    return "redirect:/dashboard";
   }
 
   /**
@@ -70,13 +90,17 @@ public class EditComputerController {
   final ComputerDto computerDto, final BindingResult result) {
     final ComputerDto newComputerDto = computerService.getById(computerDto.getId());
     if (newComputerDto == null) {
-      map.addAttribute("message", computerDto + "does not exist in database anymore.");
+      map.addAttribute("errormessage",
+          computerDto + messageSourceAccessor.getMessage("error-edit-selection"));
       return "redirect:/dashboard";
     }
 
     if (!result.hasErrors()) {
       computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto));
-      map.addAttribute("message", "Successfully edited " + computerDto.toString());
+
+      map.addAttribute("message",
+          messageSourceAccessor.getMessage("success-edit") + computerDto.toString());
+
       return "redirect:/dashboard";
     } else {
       map.addAttribute("companies", companyService.getAll());

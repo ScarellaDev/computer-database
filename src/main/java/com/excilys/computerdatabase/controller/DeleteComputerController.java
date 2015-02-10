@@ -6,7 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +30,17 @@ public class DeleteComputerController {
    * Instance of ComputerServiceJDBC
    */
   @Autowired
-  private IComputerService     computerService;
+  private IComputerService      computerService;
+
+  /*
+   * MessageSourceAccessor
+   */
+  private MessageSourceAccessor messageSourceAccessor;
+
+  @Autowired
+  public void setMessageSource(final MessageSource messageSource) {
+    this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
+  }
 
   /*
    * POSITIVE LONG PATTERN
@@ -38,7 +51,7 @@ public class DeleteComputerController {
    * Remove computer(s) from the database
    */
   @RequestMapping(method = RequestMethod.POST)
-  protected String doPost(@RequestParam("selection")
+  protected String doPost(final ModelMap map, @RequestParam("selection")
   final String selection) {
 
     //Create a matcher to find the positives longs in the String
@@ -52,10 +65,12 @@ public class DeleteComputerController {
     }
 
     if (idList.isEmpty()) {
+      map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-empty-selection"));
       return "redirect:/dashboard";
     }
-
     computerService.removeByIdList(idList);
+
+    map.addAttribute("message", messageSourceAccessor.getMessage("success-delete"));
 
     return "redirect:/dashboard";
   }

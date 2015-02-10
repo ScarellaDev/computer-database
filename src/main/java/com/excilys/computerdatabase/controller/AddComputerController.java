@@ -2,6 +2,8 @@ package com.excilys.computerdatabase.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -51,6 +53,16 @@ public class AddComputerController {
     binder.setValidator(computerDtoValidator);
   }
 
+  /*
+   * MessageSourceAccessor
+   */
+  private MessageSourceAccessor messageSourceAccessor;
+
+  @Autowired
+  public void setMessageSource(final MessageSource messageSource) {
+    this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
+  }
+
   @RequestMapping(method = RequestMethod.GET)
   protected String doGet(final ModelMap map) {
     map.addAttribute("companies", companyService.getAll());
@@ -66,7 +78,10 @@ public class AddComputerController {
   final ComputerDto computerDto, final BindingResult result) {
     if (!result.hasErrors()) {
       computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto));
-      map.addAttribute("message", "Successfully added " + computerDto.toString());
+
+      map.addAttribute("message",
+          messageSourceAccessor.getMessage("success-add") + computerDto.toString());
+
       return "redirect:/dashboard";
     } else {
       map.addAttribute("companies", companyService.getAll());
