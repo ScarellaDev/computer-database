@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
 import com.excilys.computerdatabase.service.ICompanyService;
@@ -23,12 +22,6 @@ import com.excilys.computerdatabase.service.ICompanyService;
 */
 @Service
 public class CompanyServiceJDBC implements ICompanyService {
-  /*
-   * Instance of ConnectionManager
-   */
-  @Autowired
-  private ConnectionManager   connectionManager;
-
   /*
   * Instance of ICompanyDao
   */
@@ -60,8 +53,6 @@ public class CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("CompanyServiceJDBC - GET BY ID FAIL: " + company);
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET BY ID SUCCESS: " + company);
     return company;
@@ -80,8 +71,6 @@ public class CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("CompanyServiceJDBC - GET ALL FAIL");
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET ALL SUCCESS");
     return companies;
@@ -102,8 +91,6 @@ public class CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID FAIL");
       return false;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - REMOVE BY ID SUCCESS");
     return true;
@@ -123,8 +110,6 @@ public class CompanyServiceJDBC implements ICompanyService {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST FAIL: " + newPage);
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("CompanyServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;

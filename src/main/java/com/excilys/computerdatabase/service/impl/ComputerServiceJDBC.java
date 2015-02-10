@@ -26,12 +26,6 @@ import com.excilys.computerdatabase.service.IComputerService;
 public class ComputerServiceJDBC implements IComputerService {
 
   /*
-   * Instance of ConnectionManager
-   */
-  @Autowired
-  private ConnectionManager   connectionManager;
-
-  /*
   * Instance of the IComputerDao
   */
   @Autowired
@@ -55,8 +49,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getById()", e);
       LOGGER.debug("ComputerServiceJDBC - GET BY ID FAIL: " + ComputerDtoConverter.toDto(computer));
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER
         .debug("ComputerServiceJDBC - GET BY ID SUCCESS: " + ComputerDtoConverter.toDto(computer));
@@ -75,8 +67,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getAll()", e);
       LOGGER.debug("ComputerServiceJDBC - GET ALL FAIL");
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - GET ALL SUCCESS");
     return ComputerDtoConverter.toDto(computers);
@@ -97,8 +87,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - ADD BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
@@ -120,8 +108,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - UPDATE BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
@@ -141,8 +127,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during removeById()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID FAIL");
       return false;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID SUCCESS");
     return true;
@@ -160,8 +144,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during removeByIdList()", e);
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST FAIL");
       return;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY ID LIST SUCCESS");
   }
@@ -181,8 +163,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER FAIL: "
           + ComputerDtoConverter.toDto(newComputer));
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - REMOVE BY COMPUTER SUCCESS: "
         + ComputerDtoConverter.toDto(newComputer));
@@ -202,8 +182,6 @@ public class ComputerServiceJDBC implements IComputerService {
       LOGGER.warn("PersistenceException: during getPagedList()", e);
       LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST FAIL: " + newPage);
       return null;
-    } finally {
-      connectionManager.closeConnection();
     }
     LOGGER.debug("ComputerServiceJDBC - GET PAGED LIST SUCCESS: " + newPage);
     return newPage;

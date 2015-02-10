@@ -9,33 +9,39 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
 
-/**
- * Test class for the CompanyDao
- * 
- * @author Jeremy SCARELLA
- */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/applicationContext.xml" })
 public class CompanyDaoTest {
 
   @Autowired
-  ICompanyDao       companyDao;
+  ICompanyDao   companyDao;
+
+  List<Company> list;
+
   @Autowired
-  ConnectionManager cm;
-  List<Company>     list;
+  DataSource    dataSource;
 
   @Before
   public void init() throws SQLException {
     list = new ArrayList<Company>();
     list.add(new Company(1L, "Apple Inc."));
     list.add(new Company(2L, "Thinking Machines"));
-    final Connection connection = cm.getConnection();
+
+    final Connection connection = DataSourceUtils.getConnection(dataSource);
 
     final Statement stmt = connection.createStatement();
     stmt.execute("drop table if exists computer;");
@@ -54,8 +60,7 @@ public class CompanyDaoTest {
 
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  1,'MacBook Pro 15.4 inch',null,null,1);");
     stmt.execute("insert into computer (id,name,introduced,discontinued,company_id) values (  2,'MacBook Pro','2006-01-10',null,1);");
-    cm.close(stmt);
-    cm.closeConnection();
+    connection.close();
   }
 
   /*
@@ -121,25 +126,19 @@ public class CompanyDaoTest {
    * Tests of the delete function
    */
   @Test
-  public void delete() {
-    cm.getConnection();
+  public void remove() {
     companyDao.removeById(2L);
-    cm.closeConnection();
     assertNull(companyDao.getById(2L));
   }
 
   @Test
-  public void deleteInvalidId() {
-    cm.getConnection();
+  public void removeInvalidId() {
     companyDao.removeById(-1L);
-    cm.closeConnection();
     assertEquals(list, companyDao.getAll());
   }
 
   @Test(expected = PersistenceException.class)
   public void deleteComputerLeft() {
-    cm.getConnection();
     companyDao.removeById(1L);
-    cm.closeConnection();
   }
 }

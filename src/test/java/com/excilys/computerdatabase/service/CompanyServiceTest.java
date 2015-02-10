@@ -2,6 +2,7 @@ package com.excilys.computerdatabase.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -24,39 +25,32 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.exception.PersistenceException;
-import com.excilys.computerdatabase.persistence.ConnectionManager;
 import com.excilys.computerdatabase.persistence.ICompanyDao;
 import com.excilys.computerdatabase.persistence.IComputerDao;
+import com.excilys.computerdatabase.service.impl.CompanyServiceJDBC;
 
-/**
- * Test class for the CompanyService
- * 
- * @author Jeremy SCARELLA
- */
 @RunWith(MockitoJUnitRunner.class)
 public class CompanyServiceTest {
 
   @InjectMocks
-  ICompanyService   companyService;
+  CompanyServiceJDBC companyServiceJDBC;
 
-  ICompanyDao       companyDao;
-  IComputerDao      computerDao;
-  ConnectionManager connectionManager;
+  ICompanyDao        companyDao;
+  IComputerDao       computerDao;
 
-  Page<Company>     page;
-  Page<Company>     pageReturned;
-  Page<Company>     wrongPNumber;
-  Page<Company>     wrongRPP;
-  List<Computer>    computerList;
-  List<Company>     companyList;
-  Company           c1;
-  Company           c2;
+  Page<Company>      page;
+  Page<Company>      pageReturned;
+  Page<Company>      wrongPNumber;
+  Page<Company>      wrongRPP;
+  List<Computer>     computerList;
+  List<Company>      companyList;
+  Company            c1;
+  Company            c2;
 
   @Before
   public void init() {
     companyDao = mock(ICompanyDao.class);
     computerDao = mock(IComputerDao.class);
-    connectionManager = mock(ConnectionManager.class);
 
     companyList = new ArrayList<Company>();
     c1 = new Company(1L, "company 1");
@@ -70,10 +64,10 @@ public class CompanyServiceTest {
     computerList.add(new Computer(3L, "ordi 3", null, null, c2));
 
     page = new Page<Company>();
-
-    pageReturned = new Page<Company>();
     page.setTotalNbElements(2);
     page.setList(companyList);
+
+    pageReturned = new Page<Company>();
 
     wrongPNumber = new Page<Company>();
     wrongPNumber.setPageIndex(-1);
@@ -106,7 +100,6 @@ public class CompanyServiceTest {
       }
     }).when(computerDao).removeByCompanyId(anyLong());
 
-    //companyService = new CompanyDBServiceMock(companyDao, computerDao);
     MockitoAnnotations.initMocks(this);
   }
 
@@ -115,7 +108,7 @@ public class CompanyServiceTest {
    */
   @Test
   public void getAll() {
-    assertEquals(companyList, companyService.getAll());
+    assertEquals(companyList, companyServiceJDBC.getAll());
   }
 
   /*
@@ -123,12 +116,12 @@ public class CompanyServiceTest {
    */
   @Test
   public void getById() {
-    assertEquals(c1, companyService.getById(1L));
+    assertEquals(c1, companyServiceJDBC.getById(1L));
   }
 
   @Test
   public void getByIdInvalid() {
-    assertNull(companyService.getById(-1L));
+    assertNull(companyServiceJDBC.getById(-1L));
   }
 
   /*
@@ -136,44 +129,34 @@ public class CompanyServiceTest {
    */
   @Test
   public void getPagedList() {
-    assertEquals(pageReturned, companyService.getPagedList(page));
+    assertEquals(pageReturned, companyServiceJDBC.getPagedList(page));
   }
 
   @Test
   public void getPagedListNull() {
-    assertNull(companyService.getPagedList(null));
+    assertNull(companyServiceJDBC.getPagedList(null));
   }
 
-  @Test(expected = PersistenceException.class)
+  @Test(expected = NullPointerException.class)
   public void invalidPageNumber() {
-    companyService.getPagedList(wrongPNumber);
+    companyServiceJDBC.getPagedList(wrongPNumber);
   }
 
-  @Test(expected = PersistenceException.class)
+  @Test
   public void invalidResultsPerPage() {
-    companyService.getPagedList(wrongRPP);
+    assertNull(companyServiceJDBC.getPagedList(wrongRPP));
   }
 
   /*
-   * Tests delete function
+   * Tests remove function
    */
   @Test
   public void delete() {
-    final int x = companyList.size();
-    final int y = computerList.size();
-    companyService.removeById(1L);
-
-    assertEquals(x - 1, companyList.size());
-    assertEquals(y - 2, computerList.size());
+    assertTrue(companyServiceJDBC.removeById(1L));
   }
 
   @Test
   public void deleteInvalidId() {
-    final int x = companyList.size();
-    final int y = computerList.size();
-    companyService.removeById(3L);
-
-    assertEquals(x, companyList.size());
-    assertEquals(y, computerList.size());
+    assertTrue(companyServiceJDBC.removeById(3L));
   }
 }
