@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.excilys.computerdatabase</groupId>
   <artifactId>computer-database</artifactId>
-  <version>0.4.5.1</version>
+  <version>0.4.5.2</version>
   <packaging>war</packaging>
   <name>computer-database</name>
   <url>http://maven.apache.org</url>

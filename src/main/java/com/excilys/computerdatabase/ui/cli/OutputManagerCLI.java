@@ -18,9 +18,9 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
+import com.excilys.computerdatabase.dto.ComputerDtoValidator;
 import com.excilys.computerdatabase.service.ICompanyService;
 import com.excilys.computerdatabase.service.IComputerService;
-import com.excilys.computerdatabase.validator.ComputerDtoValidator;
 import com.excilys.computerdatabase.validator.StringValidator;
 
 /**

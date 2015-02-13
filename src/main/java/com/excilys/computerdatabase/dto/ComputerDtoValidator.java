@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.validator;
+package com.excilys.computerdatabase.dto;
 
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 @Component
 public class ComputerDtoValidator implements Validator {
