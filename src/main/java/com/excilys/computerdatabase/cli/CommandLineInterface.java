@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.ui.cli;
+package com.excilys.computerdatabase.cli;
 
 import java.util.Locale;
 import java.util.Scanner;

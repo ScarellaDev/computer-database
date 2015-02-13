@@ -1,6 +1,6 @@
 package com.excilys.computerdatabase;
 
-import com.excilys.computerdatabase.ui.cli.CommandLineInterface;
+import com.excilys.computerdatabase.cli.CommandLineInterface;
 
 /**
 * Program's entry point

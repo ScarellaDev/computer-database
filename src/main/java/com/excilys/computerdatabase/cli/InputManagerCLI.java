@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.ui.cli;
+package com.excilys.computerdatabase.cli;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
