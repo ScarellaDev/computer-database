@@ -1,22 +1,45 @@
 package com.excilys.computerdatabase.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.excilys.computerdatabase.persistence.LocalDatePersistenceConverter;
 
 /**
 * Computer class.
 *
 * @author Jeremy SCARELLA
 */
+@Entity
+@Table(name = "computer")
 public class Computer {
 
   /*
    * Attributes
    */
-  private Long          id;
-  private String        name;
-  private LocalDateTime introduced;
-  private LocalDateTime discontinued;
-  private Company       company;
+  @Id
+  @GeneratedValue
+  private Long      id;
+
+  private String    name;
+
+  @Convert(converter = LocalDatePersistenceConverter.class)
+  private LocalDate introduced;
+
+  @Convert(converter = LocalDatePersistenceConverter.class)
+  private LocalDate discontinued;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "company_id")
+  private Company   company;
 
   /*
    * Constructors
@@ -33,8 +56,8 @@ public class Computer {
   * @param discontinued
   * @param company
   */
-  public Computer(final Long id, final String name, final LocalDateTime introduced,
-      final LocalDateTime discontinued, final Company company) {
+  public Computer(final Long id, final String name, final LocalDate introduced,
+      final LocalDate discontinued, final Company company) {
     super();
     this.id = id;
     this.name = name;
@@ -130,12 +153,12 @@ public class Computer {
       return this;
     }
 
-    public Builder introduced(final LocalDateTime introduced) {
+    public Builder introduced(final LocalDate introduced) {
       this.computer.introduced = introduced;
       return this;
     }
 
-    public Builder discontinued(final LocalDateTime discontinued) {
+    public Builder discontinued(final LocalDate discontinued) {
       this.computer.discontinued = discontinued;
       return this;
     }
@@ -175,19 +198,19 @@ public class Computer {
     this.name = name;
   }
 
-  public LocalDateTime getIntroduced() {
+  public LocalDate getIntroduced() {
     return introduced;
   }
 
-  public void setIntroduced(final LocalDateTime introduced) {
+  public void setIntroduced(final LocalDate introduced) {
     this.introduced = introduced;
   }
 
-  public LocalDateTime getDiscontinued() {
+  public LocalDate getDiscontinued() {
     return discontinued;
   }
 
-  public void setDiscontinued(final LocalDateTime discontinued) {
+  public void setDiscontinued(final LocalDate discontinued) {
     this.discontinued = discontinued;
   }
 

@@ -2,8 +2,10 @@ package com.excilys.computerdatabase.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.domain.Page;
 import com.excilys.computerdatabase.dto.ComputerDto;
 
 /**
@@ -18,6 +20,13 @@ public interface IComputerService {
    * @return The computer that was found or null if there is no computer for this id.
    */
   ComputerDto getById(Long id);
+
+  /**
+   * Get the list of all computers with specified company id in the database.
+   * @param id: id of the company attached to the computers in the database.
+   * @return The computer list that was found or null if there is no computer for this company id.
+   */
+  List<ComputerDto> getByCompanyId(final Long id);
 
   /**
    * Get the List of all the computers in the database.
@@ -42,15 +51,16 @@ public interface IComputerService {
   /**
    * Remove a computer from the database using its id.
    * @param id : id of the computer to remove.
-   * @return True if the computer was removed from the database, false otherwise.
+   * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
-  Boolean removeById(Long id);
+  ComputerDto removeById(Long id);
 
   /**
    * Remove a list of computers from the database using their ids.
    * @param idList : the list of ids of the computers to remove.
+   * @return The list of deleted computers
    */
-  void removeByIdList(List<Long> idList);
+  List<ComputerDto> removeByIdList(List<Long> idList);
 
   /**
    * Remove a computer from the database using a Computer instance.
@@ -60,9 +70,10 @@ public interface IComputerService {
   ComputerDto removeByComputer(Computer computer);
 
   /**
-   * Get a Page of computers in the database.
-   * @param page : a page containing the pageIndex and the max number of elements the page can have
+   * Get a Page of computers from the database.
+   * @param search: the search String entered by the user
+   * @param pageable: a Spring Pageable object
    * @return A Page instance containing a sublist of computers
    */
-  Page<ComputerDto> getPagedList(Page<ComputerDto> page);
+  Page<Computer> getPagedList(String search, Pageable pageable);
 }

@@ -1,6 +1,6 @@
 package com.excilys.computerdatabase.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,12 +34,12 @@ public class ComputerDtoConverter {
       builder.name(computerDto.getName());
     }
     if (StringValidator.isDate(computerDto.getIntroduced(), dateFormat)) {
-      builder.introduced(LocalDateTime.parse(computerDto.getIntroduced() + " 00:00:00",
-          DateTimeFormatter.ofPattern(dateFormat + " HH:mm:ss")));
+      builder.introduced(LocalDate.parse(computerDto.getIntroduced(),
+          DateTimeFormatter.ofPattern(dateFormat)));
     }
     if (StringValidator.isDate(computerDto.getDiscontinued(), dateFormat)) {
-      builder.discontinued(LocalDateTime.parse(computerDto.getDiscontinued() + " 00:00:00",
-          DateTimeFormatter.ofPattern(dateFormat + " HH:mm:ss")));
+      builder.discontinued(LocalDate.parse(computerDto.getDiscontinued(),
+          DateTimeFormatter.ofPattern(dateFormat)));
     }
     if (computerDto.getCompanyId() > 0) {
       builder.company(new Company(computerDto.getCompanyId(), computerDto.getCompanyName()));
@@ -87,11 +87,11 @@ public class ComputerDtoConverter {
     }
     if (computer.getIntroduced() != null
         && !StringValidator.isEmpty(computer.getIntroduced().toString())) {
-      builder.introduced(computer.getIntroduced().toString().substring(0, 10));
+      builder.introduced(computer.getIntroduced().toString());
     }
     if (computer.getDiscontinued() != null
         && !StringValidator.isEmpty(computer.getDiscontinued().toString())) {
-      builder.discontinued(computer.getDiscontinued().toString().substring(0, 10));
+      builder.discontinued(computer.getDiscontinued().toString());
     }
     if (computer.getCompany() != null) {
       builder.companyId(computer.getCompany().getId());

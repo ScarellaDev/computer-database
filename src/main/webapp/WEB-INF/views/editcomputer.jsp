@@ -22,7 +22,7 @@
                         id: ${computerDto.id}
                     </div>
                     <h1><spring:message code="title-edit"/></h1>
-
+					<c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
                     <form:form id="form" action="editcomputer" method="POST" commandName="computerDto">
                         <form:input type="hidden" path="id" value="${computerDto.id}"/>
                         <form:errors path="id" cssClass="error"/>

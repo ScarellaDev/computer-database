@@ -17,13 +17,13 @@ id="WebApp_ID" version="3.0">
 	</listener>
 	
 	<servlet>
-		<servlet-name>computer-database</servlet-name>
+		<servlet-name>spring</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>computer-database</servlet-name>
+		<servlet-name>spring</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	

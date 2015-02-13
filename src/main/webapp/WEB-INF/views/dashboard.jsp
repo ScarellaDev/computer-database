@@ -12,10 +12,12 @@
 
 	<section id="main">
 		<div class="container">
-			<h1 id="homeTitle">${page.totalNbElements} <spring:message code="title-dashboard"/></h1>
+			<h1 id="homeTitle">${page.totalElements} <spring:message code="title-dashboard"/></h1>
 			<div id="actions" class="form-horizontal">
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
+						<input type="hidden" name="size" value="${page.size}">
+						<input type="hidden" name="page" value="0">
 						<input type="search" id="search" name="search"
 						class="form-control" placeholder="<spring:message code="search-placeholder"/>" /> <input
 						type="submit" id="searchsubmit" value="<spring:message code="button-filter"/>"
@@ -25,7 +27,9 @@
 				<div class="pull-right">
 					<a class="btn btn-success" id="addcomputer" href="addcomputer"><spring:message code="button-add"/></a>
 					<a class="btn btn-danger" id="deletecomputer" href="#"
-					onclick="$.fn.toggleEditMode();"><spring:message code="button-delete"/></a>
+					onclick="$.fn.toggleEditMode();">
+						<spring:message code="button-delete"/>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -35,7 +39,8 @@
 		</form>
 		
 		<div class="container" style="margin-top: 10px;">
-		
+			<c:if test="${not empty message}"><div class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
+			<c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -48,45 +53,40 @@
 						class="fa fa-trash-o fa-lg"></i>
 						</a>
 						</span></th>
-						<%String[][] columns = {{"1","computer-name"}, {"2", "computer-introduced"},
-						{"3", "computer-discontinued"}, {"4","computer-company"}};
+						<%String[][] columns = {{"name","computer-name"}, {"introduced", "computer-introduced"},
+						{"discontinued", "computer-discontinued"}, {"company.name","computer-company"}};
 						pageContext.setAttribute("columns", columns);%>
 						<c:forEach items="${columns}" var="col">
 							<c:choose>
-								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"ASC\") }">
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="desc"><spring:message code="${col[1]}"/></h:link></th>
-								</c:when>
-								<c:when test="${col[0].equals(page.sort.toString()) && page.order.equals(\"DESC\") }">
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc"><spring:message code="${col[1]}"/></h:link></th>
+								<c:when test="${col[0].equals(sort) && direction.equalsIgnoreCase(\"ASC\") }">
+									<th><h:link target="dashboard" size="${page.size}" search="${search}" sort="${col[0]}" direction="desc"><spring:message code="${col[1]}"/></h:link></th>
 								</c:when>
 								<c:otherwise>
-									<th><h:link target="dashboard" pageIndex="${page.pageIndex}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${col[0]}" order="asc"><spring:message code="${col[1]}"/></h:link></th>
+									<th><h:link target="dashboard" size="${page.size}" search="${search}" sort="${col[0]}" direction="asc"><spring:message code="${col[1]}"/></h:link></th>
 								</c:otherwise>
 							</c:choose>
-						</c:forEach>	
+						</c:forEach>		
 					</tr>
 				</thead>
 				<!-- Browse attribute computers -->
 				<tbody id="results">
-					<c:forEach items="${page.list}" var="computer">
+					<c:forEach items="${page.content}" var="computer">
 						<tr>
 							<td class="editMode"><input type="checkbox" name="cb" class="cb" value="${computer.id}"></td>
 							<td><a href="editcomputer?id=${computer.id}"><c:out value="${computer.name}"/></a></td>
 							<td>${computer.introduced}</td>
 							<td>${computer.discontinued}</td>
-							<td>${computer.companyName}</td>
+							<td>${computer.company.name}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
-			<c:if test="${not empty message}"><div class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
-			<c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
 		</div>
 	</section>
 	
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
-			<h:pagination target="dashboard" pageIndex="${page.pageIndex}" totalNbPages="${page.totalNbPages}" nbElementsPerPage="${page.nbElementsPerPage}" search="${page.search}" sort="${page.sort.toString()}" order="${page.order}"/>
+			<h:pagination target="dashboard" pageNumber="${page.number}" totalPages="${page.totalPages}" size="${page.size}" search="${search}" sort="${sort}" direction="${direction}"/>
 		</div>
 	</footer>
 	

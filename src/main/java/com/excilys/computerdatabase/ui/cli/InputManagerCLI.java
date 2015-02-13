@@ -1,6 +1,6 @@
 package com.excilys.computerdatabase.ui.cli;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
@@ -8,6 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.ICompanyService;
+import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
@@ -25,14 +26,18 @@ public class InputManagerCLI {
   private static String                  userInput;
 
   /*
-   * Date FORMATTER : yyyy-MM-dd HH:mm:ss
+   * Date FORMATTER : yyyy-MM-dd
    */
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter
-                                                       .ofPattern("yyyy-MM-dd HH:mm:ss");
+  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   /**
-  * Instance of CompanyServiceJDBC for the access to the database
+  * Instance of ComputerService for the access to the database
   */
+  private IComputerService               computerService;
+
+  /**
+   * Instance of CompanyService for the access to the database
+   */
   private ICompanyService                companyService;
 
   /**
@@ -40,12 +45,11 @@ public class InputManagerCLI {
    */
   private OutputManagerCLI               outputManagerCLI;
 
-  public InputManagerCLI() {
-    outputManagerCLI = new OutputManagerCLI();
-    final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-        "applicationContext.xml");
-    companyService = (ICompanyService) context.getBean("companyServiceJDBC");
-    context.close();
+  public InputManagerCLI(final ClassPathXmlApplicationContext context) {
+    sc = new Scanner(System.in);
+    outputManagerCLI = new OutputManagerCLI(context);
+    computerService = (IComputerService) context.getBean("computerService");
+    companyService = (ICompanyService) context.getBean("companyService");
   }
 
   /**
@@ -55,7 +59,7 @@ public class InputManagerCLI {
     userInput = null;
     System.out
         .println("-> You entered the ls command, please enter the option you want to display:\r\n- 'computers'\r\n- 'companies'");
-    sc = new Scanner(System.in);
+
     userInput = sc.nextLine().trim().toLowerCase();
     switch (userInput) {
       case "computers":
@@ -90,13 +94,14 @@ public class InputManagerCLI {
         .println("-> You entered the show command, please enter the id of the computer you want to display (or press enter to quit command):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
         System.out.println("-> show command aborted");
         return;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
+
           outputManagerCLI.showComputer(userInput);
           break;
         } else {
@@ -118,7 +123,7 @@ public class InputManagerCLI {
         .println("-> You entered the add command:\r\n- please enter the name of the computer you want to add (or press enter to quit command):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> add command aborted");
@@ -134,7 +139,7 @@ public class InputManagerCLI {
         .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
@@ -142,8 +147,7 @@ public class InputManagerCLI {
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer introducedS = new StringBuffer(userInput);
-          introducedS.append(" 00:00:00");
-          builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
+          builder.introduced(LocalDate.parse(introducedS, FORMATTER));
           break;
         } else {
           System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
@@ -157,7 +161,7 @@ public class InputManagerCLI {
         .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
@@ -165,8 +169,7 @@ public class InputManagerCLI {
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
-          discontinuedS.append(" 00:00:00");
-          builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
+          builder.discontinued(LocalDate.parse(discontinuedS, FORMATTER));
           break;
         } else {
           System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
@@ -180,15 +183,20 @@ public class InputManagerCLI {
         .println("- please enter the id of the company of the computer you want to add (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
-          builder.company(companyService.getById(new Long(userInput)));
-          break;
+          if (companyService.getById(new Long(userInput)) != null) {
+            builder.company(companyService.getById(new Long(userInput)));
+            break;
+          } else {
+            System.out.println("Company not found in DB, please enter a new valid id:");
+            continue;
+          }
         } else {
           System.out.println("Please, enter a new valid id:");
           continue;
@@ -209,7 +217,7 @@ public class InputManagerCLI {
         .println("-> You entered the update command:\r\n- please enter the id of the computer you want to update (or press enter to quit command):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
@@ -217,8 +225,13 @@ public class InputManagerCLI {
         return;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
-          builder.id(new Long(userInput));
-          break;
+          if (computerService.getById(new Long(userInput)) != null) {
+            builder.id(new Long(userInput));
+            break;
+          } else {
+            System.out.println("Computer not found in DB, please enter a new valid id:");
+            continue;
+          }
         } else {
           System.out.println("Please, enter a new valid id:");
           continue;
@@ -230,7 +243,7 @@ public class InputManagerCLI {
     System.out.println("- please enter the name of the computer:");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (StringValidator.isEmpty(userInput) || "null".equals(userInput)) {
         System.out.println("Non valid name (cannot be empty or set to 'null')");
@@ -246,7 +259,7 @@ public class InputManagerCLI {
         .println("- please enter the introduced date (format: yyyy-MM-dd) of the computer if you want to update it (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
@@ -254,8 +267,7 @@ public class InputManagerCLI {
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer introducedS = new StringBuffer(userInput);
-          introducedS.append(" 00:00:00");
-          builder.introduced(LocalDateTime.parse(introducedS, FORMATTER));
+          builder.introduced(LocalDate.parse(introducedS, FORMATTER));
           break;
         } else {
           System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
@@ -269,7 +281,7 @@ public class InputManagerCLI {
         .println("- please enter the discontinued date (format: yyyy-MM-dd) of the computer if you want to update (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
@@ -277,8 +289,7 @@ public class InputManagerCLI {
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
           final StringBuffer discontinuedS = new StringBuffer(userInput);
-          discontinuedS.append(" 00:00:00");
-          builder.discontinued(LocalDateTime.parse(discontinuedS, FORMATTER));
+          builder.discontinued(LocalDate.parse(discontinuedS, FORMATTER));
           break;
         } else {
           System.out.println("Please, enter a new valid date (format: yyyy-MM-dd):");
@@ -292,15 +303,20 @@ public class InputManagerCLI {
         .println("- please enter the id of the company of the computer if you want to update it (press enter or type 'null' to skip this value):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || "".equals(userInput)
           || "null".equals(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
-          builder.company(companyService.getById(new Long(userInput)));
-          break;
+          if (companyService.getById(new Long(userInput)) != null) {
+            builder.company(companyService.getById(new Long(userInput)));
+            break;
+          } else {
+            System.out.println("Company not found in DB, please enter a new valid id:");
+            continue;
+          }
         } else {
           System.out.println("Please, enter a new valid id:");
           continue;
@@ -317,7 +333,7 @@ public class InputManagerCLI {
     userInput = null;
     System.out
         .println("-> You entered the remove command, please enter the option you want to display:\r\n- 'computer'\r\n- 'company'");
-    sc = new Scanner(System.in);
+
     userInput = sc.nextLine().trim().toLowerCase();
     switch (userInput) {
       case "computer":
@@ -352,7 +368,7 @@ public class InputManagerCLI {
         .println("-> You entered the remove computer command, please enter the id of the computer you want to remove from the DB (or press enter to quit command):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
         System.out.println("-> remove computer command aborted");
@@ -377,7 +393,7 @@ public class InputManagerCLI {
         .println("-> You entered the remove company command, please enter the id of the company you want to remove from the DB (or press enter to quit command):");
     while (true) {
       userInput = null;
-      sc = new Scanner(System.in);
+
       userInput = sc.nextLine().trim().toLowerCase();
       if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
         System.out.println("-> remove company command aborted");

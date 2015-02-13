@@ -1,6 +1,10 @@
 package com.excilys.computerdatabase.ui.cli;
 
+import java.util.Locale;
 import java.util.Scanner;
+
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
 * Command Line Interface that allows the user to consult and modify his computer database in the Console.
@@ -19,8 +23,15 @@ public class CommandLineInterface {
    * Start the CLI : infinite loop waiting for mainUserInput and executing the command matching the mainUserInput when received.
    */
   public void start() {
-    final InputManagerCLI inputManagerCLI = new InputManagerCLI();
-    final OutputManagerCLI outputManagerCLI = new OutputManagerCLI();
+    LocaleContextHolder.setLocale(Locale.ENGLISH);
+    /*
+     * OR: LocaleContextHolder.setLocale(Locale.FRENCH);
+     * NEEDS TO ASK USER AT START
+     */
+    final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+        "applicationContext.xml");
+    final InputManagerCLI inputManagerCLI = new InputManagerCLI(context);
+    final OutputManagerCLI outputManagerCLI = new OutputManagerCLI(context);
     outputManagerCLI.showMenu();
     while (true) {
       mainUserInput = null;
@@ -175,12 +186,18 @@ public class CommandLineInterface {
             break;
           case "q":
             System.out.println("Thank you for using our CLI. Goodbye!");
+            mainSc.close();
+            context.close();
             return;
           case "quit":
             System.out.println("Thank you for using our CLI. Goodbye!");
+            mainSc.close();
+            context.close();
             return;
           case "exit":
             System.out.println("Thank you for using our CLI. Goodbye!");
+            mainSc.close();
+            context.close();
             return;
           default:
             System.out.println("Non valid command. Please, try again.\r\n");

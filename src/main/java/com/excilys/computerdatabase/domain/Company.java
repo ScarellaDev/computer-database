@@ -1,16 +1,26 @@
 package com.excilys.computerdatabase.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
 * Company class.
 *
 * @author Jeremy SCARELLA
 */
-public final class Company {
+@Entity
+@Table(name = "company")
+public class Company {
 
   /*
    * Attributes
    */
+  @Id
+  @GeneratedValue
   private Long   id;
+
   private String name;
 
   /*

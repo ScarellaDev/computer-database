@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -16,12 +20,12 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.excilys.computerdatabase.domain.Page;
+import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.OrderBy;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
@@ -46,6 +50,9 @@ public class ComputerController {
    */
   @Autowired
   private ICompanyService  companyService;
+
+  private String           message      = null;
+  private String           errormessage = null;
 
   /*
    * Validator settings
@@ -82,57 +89,32 @@ public class ComputerController {
    * Displays pages of computer lists from database
    */
   @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-  protected String getDashboard(final ModelMap map,
-      @RequestParam(value = "pageIndex", required = false, defaultValue = "1")
-      final Integer pageIndex,
-      @RequestParam(value = "nbElementsPerPage", required = false, defaultValue = "10")
-      final Integer nbElementsPerPage,
-      @RequestParam(value = "search", required = false, defaultValue = "")
-      final String search, @RequestParam(value = "sort", required = false, defaultValue = "0")
-      final Integer sort, @RequestParam(value = "order", required = false, defaultValue = "ASC")
-      final String order, @ModelAttribute("message")
-      final String message, @ModelAttribute("errormessage")
-      final String errormessage) {
+  protected String dashboard(final ModelMap map, @PageableDefault(value = 100)
+  final Pageable pageable, @RequestParam(value = "search", required = false, defaultValue = "")
+  final String search) {
+    final Page<Computer> page;
+    if (pageable.getPageSize() > 100) {
+      final Pageable limitedPageable = new PageRequest(0, 100);
+      page = computerService.getPagedList(search, limitedPageable);
+    } else {
+      page = computerService.getPagedList(search, pageable);
+    }
+
+    if (page.hasContent()) {
+      map.addAttribute("search", search);
+      map.addAttribute("page", page);
+      if (page.getSort() != null && OrderBy.getOrderByFromSort(page.getSort()) != null) {
+        map.addAttribute("sort", OrderBy.getOrderByFromSort(page.getSort()).getColName());
+        map.addAttribute("direction", OrderBy.getOrderByFromSort(page.getSort()).getDir());
+      }
+    } else {
+      errormessage = messageSourceAccessor.getMessage("error-no-computer-found");
+    }
 
     map.addAttribute("message", message);
+    message = null;
     map.addAttribute("errormessage", errormessage);
-
-    Page<ComputerDto> page = new Page<ComputerDto>();
-
-    //Get pageIndex and set it
-    if (pageIndex < 1) {
-      page.setPageIndex(1);
-    } else {
-      page.setPageIndex(pageIndex);
-    }
-
-    //Get nbElementsPerPage and set it
-    if (nbElementsPerPage < 10) {
-      page.setNbElementsPerPage(10);
-    } else {
-      page.setNbElementsPerPage(nbElementsPerPage);
-    }
-
-    //Get search parameter
-    if (search != null) {
-      page.setSearch(search.trim());
-    }
-
-    //Get sort & order parameters
-    if (sort != null) {
-      page.setSort(sort);
-    }
-
-    if (order != null
-        && (order.compareToIgnoreCase("ASC") == 0 || order.compareToIgnoreCase("DESC") == 0)) {
-      page.setOrder(order.toUpperCase());
-    }
-
-    //Retrieve the list of computers to display
-    page = computerService.getPagedList(page);
-
-    map.addAttribute("page", page);
-
+    errormessage = null;
     return "dashboard";
   }
 
@@ -143,6 +125,9 @@ public class ComputerController {
   protected String getAddForm(final ModelMap map) {
     map.addAttribute("companies", companyService.getAll());
     map.addAttribute("computerDto", new ComputerDto());
+
+    map.addAttribute("errormessage", errormessage);
+    errormessage = null;
     return "addcomputer";
   }
 
@@ -153,13 +138,17 @@ public class ComputerController {
   protected String addComputer(final ModelMap map, @Validated
   final ComputerDto computerDto, final BindingResult result) {
     if (!result.hasErrors()) {
-      computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
-          messageSourceAccessor.getMessage("date-format")));
-
-      map.addAttribute("message",
-          messageSourceAccessor.getMessage("success-add") + computerDto.toString());
-
-      return "redirect:/dashboard";
+      if (computerDto.getCompanyId() == 0
+          || (computerDto.getCompanyId() > 0 && companyService.getById(computerDto.getCompanyId()) != null)) {
+        computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
+            messageSourceAccessor.getMessage("date-format")));
+        message = messageSourceAccessor.getMessage("success-add") + computerDto.toString();
+        return "redirect:/dashboard";
+      } else {
+        errormessage = messageSourceAccessor.getMessage("error-company-selection");
+        map.addAttribute("companies", companyService.getAll());
+        return "addcomputer";
+      }
     } else {
       map.addAttribute("companies", companyService.getAll());
       return "addcomputer";
@@ -173,18 +162,22 @@ public class ComputerController {
   protected String getEditForm(final ModelMap map, @RequestParam("id")
   final Long id) {
     if (id != null) {
-      ComputerDto computerDto = computerService.getById(id);
+      final ComputerDto computerDto = computerService.getById(id);
       if (computerDto != null) {
         map.addAttribute("companies", companyService.getAll());
         map.addAttribute("computerDto", computerDto);
+
+        map.addAttribute("errormessage", errormessage);
+        errormessage = null;
         return "editcomputer";
       } else {
-        map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-edit-selection"));
+        errormessage = messageSourceAccessor.getMessage("error-edit-selection");
         return "redirect:/dashboard";
       }
+    } else {
+      errormessage = messageSourceAccessor.getMessage("error-edit-false-selection");
+      return "redirect:/dashboard";
     }
-    map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-edit-false-selection"));
-    return "redirect:/dashboard";
   }
 
   /**
@@ -194,23 +187,28 @@ public class ComputerController {
   protected String editComputer(final ModelMap map, @Validated
   final ComputerDto computerDto, final BindingResult result) {
     final ComputerDto newComputerDto = computerService.getById(computerDto.getId());
-    if (newComputerDto == null) {
-      map.addAttribute("errormessage",
-          computerDto + messageSourceAccessor.getMessage("error-edit-selection"));
-      return "redirect:/dashboard";
-    }
-
-    if (!result.hasErrors()) {
-      computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto,
-          messageSourceAccessor.getMessage("date-format")));
-
-      map.addAttribute("message",
-          messageSourceAccessor.getMessage("success-edit") + computerDto.toString());
-
-      return "redirect:/dashboard";
+    if (newComputerDto != null) {
+      if (!result.hasErrors()) {
+        if (computerDto.getCompanyId() == 0
+            || (computerDto.getCompanyId() > 0 && companyService
+                .getById(computerDto.getCompanyId()) != null)) {
+          computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto,
+              messageSourceAccessor.getMessage("date-format")));
+          message = messageSourceAccessor.getMessage("success-edit") + computerDto.toString();
+          return "redirect:/dashboard";
+        } else {
+          errormessage = messageSourceAccessor.getMessage("error-company-selection");
+          map.addAttribute("companies", companyService.getAll());
+          return "editcomputer";
+        }
+      } else {
+        map.addAttribute("companies", companyService.getAll());
+        return "editcomputer";
+      }
     } else {
-      map.addAttribute("companies", companyService.getAll());
-      return "editcomputer";
+      errormessage = messageSourceAccessor.getMessage("error-edit-selection")
+          + computerDto.toString();
+      return "redirect:/dashboard";
     }
   }
 
@@ -232,13 +230,15 @@ public class ComputerController {
     }
 
     if (idList.isEmpty()) {
-      map.addAttribute("errormessage", messageSourceAccessor.getMessage("error-empty-selection"));
+      errormessage = messageSourceAccessor.getMessage("error-empty-selection");
       return "redirect:/dashboard";
     }
-    computerService.removeByIdList(idList);
-
-    map.addAttribute("message", messageSourceAccessor.getMessage("success-delete"));
-
+    List<ComputerDto> computers = computerService.removeByIdList(idList);
+    if (computers != null) {
+      message = messageSourceAccessor.getMessage("success-delete");
+    } else {
+      errormessage = messageSourceAccessor.getMessage("error-remove-selection");
+    }
     return "redirect:/dashboard";
   }
 }

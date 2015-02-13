@@ -19,7 +19,7 @@
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1><spring:message code="title-add"/></h1>
-                    
+                    <c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
                     <form:form id="form" action="addcomputer" method="POST" commandName="computerDto">
                         <fieldset>
                             <div class="form-group">
