@@ -1,0 +1,56 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/data/jpa
+						http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<!-- Declares support for general annotations such as @Required, @Autowired, @PostConstruct -->
+	<context:annotation-config />
+
+	<!-- Loading of the properties file for DataSource configuration -->
+	<context:property-placeholder location="classpath:db.properties" />
+
+	<!-- BoneCP dataSource used by the transactionManager and the Daos -->
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${DB_DRIVER}"/>
+		<property name="jdbcUrl" value="${DB_URL}"/>
+		<property name="username" value="${DB_USERNAME}"/>
+		<property name="password" value="${DB_PASSWORD}"/>
+		<property name="maxConnectionsPerPartition" value="10" />
+		<property name="minConnectionsPerPartition" value="5" />
+		<property name="partitionCount" value="1" />
+	</bean>
+
+	<!-- Spring Data JPA Repositories -->
+	<jpa:repositories base-package="com.excilys.computerdatabase.persistence.repository" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="txManager"/>
+	
+	<!-- JPA API HIBERNATE -->
+	<bean id="entityManagerFactory"	class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!-- Default value for persistenceXmlLocation -->
+		<property name="packagesToScan" value="com.excilys.computerdatabase.domain"/>
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<property name="jpaDialect" ref="jpaDialect" />
+		<property name="mappingResources">
+			<list>
+				<value>mapping/computer.hbm.xml</value>
+				<value>mapping/company.hbm.xml</value>
+				<value>mapping/user.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="jpaVendorAdapter"	class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+	</bean>
+	
+	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+	<!-- /JPA API HIBERNATE -->
+	
+
+</beans>

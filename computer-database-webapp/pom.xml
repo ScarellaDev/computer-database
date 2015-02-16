@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>computer-database</artifactId>
+		<version>0.4.5.3</version>
+	</parent>
+	<artifactId>computer-database-webapp</artifactId>
+	<packaging>war</packaging>
+
+	<dependencies>
+
+		<!-- DEPENDECY MODULES -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-service</artifactId>
+		</dependency>
+		<!-- /DEPENDECY MODULES -->
+
+		<!-- JEE COMPONENTS -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- /JEE COMPONENTS -->
+
+		<!-- SERVLET APIs -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- /SERVLET APIs -->
+
+		<!-- SPRING FRAMEWORK -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<!-- /SPRING FRAMEWORK -->
+
+		<!-- SPRING SECURITY -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<!-- /SPRING SECURITY -->
+
+	</dependencies>
+
+</project>

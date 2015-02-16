@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.excilys.computerdatabase.domain.Computer" table="computer">
+		<id name="id" column="id" type="java.lang.Long">
+			<generator class="native" />
+		</id>
+		<property name="name" column="name" type="string" />
+		<property name="introduced" column="introduced"
+			type="org.jadira.usertype.dateandtime.threeten.PersistentLocalDate" />
+		<property name="discontinued" column="discontinued" 
+			type="org.jadira.usertype.dateandtime.threeten.PersistentLocalDate" />
+		<many-to-one name="company" column="company_id" class="com.excilys.computerdatabase.domain.Company" lazy="false"/>
+	</class>
+</hibernate-mapping>

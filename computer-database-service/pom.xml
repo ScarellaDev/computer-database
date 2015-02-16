@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>computer-database</artifactId>
+		<version>0.4.5.3</version>
+	</parent>
+	<artifactId>computer-database-service</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+
+		<!-- DEPENDENCY MODULES -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-persistence</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-binding</artifactId>
+		</dependency>
+		<!-- /DEPENDENCY MODULES -->
+
+		<!-- SPRING FRAMEWORK -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+		</dependency>
+		<!-- /SPRING FRAMEWORK -->
+		
+		<!-- SPRING SECURITY -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<!-- /SPRING SECURITY -->
+
+		<!-- TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- /TESTING -->
+
+	</dependencies>
+</project>

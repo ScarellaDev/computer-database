@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.excilys.computerdatabase.domain.User" table="user">
+		<id name="id" column="id" type="java.lang.Long">
+			<generator class="native" />
+		</id>
+		<property name="username" column="username" type="string"
+			unique="true" />
+		<property name="password" column="password" type="string" />
+		<property name="enabled" column="enabled" type="java.lang.Boolean" />
+		<property name="role" column="role" type="string" />
+	</class>
+</hibernate-mapping>

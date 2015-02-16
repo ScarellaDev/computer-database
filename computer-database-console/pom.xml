@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>computer-database</artifactId>
+		<version>0.4.5.3</version>
+	</parent>
+	<artifactId>computer-database-console</artifactId>
+	<packaging>jar</packaging>
+
+	<dependencies>
+
+		<!-- DEPENDENCY MODULES -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-service</artifactId>
+		</dependency>
+		<!-- /DEPENDENCY MODULES -->
+		
+		<!-- SPRING DATA JPA -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
+		<!-- /SPRING DATA JPA -->
+
+	</dependencies>
+
+</project>

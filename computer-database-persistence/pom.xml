@@ -1,0 +1,97 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>computer-database</artifactId>
+		<version>0.4.5.3</version>
+	</parent>
+	<artifactId>computer-database-persistence</artifactId>
+	<packaging>jar</packaging>
+
+
+	<dependencies>
+
+		<!-- DEPENDECY MODULES -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-core</artifactId>
+		</dependency>
+		<!-- /DEPENDECY MODULES -->
+
+		<!-- DB POOLING -->
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- /DB POOLING -->
+
+		<!-- SPRING FRAMEWORK -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		<!-- /SPRING FRAMEWORK -->
+
+		<!-- LOCAL DATE COMPATIBILITY FOR HIBERNATE -->
+		<dependency>
+			<groupId>org.jadira.usertype</groupId>
+			<artifactId>usertype.extended</artifactId>
+		</dependency>
+
+		<!-- CONNECTOR -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- /CONNECTOR -->
+
+		<!-- JPA PROVIDER -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-osgi</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- /JPA PROVIDER -->
+
+		<!-- XML APIs -->
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- /XML APIs -->
+
+		<!-- TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- /TESTING -->
+		
+		<!-- PERSISTENCE FRAMEWORK -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- /PERSISTENCE FRAMEWORK -->
+
+	</dependencies>
+</project>
