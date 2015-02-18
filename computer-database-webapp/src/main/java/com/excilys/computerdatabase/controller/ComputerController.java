@@ -132,9 +132,10 @@ public class ComputerController {
     if (!result.hasErrors()) {
       if (computerDto.getCompanyId() == 0
           || (computerDto.getCompanyId() > 0 && companyService.getById(computerDto.getCompanyId()) != null)) {
-        computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
-            messageSourceAccessor.getMessage("date-format")));
-        message = messageSourceAccessor.getMessage("success-add") + computerDto.toString();
+        Computer addedComputer = computerService.addByComputer(ComputerDtoConverter.toComputer(
+            computerDto, messageSourceAccessor.getMessage("date-format")));
+        message = messageSourceAccessor.getMessage("success-add")
+            + ComputerDtoConverter.toDto(addedComputer).toString();
         return "redirect:/dashboard";
       } else {
         errormessage = messageSourceAccessor.getMessage("error-company-selection");
@@ -154,7 +155,7 @@ public class ComputerController {
   protected String getEditForm(final ModelMap map, @RequestParam("id")
   final Long id) {
     if (id != null) {
-      final ComputerDto computerDto = computerService.getById(id);
+      final ComputerDto computerDto = ComputerDtoConverter.toDto(computerService.getById(id));
       if (computerDto != null) {
         map.addAttribute("companies", companyService.getAll());
         map.addAttribute("computerDto", computerDto);
@@ -178,15 +179,17 @@ public class ComputerController {
   @RequestMapping(value = "/editcomputer", method = RequestMethod.POST)
   protected String editComputer(final ModelMap map, @Valid
   final ComputerDto computerDto, final BindingResult result) {
-    final ComputerDto newComputerDto = computerService.getById(computerDto.getId());
+    final ComputerDto newComputerDto = ComputerDtoConverter.toDto(computerService
+        .getById(computerDto.getId()));
     if (newComputerDto != null) {
       if (!result.hasErrors()) {
         if (computerDto.getCompanyId() == 0
             || (computerDto.getCompanyId() > 0 && companyService
                 .getById(computerDto.getCompanyId()) != null)) {
-          computerService.updateByComputer(ComputerDtoConverter.toComputer(computerDto,
-              messageSourceAccessor.getMessage("date-format")));
-          message = messageSourceAccessor.getMessage("success-edit") + computerDto.toString();
+          Computer updatedComputer = computerService.updateByComputer(ComputerDtoConverter
+              .toComputer(computerDto, messageSourceAccessor.getMessage("date-format")));
+          message = messageSourceAccessor.getMessage("success-edit")
+              + ComputerDtoConverter.toDto(updatedComputer).toString();
           return "redirect:/dashboard";
         } else {
           errormessage = messageSourceAccessor.getMessage("error-company-selection");
@@ -225,7 +228,8 @@ public class ComputerController {
       errormessage = messageSourceAccessor.getMessage("error-empty-selection");
       return "redirect:/dashboard";
     }
-    List<ComputerDto> computers = computerService.removeByIdList(idList);
+    List<ComputerDto> computers = ComputerDtoConverter
+        .toDto(computerService.removeByIdList(idList));
     if (computers != null) {
       message = messageSourceAccessor.getMessage("success-delete");
     } else {

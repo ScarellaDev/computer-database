@@ -15,6 +15,11 @@
 		<!-- DEPENDENCY MODULES -->
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>computer-database-binding</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>computer-database-service</artifactId>
 		</dependency>
 		<!-- /DEPENDENCY MODULES -->

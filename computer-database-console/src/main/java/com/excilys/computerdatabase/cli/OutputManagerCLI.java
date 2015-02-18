@@ -232,7 +232,7 @@ public class OutputManagerCLI {
   public void showComputerList() {
     //Print computer list from DB
     List<ComputerDto> computersDto = new ArrayList<ComputerDto>();
-    computersDto = computerService.getAll();
+    computersDto = ComputerDtoConverter.toDto(computerService.getAll());
     if (computersDto != null) {
       System.out.println("Here is a list of all the computers in the DB:\r\n");
       for (ComputerDto computerDto : computersDto) {
@@ -426,7 +426,8 @@ public class OutputManagerCLI {
     //Print the details of the computer with id=idS
 
     if (StringValidator.isPositiveLong(idS)) {
-      final ComputerDto computerDto = computerService.getById(new Long(idS));
+      final ComputerDto computerDto = ComputerDtoConverter.toDto(computerService.getById(new Long(
+          idS)));
       if (computerDto == null) {
         System.out.println("Computer not found in database.\r\n");
       } else {
@@ -481,8 +482,8 @@ public class OutputManagerCLI {
     //Check computerDto
     if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.addByComputer(ComputerDtoConverter.toComputer(computerDto,
-          "yyyy-MM-dd"));
+      newComputerDto = ComputerDtoConverter.toDto(computerService
+          .addByComputer(ComputerDtoConverter.toComputer(computerDto, "yyyy-MM-dd")));
       if (newComputerDto == null) {
         System.out.println("Error: Computer could not be added to the DB.\r\n");
       } else {
@@ -503,7 +504,7 @@ public class OutputManagerCLI {
     final Map<String, String> errorMap = new HashMap<String, String>();
     if (ComputerDtoValidator.isValid(ComputerDtoConverter.toDto(computer), errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.addByComputer(computer);
+      newComputerDto = ComputerDtoConverter.toDto(computerService.addByComputer(computer));
       if (newComputerDto == null) {
         System.out.println("Error: Computer could not be added to the DB.\r\n");
       } else {
@@ -571,8 +572,8 @@ public class OutputManagerCLI {
     //Check computerDto
     if (ComputerDtoValidator.isValid(computerDto, errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.updateByComputer(ComputerDtoConverter.toComputer(
-          computerDto, "yyyy-MM-dd"));
+      newComputerDto = ComputerDtoConverter.toDto(computerService
+          .updateByComputer(ComputerDtoConverter.toComputer(computerDto, "yyyy-MM-dd")));
       if (newComputerDto == null) {
         System.out.println("Error: Computer could not be updated in the DB.\r\n");
       } else {
@@ -593,7 +594,7 @@ public class OutputManagerCLI {
     final Map<String, String> errorMap = new HashMap<String, String>();
     if (ComputerDtoValidator.isValid(ComputerDtoConverter.toDto(computer), errorMap)) {
       ComputerDto newComputerDto = null;
-      newComputerDto = computerService.updateByComputer(computer);
+      newComputerDto = ComputerDtoConverter.toDto(computerService.updateByComputer(computer));
       if (newComputerDto == null) {
         System.out.println("Error: Computer could not be updated in the DB.\r\n");
       } else {
@@ -613,7 +614,8 @@ public class OutputManagerCLI {
     //Print the details of the computer with id=idS
     if (StringValidator.isPositiveLong(idS)) {
       if (computerService.getById(new Long(idS)) != null) {
-        ComputerDto computerDto = computerService.removeById(new Long(idS));
+        ComputerDto computerDto = ComputerDtoConverter.toDto(computerService.removeById(new Long(
+            idS)));
         if (computerDto != null) {
           System.out.println("Your computer was successfully removed from the DB:"
               + computerDto.toString());

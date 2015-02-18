@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.persistence.repository.ComputerRepository;
 import com.excilys.computerdatabase.service.IComputerService;
 
@@ -44,9 +42,9 @@ public class ComputerService implements IComputerService {
    */
   @Transactional(readOnly = true)
   @Override
-  public ComputerDto getById(final Long id) {
+  public Computer getById(final Long id) {
     LOGGER.debug("ComputerService - GET BY ID");
-    return ComputerDtoConverter.toDto(computerRepository.findOne(id));
+    return computerRepository.findOne(id);
   }
 
   /**
@@ -56,9 +54,9 @@ public class ComputerService implements IComputerService {
    */
   @Transactional(readOnly = true)
   @Override
-  public List<ComputerDto> getByCompanyId(final Long id) {
+  public List<Computer> getByCompanyId(final Long id) {
     LOGGER.debug("ComputerService - GET BY COMPANY ID");
-    return ComputerDtoConverter.toDto(computerRepository.findByCompanyId(id));
+    return computerRepository.findByCompanyId(id);
   }
 
   /**
@@ -67,9 +65,9 @@ public class ComputerService implements IComputerService {
    */
   @Transactional(readOnly = true)
   @Override
-  public List<ComputerDto> getAll() {
+  public List<Computer> getAll() {
     LOGGER.debug("ComputerService - GET ALL");
-    return ComputerDtoConverter.toDto(computerRepository.findAll());
+    return computerRepository.findAll();
   }
 
   /**
@@ -78,9 +76,15 @@ public class ComputerService implements IComputerService {
    * @return An instance of the computer that was added to the database or null if the INSERT did not work.
    */
   @Override
-  public ComputerDto addByComputer(final Computer computer) {
+  public Computer addByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - ADD BY COMPUTER");
-    return ComputerDtoConverter.toDto(computerRepository.save(computer));
+    Computer addedComputer = computerRepository.save(computer);
+    if (computerRepository.exists(addedComputer.getId())) {
+      return computerRepository.findOne(addedComputer.getId());
+    } else {
+      return null;
+    }
+
   }
 
   /**
@@ -89,12 +93,11 @@ public class ComputerService implements IComputerService {
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   @Override
-  public ComputerDto updateByComputer(final Computer computer) {
+  public Computer updateByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - UPDATE BY COMPUTER");
     if (computerRepository.exists(computer.getId())) {
       computerRepository.save(computer);
-      Computer updatedComputer = computerRepository.findOne(computer.getId());
-      return ComputerDtoConverter.toDto(updatedComputer);
+      return computerRepository.findOne(computer.getId());
     } else {
       return null;
     }
@@ -106,12 +109,12 @@ public class ComputerService implements IComputerService {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   @Override
-  public ComputerDto removeById(final Long id) {
+  public Computer removeById(final Long id) {
     LOGGER.debug("ComputerService - REMOVE BY ID");
     if (computerRepository.exists(id)) {
-      Computer computer = computerRepository.findOne(id);
+      Computer removedComputer = computerRepository.findOne(id);
       computerRepository.delete(id);
-      return ComputerDtoConverter.toDto(computer);
+      return removedComputer;
     } else {
       return null;
     }
@@ -123,7 +126,7 @@ public class ComputerService implements IComputerService {
    * * @return The list of deleted computers
    */
   @Override
-  public List<ComputerDto> removeByIdList(final List<Long> idList) {
+  public List<Computer> removeByIdList(final List<Long> idList) {
     LOGGER.debug("ComputerService - REMOVE BY ID LIST");
     List<Computer> computers = new ArrayList<Computer>();
     idList.forEach(id -> {
@@ -132,7 +135,7 @@ public class ComputerService implements IComputerService {
         computerRepository.delete(id);
       }
     });
-    return ComputerDtoConverter.toDto(computers);
+    return computers;
   }
 
   /**
@@ -141,12 +144,12 @@ public class ComputerService implements IComputerService {
    * @return An instance of the computer that was removed from the database or null if the DELETE did not work.
    */
   @Override
-  public ComputerDto removeByComputer(final Computer computer) {
+  public Computer removeByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - REMOVE BY COMPUTER");
     if (computerRepository.exists(computer.getId())) {
       Computer removedComputer = computerRepository.findOne(computer.getId());
       computerRepository.delete(computer.getId());
-      return ComputerDtoConverter.toDto(removedComputer);
+      return removedComputer;
     } else {
       return null;
     }

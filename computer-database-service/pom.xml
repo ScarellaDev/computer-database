@@ -17,11 +17,6 @@
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>computer-database-persistence</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.excilys.computerdatabase</groupId>
-			<artifactId>computer-database-binding</artifactId>
-		</dependency>
 		<!-- /DEPENDENCY MODULES -->
 
 		<!-- SPRING FRAMEWORK -->

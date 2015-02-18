@@ -4,16 +4,16 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="computer-database-service-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-service/computer-database-service">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="computer-database-persistence-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-persistence/computer-database-persistence">
+        <dependent-module archiveName="computer-database-binding-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-binding/computer-database-binding">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="computer-database-core-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-core/computer-database-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="computer-database-binding-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-binding/computer-database-binding">
+        <dependent-module archiveName="computer-database-service-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-service/computer-database-service">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="computer-database-persistence-0.4.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/computer-database-persistence/computer-database-persistence">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="computer-database"/>
