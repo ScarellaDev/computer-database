@@ -23,6 +23,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -58,14 +61,6 @@ public class CompanyRepositoryTest {
   }
 
   /*
-   * Tests of the getAll function
-   */
-  @Test
-  public void getAll() {
-    assertEquals(list, companyRepository.findAll());
-  }
-
-  /*
    * Tests of the getById function
    */
   @Test
@@ -80,22 +75,30 @@ public class CompanyRepositoryTest {
   }
 
   /*
-   * Tests of the delete function
+   * Tests of the getAll function
    */
   @Test
-  public void delete() {
+  public void getAll() {
+    assertEquals(list, companyRepository.findAll());
+  }
+
+  /*
+   * Tests of the remove function
+   */
+  @Test
+  public void remove() {
     companyRepository.delete(2L);
     assertNull(companyRepository.findOne(2L));
   }
 
   @Test(expected = EmptyResultDataAccessException.class)
-  public void deleteInvalidId() {
+  public void removeInvalidId() {
     companyRepository.delete(-1L);
     assertEquals(list, companyRepository.findAll());
   }
 
   @Test(expected = DataIntegrityViolationException.class)
-  public void deleteComputerLeft() {
+  public void removeComputerLeft() {
     companyRepository.delete(1L);
   }
 
@@ -113,7 +116,13 @@ public class CompanyRepositoryTest {
   @Test
   public void pagedResultNull() {
     Page<Company> page = new PageImpl<Company>(list);
-    Pageable pageable = null;
-    assertEquals(page, companyRepository.findAll(pageable));
+    Pageable nullPageable = null;
+    assertEquals(page, companyRepository.findAll(nullPageable));
+  }
+
+  @Test(expected = PropertyReferenceException.class)
+  public void invalidSort() {
+    Pageable pageable = new PageRequest(0, 20, new Sort(Direction.ASC, "x"));
+    companyRepository.findAll(pageable);
   }
 }

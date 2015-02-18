@@ -44,7 +44,11 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer getById(final Long id) {
     LOGGER.debug("ComputerService - GET BY ID");
-    return computerRepository.findOne(id);
+    if (id != null) {
+      return computerRepository.findOne(id);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -56,7 +60,11 @@ public class ComputerService implements IComputerService {
   @Override
   public List<Computer> getByCompanyId(final Long id) {
     LOGGER.debug("ComputerService - GET BY COMPANY ID");
-    return computerRepository.findByCompanyId(id);
+    if (id != null) {
+      return computerRepository.findByCompanyId(id);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -78,12 +86,13 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer addByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - ADD BY COMPUTER");
-    Computer addedComputer = computerRepository.save(computer);
-    if (computerRepository.exists(addedComputer.getId())) {
-      return computerRepository.findOne(addedComputer.getId());
-    } else {
-      return null;
+    if (computer != null) {
+      Computer addedComputer = computerRepository.save(computer);
+      if (computerRepository.exists(addedComputer.getId())) {
+        return computerRepository.findOne(addedComputer.getId());
+      }
     }
+    return null;
 
   }
 
@@ -95,7 +104,7 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer updateByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - UPDATE BY COMPUTER");
-    if (computerRepository.exists(computer.getId())) {
+    if (computer != null && computerRepository.exists(computer.getId())) {
       computerRepository.save(computer);
       return computerRepository.findOne(computer.getId());
     } else {
@@ -111,7 +120,7 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer removeById(final Long id) {
     LOGGER.debug("ComputerService - REMOVE BY ID");
-    if (computerRepository.exists(id)) {
+    if (id != null && computerRepository.exists(id)) {
       Computer removedComputer = computerRepository.findOne(id);
       computerRepository.delete(id);
       return removedComputer;
@@ -128,14 +137,18 @@ public class ComputerService implements IComputerService {
   @Override
   public List<Computer> removeByIdList(final List<Long> idList) {
     LOGGER.debug("ComputerService - REMOVE BY ID LIST");
-    List<Computer> computers = new ArrayList<Computer>();
-    idList.forEach(id -> {
-      if (computerRepository.exists(id)) {
-        computers.add(computerRepository.findOne(id));
-        computerRepository.delete(id);
-      }
-    });
-    return computers;
+    if (!idList.isEmpty()) {
+      List<Computer> computers = new ArrayList<Computer>();
+      idList.forEach(id -> {
+        if (computerRepository.exists(id)) {
+          computers.add(computerRepository.findOne(id));
+          computerRepository.delete(id);
+        }
+      });
+      return computers;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -146,7 +159,7 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer removeByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - REMOVE BY COMPUTER");
-    if (computerRepository.exists(computer.getId())) {
+    if (computer != null && computerRepository.exists(computer.getId())) {
       Computer removedComputer = computerRepository.findOne(computer.getId());
       computerRepository.delete(computer.getId());
       return removedComputer;

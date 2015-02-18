@@ -18,6 +18,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
@@ -33,6 +37,9 @@ public class CompanyServiceTest {
 
   CompanyRepository  companyRepository;
   ComputerRepository computerRepository;
+
+  Page<Company>      page;
+  Pageable           pageable;
 
   List<Computer>     computerList;
   List<Company>      companyList;
@@ -50,6 +57,10 @@ public class CompanyServiceTest {
     companyList.add(c1);
     companyList.add(c2);
 
+    pageable = new PageRequest(0, 5);
+
+    page = new PageImpl<Company>(companyList, pageable, companyList.size());
+
     computerList = new ArrayList<Computer>();
     computerList.add(new Computer(1L, "ordi 1", null, null, c1));
     computerList.add(new Computer(2L, "ordi 2", null, null, c1));
@@ -58,10 +69,10 @@ public class CompanyServiceTest {
     when(companyRepository.findAll()).thenReturn(companyList);
     when(companyRepository.findOne(1L)).thenReturn(c1);
 
-    doAnswer(new Answer<List<Computer>>() {
+    doAnswer(new Answer<List<Company>>() {
       @Override
-      public List<Computer> answer(final InvocationOnMock invocation) {
-        final long l = (Long) invocation.getArguments()[0];
+      public List<Company> answer(final InvocationOnMock invocation) {
+        final Long l = (Long) invocation.getArguments()[0];
         companyList.removeIf(c -> c.getId() == l);
         return null;
       }
@@ -70,21 +81,13 @@ public class CompanyServiceTest {
     doAnswer(new Answer<List<Computer>>() {
       @Override
       public List<Computer> answer(final InvocationOnMock invocation) {
-        final long l = (Long) invocation.getArguments()[0];
+        final Long l = (Long) invocation.getArguments()[0];
         computerList.removeIf(c -> c.getCompany().getId() == l);
         return null;
       }
     }).when(computerRepository).deleteByCompanyId(anyLong());
 
     MockitoAnnotations.initMocks(this);
-  }
-
-  /*
-   * Test getAll function
-   */
-  @Test
-  public void getAll() {
-    assertEquals(companyList, companyService.getAll());
   }
 
   /*
@@ -100,26 +103,62 @@ public class CompanyServiceTest {
     assertNull(companyService.getById(-1L));
   }
 
+  @Test
+  public void getByNullId() {
+    assertNull(companyService.getById(null));
+  }
+
   /*
-   * Tests delete function
+   * Test getAll function
    */
   @Test
-  public void delete() {
+  public void getAll() {
+    assertEquals(companyList, companyService.getAll());
+  }
+
+  /*
+   * Tests remove function
+   */
+  @Test
+  public void removeById() {
     final int x = companyList.size();
     final int y = computerList.size();
     companyService.removeById(1L);
 
-    assertEquals(x - 1, companyList.size());
+    assertEquals((x - 1), companyList.size());
     assertEquals(y - 2, computerList.size());
   }
 
   @Test
-  public void deleteInvalidId() {
+  public void removeByInvalidId() {
     final int x = companyList.size();
     final int y = computerList.size();
     companyService.removeById(3L);
 
     assertEquals(x, companyList.size());
     assertEquals(y, computerList.size());
+  }
+
+  @Test
+  public void removeByNullId() {
+    final int x = companyList.size();
+    final int y = computerList.size();
+    companyService.removeById(null);
+
+    assertEquals(x, companyList.size());
+    assertEquals(y, computerList.size());
+  }
+
+  /*
+   * Tests getPagedList
+   */
+  @Test
+  public void getPagedList() {
+    assertEquals(page, companyService.getPagedList(pageable));
+  }
+
+  @Test
+  public void getPagedListNull() {
+    assertNull(companyService.getPagedList(null));
   }
 }

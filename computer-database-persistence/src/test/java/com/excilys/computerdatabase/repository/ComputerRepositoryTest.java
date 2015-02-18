@@ -79,14 +79,6 @@ public class ComputerRepositoryTest {
   }
 
   /*
-   * Tests of the findAll function
-   */
-  @Test
-  public void findAll() {
-    assertEquals(list, computerRepository.findAll());
-  }
-
-  /*
    * Tests of the findOne function
    */
   @Test
@@ -102,10 +94,18 @@ public class ComputerRepositoryTest {
   }
 
   /*
-   * Tests of the create function
+   * Tests of the findAll function
    */
   @Test
-  public void create() {
+  public void findAll() {
+    assertEquals(list, computerRepository.findAll());
+  }
+
+  /*
+   * Tests of the add function
+   */
+  @Test
+  public void add() {
     final Computer computer = Computer.builder().name("test")
         .introduced(LocalDate.parse("1993-01-10")).company(apple).build();
 
@@ -115,13 +115,13 @@ public class ComputerRepositoryTest {
   }
 
   @Test(expected = InvalidDataAccessApiUsageException.class)
-  public void createNull() {
+  public void addNull() {
     Computer computer = null;
     computerRepository.save(computer);
   }
 
   @Test
-  public void createEmptyComputer() {
+  public void addEmptyComputer() {
     computerRepository.save(new Computer());
     list.add(Computer.builder().id(5L).build());
     assertEquals(list, computerRepository.findAll());
@@ -163,17 +163,17 @@ public class ComputerRepositoryTest {
   }
 
   /*
-   * Tests of the delete function
+   * Tests of the remove function
    */
   @Test
-  public void delete() {
+  public void remove() {
     assertNotNull(computerRepository.findOne(2L));
     computerRepository.delete(2L);
     assertNull(computerRepository.findOne(2L));
   }
 
   @Test(expected = EmptyResultDataAccessException.class)
-  public void deleteInvalidId() {
+  public void removeInvalidId() {
     computerRepository.delete(-1L);
   }
 
@@ -181,7 +181,7 @@ public class ComputerRepositoryTest {
    * Tests of the deleteByCompanyId function
    */
   @Test
-  public void deleteByCompanyId() {
+  public void removeByCompanyId() {
     computerRepository.deleteByCompanyId(2L);
     assertNull(computerRepository.findOne(3L));
     assertNull(computerRepository.findOne(4L));
@@ -208,9 +208,8 @@ public class ComputerRepositoryTest {
   @Test
   public void pagedResultNull() {
     Page<Computer> page = new PageImpl<Computer>(list);
-    Pageable pageable = null;
     assertEquals(page,
-        computerRepository.findByNameStartingWithOrCompanyNameStartingWith("", "", pageable));
+        computerRepository.findByNameStartingWithOrCompanyNameStartingWith("", "", null));
   }
 
   @Test(expected = PropertyReferenceException.class)
@@ -218,5 +217,4 @@ public class ComputerRepositoryTest {
     Pageable pageable = new PageRequest(0, 20, new Sort(Direction.ASC, "x"));
     computerRepository.findByNameStartingWithOrCompanyNameStartingWith("", "", pageable);
   }
-
 }

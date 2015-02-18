@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +29,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.dto.ComputerDto;
-import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.persistence.repository.ComputerRepository;
 import com.excilys.computerdatabase.service.impl.ComputerService;
 
@@ -43,7 +42,6 @@ public class ComputerServiceTest {
 
   ComputerRepository computerRepository;
   List<Computer>     list;
-  List<ComputerDto>  dtoList;
   Company            c1;
   Company            c2;
   Computer           computer;
@@ -60,8 +58,6 @@ public class ComputerServiceTest {
     list.add(new Computer(2L, "ordi 2", null, null, c1));
     list.add(new Computer(3L, "ordi 3", null, null, c2));
 
-    dtoList = ComputerDtoConverter.toDto(list);
-
     pageable = new PageRequest(0, 5);
 
     computer = new Computer(4L, "ordi 4", null, null, c1);
@@ -72,37 +68,40 @@ public class ComputerServiceTest {
         computerRepository.findByNameStartingWithOrCompanyNameStartingWith(anyString(),
             anyString(), any(Pageable.class))).thenReturn(page);
 
-    doAnswer(new Answer<ComputerDto>() {
+    doAnswer(new Answer<Computer>() {
       @Override
-      public ComputerDto answer(final InvocationOnMock invocation) {
+      public Computer answer(final InvocationOnMock invocation) {
         final long l = (Long) invocation.getArguments()[0];
-        if (l > 0 && l < dtoList.size()) {
-          return dtoList.get((int) l - 1);
+        List<Computer> comp = list.stream().filter(c -> c.getId() == l)
+            .collect(Collectors.toList());
+        if (comp.isEmpty()) {
+          return null;
+        } else {
+          return comp.get(0);
         }
-        return null;
       }
     }).when(computerRepository).findOne(anyLong());
 
-    doAnswer(new Answer<ComputerDto>() {
+    doAnswer(new Answer<Computer>() {
       @Override
-      public ComputerDto answer(final InvocationOnMock invocation) {
+      public Computer answer(final InvocationOnMock invocation) {
         final Computer computer = (Computer) invocation.getArguments()[0];
         if (computer != null) {
-          if (computer.getId() < 1 || computer.getId() >= list.size()) {
-            dtoList.add(ComputerDtoConverter.toDto(computer));
+          if (computer.getId() == null || computer.getId() < 1 || computer.getId() >= list.size()) {
+            list.add(computer);
           } else {
-            dtoList.set((int) (computer.getId() - 1), ComputerDtoConverter.toDto(computer));
+            list.set((int) (computer.getId() - 1), computer);
           }
         }
         return null;
       }
     }).when(computerRepository).save(any(Computer.class));
 
-    doAnswer(new Answer<ComputerDto>() {
+    doAnswer(new Answer<Computer>() {
       @Override
-      public ComputerDto answer(final InvocationOnMock invocation) {
+      public Computer answer(final InvocationOnMock invocation) {
         final long l = (Long) invocation.getArguments()[0];
-        dtoList.removeIf(c -> c.getId() == l);
+        list.removeIf(c -> c.getId() == l);
         return null;
       }
 
@@ -112,19 +111,11 @@ public class ComputerServiceTest {
   }
 
   /*
-   * Test getAll function
-   */
-  @Test
-  public void getAll() {
-    assertEquals(dtoList, computerService.getAll());
-  }
-
-  /*
    * Tests getById function
    */
   @Test
   public void getById() {
-    assertEquals(dtoList.get(0), computerService.getById(1L));
+    assertEquals(list.get(0), computerService.getById(1L));
   }
 
   @Test
@@ -134,24 +125,32 @@ public class ComputerServiceTest {
   }
 
   /*
-   * Tests of create function
+   * Test getAll function
    */
   @Test
-  public void create() {
+  public void getAll() {
+    assertEquals(list, computerService.getAll());
+  }
+
+  /*
+   * Tests of add function
+   */
+  @Test
+  public void add() {
     computerService.addByComputer(computer);
-    assertEquals(computer, dtoList.get(3));
+    assertEquals(computer, list.get(3));
   }
 
   @Test
-  public void createNull() {
-    assertNull(computerService.addByComputer(null));
-    //assertEquals(dtoList, computerService.getAll());
+  public void addNull() {
+    computerService.addByComputer(null);
+    assertEquals(list, computerService.getAll());
   }
 
   @Test
-  public void createEmptyComputer() {
+  public void addEmptyComputer() {
     computerService.addByComputer(new Computer());
-    assertEquals(dtoList, computerService.getAll());
+    assertEquals(list, computerService.getAll());
   }
 
   /*
@@ -160,13 +159,13 @@ public class ComputerServiceTest {
   @Test
   public void update() {
     computerService.updateByComputer(computer);
-    assertEquals(dtoList, computerService.getAll());
+    assertEquals(list, computerService.getAll());
   }
 
   @Test
   public void updateNull() {
     computerService.updateByComputer(null);
-    assertEquals(dtoList, computerService.getAll());
+    assertEquals(list, computerService.getAll());
   }
 
   @Test
@@ -174,7 +173,7 @@ public class ComputerServiceTest {
     final Computer computer = new Computer();
     computer.setId(-1L);
     computerService.updateByComputer(computer);
-    assertEquals(dtoList, computerService.getAll());
+    assertEquals(list, computerService.getAll());
   }
 
   @Test
@@ -183,32 +182,32 @@ public class ComputerServiceTest {
     computer.setId(1L);
     computer.setCompany(new Company(-1L, ""));
     computerService.updateByComputer(computer);
-    assertEquals(dtoList, computerService.getAll());
+    assertEquals(list, computerService.getAll());
   }
 
   /*
-   * Tests of the delete() function
+   * Tests of the remove function
    */
   @Test
-  public void delete() {
+  public void remove() {
     final int x = computerService.getAll().size();
     computerService.removeById(3L);
-    assertEquals(x - 1, dtoList.size());
+    assertEquals(x - 1, list.size());
   }
 
   @Test
-  public void deleteInvalidId() {
+  public void removeInvalidId() {
     final int x = computerService.getAll().size();
     computerService.removeById(-1L);
     computerService.removeById(4L);
-    assertEquals(x, dtoList.size());
+    assertEquals(x, list.size());
   }
 
   /*
-   * Test of the delete(List) function
+   * Test of the remove(List) function
    */
   @Test
-  public void multipleDelete() {
+  public void multipleRemove() {
     final List<Long> l = new ArrayList<Long>();
     l.add(1L);
     l.add(2L);

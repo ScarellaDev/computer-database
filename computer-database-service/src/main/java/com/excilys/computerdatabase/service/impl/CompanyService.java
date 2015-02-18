@@ -50,7 +50,12 @@ public class CompanyService implements ICompanyService {
   @Override
   public Company getById(final Long id) {
     LOGGER.debug("CompanyService - GET BY ID");
-    return companyRepository.findOne(id);
+    if (id != null) {
+      return companyRepository.findOne(id);
+    } else {
+      return null;
+    }
+
   }
 
   /**
@@ -72,7 +77,7 @@ public class CompanyService implements ICompanyService {
   @Override
   public Company removeById(final Long id) {
     LOGGER.debug("CompanyService - REMOVE BY ID");
-    if (companyRepository.exists(id)) {
+    if (id != null && companyRepository.exists(id)) {
       Company company = companyRepository.findOne(id);
       if (!computerRepository.findByCompanyId(id).isEmpty()) {
         computerRepository.deleteByCompanyId(id);
