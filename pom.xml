@@ -5,7 +5,7 @@
 	<groupId>com.excilys.computerdatabase</groupId>
 	<artifactId>computer-database</artifactId>
 	<packaging>pom</packaging>
-	<version>0.4.5.3</version>
+	<version>0.4.6.1</version>
 	<name>computer-database</name>
 
 	<modules>
@@ -15,6 +15,7 @@
 		<module>computer-database-service</module>
 		<module>computer-database-console</module>
 		<module>computer-database-webapp</module>
+		<module>computer-database-webservice</module>
 	</modules>
 
 	<properties>
@@ -22,6 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<bonecp.version>0.8.0.RELEASE</bonecp.version>
 		<mybatis.version>3.2.8</mybatis.version>
+		<jersey.version>2.16</jersey.version>
 		<spring.version>4.1.4.RELEASE</spring.version>
 		<spring-data-commons.version>1.9.2.RELEASE</spring-data-commons.version>
 		<spring-data-jpa.version>1.7.2.RELEASE</spring-data-jpa.version>
@@ -89,6 +91,13 @@
 				<artifactId>computer-database-webapp</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
+			
+			<!-- computer-database-webservice -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>computer-database-webservice</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
 			<!-- /PROJECT MODULES -->
 
 			<!-- Logging - Force the use of the empty common-logging package -->
@@ -114,6 +123,26 @@
 				<version>${mybatis.version}</version>
 			</dependency>
 			<!-- /PERSISTENCE FRAMEWORK -->
+			
+			<!-- JERSEY -->
+			<!-- JAX-RS API -->
+	        <dependency>
+	            <groupId>org.glassfish.jersey.containers</groupId>
+	            <artifactId>jersey-container-servlet-core</artifactId>
+	            <version>${jersey.version}</version>
+	        </dependency>
+	        <!-- Required to make Jersey work with Spring DI -->
+	        <dependency>
+	            <groupId>org.glassfish.jersey.ext</groupId>
+	            <artifactId>jersey-spring3</artifactId>
+	            <version>${jersey.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.glassfish.jersey.media</groupId>
+	            <artifactId>jersey-media-json-jackson</artifactId>
+	            <version>${jersey.version}</version>
+	        </dependency>
+			<!-- /JERSEY -->
 
 			<!-- SPRING FRAMEWORK -->
 			<!-- spring-framework-bom -->

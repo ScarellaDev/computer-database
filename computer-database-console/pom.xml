@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.excilys.computerdatabase</groupId>
 		<artifactId>computer-database</artifactId>
-		<version>0.4.5.3</version>
+		<version>0.4.6.1</version>
 	</parent>
 	<artifactId>computer-database-console</artifactId>
 	<packaging>jar</packaging>

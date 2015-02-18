@@ -51,6 +51,12 @@
 	
 	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
 	<!-- /JPA API HIBERNATE -->
+
+	<!-- TransactionManager bean -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="jpaDialect" ref="jpaDialect" />
+	</bean>
 	
 
 </beans>

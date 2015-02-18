@@ -5,7 +5,6 @@
 						http://www.springframework.org/schema/security
 						http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-
 	<beans:bean id="digestFilter" class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
         	<beans:property name="userDetailsService" ref="userService" />
        		<beans:property name="authenticationEntryPoint" ref="digestEntryPoint" />
