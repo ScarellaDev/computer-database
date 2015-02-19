@@ -28,9 +28,15 @@ import com.excilys.computerdatabase.dto.ComputerDtoConverter;
 import com.excilys.computerdatabase.service.ICompanyService;
 import com.excilys.computerdatabase.service.IComputerService;
 import com.excilys.computerdatabase.webservice.IComputerWebService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @Service
 @Path("/computer")
+@Api(value = "/computer", description = "Computer related operations")
 public class ComputerWebService implements IComputerWebService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ComputerWebService.class);
@@ -45,7 +51,9 @@ public class ComputerWebService implements IComputerWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/{id: [0-9]+}")
-  public ComputerDto getById(@PathParam("id") Long id) {
+  @ApiOperation(value = "Find Computer by id")
+  public ComputerDto getById(
+      @ApiParam(value = "ID of Computer to fetch", required = true) @PathParam("id") Long id) {
 
     Computer computer = computerService.getById(id);
 
@@ -55,6 +63,7 @@ public class ComputerWebService implements IComputerWebService {
   @Override
   @GET
   @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(value = "Get all Computers")
   public List<ComputerDto> getAll() {
 
     List<Computer> computers = computerService.getAll();
@@ -65,7 +74,12 @@ public class ComputerWebService implements IComputerWebService {
   @Override
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response addByComputer(ComputerDto computerDto) {
+  @ApiOperation(value = "Add a Computer")
+  @ApiResponses(value = {
+      @ApiResponse(code = 400, message = "The company specified does not exist"),
+      @ApiResponse(code = 201, message = "Add Success") })
+  public Response addByComputer(
+      @ApiParam(value = "Computer object", required = true) ComputerDto computerDto) {
 
     Company company = null;
     if (computerDto.getCompanyId() > 0) {
@@ -100,7 +114,11 @@ public class ComputerWebService implements IComputerWebService {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("/{id: [0-9]+}")
-  public Response updateByComputer(ComputerDto computerDto) {
+  @ApiOperation(value = "Update an existing Computer")
+  @ApiResponses(value = { @ApiResponse(code = 404, message = "Requested Computer does not exist"),
+      @ApiResponse(code = 200, message = "Update Success") })
+  public Response updateByComputer(
+      @ApiParam(value = "Computer object with the updated details. The ID property must be set.", required = true) ComputerDto computerDto) {
 
     Computer computer = computerService.getById(computerDto.getId());
     if (computer == null) {
@@ -125,7 +143,11 @@ public class ComputerWebService implements IComputerWebService {
   @Override
   @DELETE
   @Path("/{id: [0-9]+}")
-  public Response removeById(@PathParam("id") Long id) {
+  @ApiOperation(value = "Remove a Computer")
+  @ApiResponses(value = { @ApiResponse(code = 204, message = "Remove Success"),
+      @ApiResponse(code = 400, message = "Failed to remove the Computer") })
+  public Response removeById(
+      @ApiParam(value = "ID of the Computer to remove", required = true) @PathParam("id") Long id) {
 
     Computer removedComputer = computerService.removeById(id);
 

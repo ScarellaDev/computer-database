@@ -15,12 +15,42 @@
         
         <!-- Import service context -->
 		<import resource="classpath:service-context.xml"/>
+		
+		<!-- Swagger API listing resource -->
+   	 	<bean id="swaggerResourceJSON"
+        	class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
+
+	    <!-- Swagger writers -->
+	    <bean id="resourceWriter"
+	        class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+	    <bean id="apiWriter"
+	        class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" />
         
 	  	<jaxrs:server id="computerWebService" basePackages="com.excilys.computerdatabase.webservice.impl" >
 			<jaxrs:providers>
 				<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+				<ref bean="resourceWriter" />
+	            <ref bean="apiWriter" />
 			</jaxrs:providers>
+			<jaxrs:serviceBeans>
+	            <!-- Swagger API Listing resource -->
+	            <ref bean="swaggerResourceJSON" />
+	        </jaxrs:serviceBeans>
 		</jaxrs:server>
+
+	    <!-- this scans the classes for resources -->
+	    <bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+	        <property name="resourcePackage" value="com.excilys.computerdatabase.webservice.impl" />
+	        <property name="version" value="3.0.1" />
+	        <property name="basePath" value="http://localhost:8080/computer-database-webservice/api" />
+	        <property name="title" value="Computer Database Web Service" />
+	        <property name="description" value="API Documentation" />
+	        <property name="contact" value="apiteam@wordnik.com" />
+	        <property name="license" value="Apache 2.0 License" />
+	        <property name="licenseUrl"
+	            value="http://www.apache.org/licenses/LICENSE-2.0.html" />
+	        <property name="scan" value="true" />
+	    </bean>
 		
         <!-- Path of the i18n message.properties -->
 		<bean id="messageSource"
