@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://cxf.apache.org/jaxrs
+		http://cxf.apache.org/schemas/jaxrs.xsd
+		http://cxf.apache.org/jaxrs-client
+		http://cxf.apache.org/schemas/jaxrs-client.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+    <context:annotation-config />
+
+    <context:component-scan
+        base-package="com.excilys.computerdatabase.webservice, com.excilys.computerdatabase.cli">
+    </context:component-scan>
+
+    <jaxrs-client:client id="computerRESTClient"
+        address="http://localhost:8080/computer-database-webservice/rest"
+        serviceClass="com.excilys.computerdatabase.webservice.IComputerWebService"
+        inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+        </jaxrs-client:providers>
+    </jaxrs-client:client>
+    
+    <jaxrs-client:client id="companyRESTClient"
+        address="http://localhost:8080/computer-database-webservice/rest"
+        serviceClass="com.excilys.computerdatabase.webservice.ICompanyWebService"
+        inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+        </jaxrs-client:providers>
+    </jaxrs-client:client>
+    
+</beans>

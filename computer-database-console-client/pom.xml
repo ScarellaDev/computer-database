@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<parent>
 		<groupId>com.excilys.computerdatabase</groupId>
 		<artifactId>computer-database</artifactId>
 		<version>0.4.6.1</version>
 	</parent>
-	<artifactId>computer-database-webservice</artifactId>
-	<packaging>war</packaging>
+	<artifactId>computer-database-console-client</artifactId>
+	<packaging>jar</packaging>
 
 	<dependencies>
 
@@ -17,11 +17,6 @@
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>computer-database-binding</artifactId>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.excilys.computerdatabase</groupId>
-			<artifactId>computer-database-service</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
@@ -29,24 +24,23 @@
 		</dependency>
 		<!-- /DEPENDENCY MODULES -->
 
-		<!-- SPRING FRAMEWORK -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<!-- /SPRING FRAMEWORK -->
-		
 		<!-- JAX-RS API -->
-	    	<dependency>
-		   <groupId>org.apache.cxf</groupId>
-		   <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+	    <dependency>
+		   	<groupId>org.apache.cxf</groupId>
+		   	<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-client</artifactId>
+		</dependency>
 		<!-- /JAX-RS -->
 
 	</dependencies>
+
 </project>
