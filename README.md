@@ -102,7 +102,7 @@ In the command line interface, add a feature which deletes a company, and all co
 Add a connection pool (BoneCP), put your credentials in an external properties file.  
 Implement a solid transaction handling model.  
 
-####4.3.9. Code review
+####4.3.9. Code review (t0 + 10 days)
 Important Points: Maven structure? Library scopes? Architecture (daos, mappers, services, models, dtos, controllers, exceptions, validators)? Validation? Unit test coverage? Search and order by design choices? JSTL Tags and HTML documents structure.  
 Point about Threading (Connections, concurrency), and Transactions.
 
@@ -112,23 +112,30 @@ Replace existing connection logic with a ThreadLocal object.
 ###4.4. Embracing Spring Framework
 
 ####4.4.1. Spring
-Enable the use of Spring to manage your objects's lifecycle, and transactions.
-Replace your connection pool by a real datasource configured in the spring context.
-Warning: Do not replace your Servlets by another class. Your controllers should still extend HttpServlet
+Enable the use of Spring to manage your objects's lifecycle, and transactions.  
+Important: Be careful to use slf4j bridges to display spring logs. Do not forget to setup your logback configuration.  
+Replace your connection pool by a real datasource configured in the spring context.  
+Which problems did you encounter? Study and note all the possible ways of solving the dependency injection issue in servlets.  
+Warning: Do not replace your Servlets by another class. Your controllers should still extend HttpServlet.
 
-####4.4.2. JDBCTemplate
+####4.4.2. Point overview: Spring integration (t0 + 11 days)
+How a webapp is started, how spring initializes itself.  
+Explanation of the common problems encountered with the different contexts.  
+Roundtable of the solutions found, best practices.
+
+####4.4.3. JDBCTemplate
 Change your DAO Implementation and use the JDBCTemplate from spring-jdbc to make your requests
 
-####4.4.3. Spring MVC
+####4.4.4. Spring MVC
 You can now forget about Servlets and use Spring MVC as Controller for your webapp.  
 Use Spring MVC validation annotations to validate your DTOs.  
 Add custom error pages.  
 
-####4.4.4. i18n
+####4.4.5. i18n
 Implement spring multilingual features (French/English).
 
-####4.4.5. Code Review
-Important Points: How to switch from a language to another? How about javascript translation? Did you use spring-mvc annotations, forms and models?
+####4.4.6. Code Review (t0 + 14 days)
+Important Points: How did you split your Spring / Spring MVC contexts? How to switch from a language to another? How about javascript translation? Did you use spring-mvc annotations, forms and models?
 
 ###4.5. Multi module, ORM, and Security
 
@@ -145,18 +152,19 @@ Following modules can be created: core, persistence, service, binding, webapp, c
 Add Spring Security to your project. Choose a stateless approach, and use an extra UserDAO and related SQL table to store and retrieve user login info.  
 Use Digest HTTP Auth.
 
-####4.5.4. Code Review
+####4.5.4. Code Review (t0 + 20 days)
 Important points: Which API was the most efficient for your queries? Limitations of those APIs.
 Maven and Spring contexts evaluation, unit tests evaluation.
 
 ###4.6. Web Services, REST API
 
-####4.6.1. Jax WS / Jax RS
+####4.6.1. Jax WS / Jax RS 
 Now, we want your webapp to also produce APIs so that clients could access the resources remotely.  
 Refactor your CLI client to act as a remote client to your webapp, using either Jax-RS or Jax-WS libraries.
 
 ####4.6.2. Jackson
 Finally, to allow the creation of AngularJS, Mobile (Android/iOS) or third party clients, you should expose the computer listing feature using Jackson and Spring RestController.
 
-####4.6.3. Final Code Review
+####4.6.3. Final Code Review (t0 + 24 days)
 
+##4.7. Final Presentation (t0 + 25 days)
