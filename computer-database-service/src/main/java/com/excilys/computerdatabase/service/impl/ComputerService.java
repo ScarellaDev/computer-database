@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.persistence.repository.ComputerRepository;
 import com.excilys.computerdatabase.service.IComputerService;
+import com.excilys.computerdatabase.validator.StringValidator;
 
 /**
 * Standard Service implementation to manage Computer objects.
@@ -86,7 +87,7 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer addByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - ADD BY COMPUTER");
-    if (computer != null) {
+    if (computer != null && !StringValidator.isEmpty(computer.getName())) {
       Computer addedComputer = computerRepository.save(computer);
       if (computerRepository.exists(addedComputer.getId())) {
         return computerRepository.findOne(addedComputer.getId());

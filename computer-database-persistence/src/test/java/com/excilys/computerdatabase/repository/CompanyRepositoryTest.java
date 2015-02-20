@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -74,6 +75,11 @@ public class CompanyRepositoryTest {
     assertNull(companyRepository.findOne(-1L));
   }
 
+  @Test(expected = InvalidDataAccessApiUsageException.class)
+  public void getByIdNull() {
+    assertNull(companyRepository.findOne(null));
+  }
+
   /*
    * Tests of the getAll function
    */
@@ -86,14 +92,21 @@ public class CompanyRepositoryTest {
    * Tests of the remove function
    */
   @Test
-  public void remove() {
+  public void removeById() {
     companyRepository.delete(2L);
     assertNull(companyRepository.findOne(2L));
   }
 
   @Test(expected = EmptyResultDataAccessException.class)
-  public void removeInvalidId() {
+  public void removeByIdInvalid() {
     companyRepository.delete(-1L);
+    assertEquals(list, companyRepository.findAll());
+  }
+
+  @Test(expected = InvalidDataAccessApiUsageException.class)
+  public void removeByIdNull() {
+    Long id = null;
+    companyRepository.delete(id);
     assertEquals(list, companyRepository.findAll());
   }
 
