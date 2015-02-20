@@ -16,7 +16,7 @@ import com.excilys.computerdatabase.webservice.IComputerWebService;
 *
 * @author Jeremy SCARELLA
 */
-public class InputManagerCLI {
+public class InputManagerCLIClient {
 
   /*
    * Scanner sc : get the user input
@@ -43,11 +43,11 @@ public class InputManagerCLI {
   /**
    * Instance of OuputManagerCLI
    */
-  private OutputManagerCLI               outputManagerCLI;
+  private OutputManagerCLIClient               outputManagerCLIClient;
 
-  public InputManagerCLI(final ClassPathXmlApplicationContext context) {
+  public InputManagerCLIClient(final ClassPathXmlApplicationContext context) {
     sc = new Scanner(System.in);
-    outputManagerCLI = new OutputManagerCLI(context);
+    outputManagerCLIClient = new OutputManagerCLIClient(context);
     computerWebService = (IComputerWebService) context.getBean(IComputerWebService.class);
     companyWebService = (ICompanyWebService) context.getBean(ICompanyWebService.class);
   }
@@ -63,22 +63,22 @@ public class InputManagerCLI {
     userInput = sc.nextLine().trim().toLowerCase();
     switch (userInput) {
       case "computers":
-        outputManagerCLI.showComputerList();
+        outputManagerCLIClient.showComputerList();
         break;
       case "ls computers":
-        outputManagerCLI.showComputerList();
+        outputManagerCLIClient.showComputerList();
         break;
       case "1":
-        outputManagerCLI.showComputerList();
+        outputManagerCLIClient.showComputerList();
         break;
       case "companies":
-        outputManagerCLI.showCompanyList();
+        outputManagerCLIClient.showCompanyList();
         break;
       case "ls companies":
-        outputManagerCLI.showCompanyList();
+        outputManagerCLIClient.showCompanyList();
         break;
       case "2":
-        outputManagerCLI.showCompanyList();
+        outputManagerCLIClient.showCompanyList();
         break;
       default:
         System.out.println("Non valid command.\r\n-> ls command aborted");
@@ -96,13 +96,13 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> show command aborted");
         return;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
 
-          outputManagerCLI.showComputer(userInput);
+          outputManagerCLIClient.showComputer(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");
@@ -129,8 +129,14 @@ public class InputManagerCLI {
         System.out.println("-> add command aborted");
         return;
       } else {
-        builder.name(userInput);
-        break;
+        if (!StringValidator.isValidName(userInput)) {
+          System.out
+              .println("Non valid name (cannot be empty or set to 'null' or have its length > 255 characters)");
+          continue;
+        } else {
+          builder.name(userInput);
+          break;
+        }
       }
     }
 
@@ -141,8 +147,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -163,8 +168,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -185,8 +189,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
@@ -203,7 +206,7 @@ public class InputManagerCLI {
         }
       }
     }
-    outputManagerCLI.showAddResult(builder.build());
+    outputManagerCLIClient.showAddResult(builder.build());
   }
 
   /**
@@ -219,8 +222,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> update command aborted");
         return;
       } else {
@@ -245,8 +247,9 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (StringValidator.isEmpty(userInput) || "null".equals(userInput)) {
-        System.out.println("Non valid name (cannot be empty or set to 'null')");
+      if (!StringValidator.isValidName(userInput)) {
+        System.out
+            .println("Non valid name (cannot be empty or set to 'null' or have its length > 255 characters)");
         continue;
       } else {
         builder.name(userInput);
@@ -261,8 +264,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -283,8 +285,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -305,8 +306,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
@@ -323,7 +323,7 @@ public class InputManagerCLI {
         }
       }
     }
-    outputManagerCLI.showUpdateResult(builder.build());
+    outputManagerCLIClient.showUpdateResult(builder.build());
   }
 
   /**
@@ -370,12 +370,12 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> remove computer command aborted");
         return;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
-          outputManagerCLI.showRemoveComputerResult(userInput);
+          outputManagerCLIClient.showRemoveComputerResult(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");
@@ -395,12 +395,12 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> remove company command aborted");
         return;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
-          outputManagerCLI.showRemoveCompanyResult(userInput);
+          outputManagerCLIClient.showRemoveCompanyResult(userInput);
           break;
         } else {
           System.out.println("Please, enter a new valid id:");

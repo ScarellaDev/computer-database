@@ -30,7 +30,7 @@ public class ComputerDtoConverter {
     if (computerDto.getId() >= 0) {
       builder.id(computerDto.getId());
     }
-    if (!StringValidator.isEmpty(computerDto.getName())) {
+    if (StringValidator.isValidName(computerDto.getName())) {
       builder.name(computerDto.getName());
     }
     if (StringValidator.isDate(computerDto.getIntroduced(), dateFormat)) {
@@ -79,10 +79,10 @@ public class ComputerDtoConverter {
     }
 
     final ComputerDto.Builder builder = ComputerDto.builder();
-    if (computer.getId() != null) {
+    if (computer.getId() != null && computer.getId() >= 0) {
       builder.id(computer.getId());
     }
-    if (computer.getName() != null) {
+    if (computer.getName() != null && StringValidator.isValidName(computer.getName())) {
       builder.name(computer.getName());
     }
     if (computer.getIntroduced() != null

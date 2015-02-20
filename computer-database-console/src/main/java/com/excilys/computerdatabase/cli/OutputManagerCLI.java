@@ -99,7 +99,7 @@ public class OutputManagerCLI {
         userInput = null;
 
         userInput = sc.nextLine().trim().toLowerCase();
-        if (userInput == null || userInput.isEmpty() || "".equals(userInput)) {
+        if (StringValidator.isEmpty(userInput)) {
           if (page.hasNext()) {
             page = computerService.getPagedList("", page.nextPageable());
             System.out.println("Page " + (page.getNumber() + 1) + " out of "
@@ -274,7 +274,7 @@ public class OutputManagerCLI {
         userInput = null;
 
         userInput = sc.nextLine().trim().toLowerCase();
-        if (userInput.isEmpty() || "".equals(userInput)) {
+        if (StringValidator.isEmpty(userInput)) {
           if (page.hasNext()) {
             page = companyService.getPagedList(page.nextPageable());
             System.out.println("Page " + (page.getNumber() + 1) + " out of "

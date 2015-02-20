@@ -9,7 +9,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 *
 * @author Jeremy SCARELLA
 */
-public class CommandLineInterface {
+public class CommandLineInterfaceClient {
   /*
    * Scanner mainSc : get the user input
    * String mainUserInput : save the user input
@@ -23,9 +23,9 @@ public class CommandLineInterface {
   public void start() {
     final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
         "console-client-context.xml");
-    final InputManagerCLI inputManagerCLI = new InputManagerCLI(context);
-    final OutputManagerCLI outputManagerCLI = new OutputManagerCLI(context);
-    outputManagerCLI.showMenu();
+    final InputManagerCLIClient inputManagerCLIClient = new InputManagerCLIClient(context);
+    final OutputManagerCLIClient outputManagerCLIClient = new OutputManagerCLIClient(context);
+    outputManagerCLIClient.showMenu();
     while (true) {
       mainUserInput = null;
       mainSc = new Scanner(System.in);
@@ -34,42 +34,42 @@ public class CommandLineInterface {
       if (mainUserInput.toLowerCase().startsWith("ls ")) {
         mainUserInput = mainUserInput.substring(3);
         if (mainUserInput.equals("computers")) {
-          outputManagerCLI.showComputerList();
+          outputManagerCLIClient.showComputerList();
         } else if (mainUserInput.equals("companies")) {
-          outputManagerCLI.showCompanyList();
+          outputManagerCLIClient.showCompanyList();
         } else {
           System.out.println("Non valid command. Please, try again.\r\n");
         }
       } else if (mainUserInput.toLowerCase().startsWith("3 ")) {
         mainUserInput = mainUserInput.substring(2);
-        outputManagerCLI.showComputer(mainUserInput);
+        outputManagerCLIClient.showComputer(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("show ")) {
         mainUserInput = mainUserInput.substring(5);
-        outputManagerCLI.showComputer(mainUserInput);
+        outputManagerCLIClient.showComputer(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("4 ")) {
         mainUserInput = mainUserInput.substring(2);
-        outputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
+        outputManagerCLIClient.showAddResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("add ")) {
         mainUserInput = mainUserInput.substring(4);
-        outputManagerCLI.showAddResult(mainUserInput.split("\\s+"));
+        outputManagerCLIClient.showAddResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("5 ")) {
         mainUserInput = mainUserInput.substring(2);
-        outputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
+        outputManagerCLIClient.showUpdateResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("update ")) {
         mainUserInput = mainUserInput.substring(7);
-        outputManagerCLI.showUpdateResult(mainUserInput.split("\\s+"));
+        outputManagerCLIClient.showUpdateResult(mainUserInput.split("\\s+"));
       } else if (mainUserInput.toLowerCase().startsWith("6 ")) {
         mainUserInput = mainUserInput.substring(2);
-        outputManagerCLI.showRemoveComputerResult(mainUserInput);
+        outputManagerCLIClient.showRemoveComputerResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("remove computer ")) {
         mainUserInput = mainUserInput.substring(16);
-        outputManagerCLI.showRemoveComputerResult(mainUserInput);
+        outputManagerCLIClient.showRemoveComputerResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("7 ")) {
         mainUserInput = mainUserInput.substring(2);
-        outputManagerCLI.showRemoveCompanyResult(mainUserInput);
+        outputManagerCLIClient.showRemoveCompanyResult(mainUserInput);
       } else if (mainUserInput.toLowerCase().startsWith("remove company ")) {
         mainUserInput = mainUserInput.substring(15);
-        outputManagerCLI.showRemoveCompanyResult(mainUserInput);
+        outputManagerCLIClient.showRemoveCompanyResult(mainUserInput);
       } else {
         Boolean help = false;
         if (mainUserInput.toLowerCase().startsWith("help ")) {
@@ -79,68 +79,68 @@ public class CommandLineInterface {
         switch (mainUserInput) {
           case "0":
             if (help) {
-              outputManagerCLI.showHelp(0);
+              outputManagerCLIClient.showHelp(0);
             } else {
-              outputManagerCLI.showMenu();
+              outputManagerCLIClient.showMenu();
             }
             break;
           case "1":
             if (help) {
-              outputManagerCLI.showHelp(1);
+              outputManagerCLIClient.showHelp(1);
             } else {
-              outputManagerCLI.showComputerList();
+              outputManagerCLIClient.showComputerList();
             }
             break;
           case "2":
             if (help) {
-              outputManagerCLI.showHelp(2);
+              outputManagerCLIClient.showHelp(2);
             } else {
-              outputManagerCLI.showCompanyList();
+              outputManagerCLIClient.showCompanyList();
             }
             break;
           case "3":
             if (help) {
-              outputManagerCLI.showHelp(3);
+              outputManagerCLIClient.showHelp(3);
             } else {
-              inputManagerCLI.askParamsShow();
+              inputManagerCLIClient.askParamsShow();
             }
             break;
           case "4":
             if (help) {
-              outputManagerCLI.showHelp(4);
+              outputManagerCLIClient.showHelp(4);
             } else {
-              inputManagerCLI.askParamsAdd();
+              inputManagerCLIClient.askParamsAdd();
             }
             break;
           case "5":
             if (help) {
-              outputManagerCLI.showHelp(5);
+              outputManagerCLIClient.showHelp(5);
             } else {
-              inputManagerCLI.askParamsUpdate();
+              inputManagerCLIClient.askParamsUpdate();
             }
             break;
           case "6":
             if (help) {
-              outputManagerCLI.showHelp(6);
+              outputManagerCLIClient.showHelp(6);
             } else {
-              inputManagerCLI.askParamsRemoveComputer();
+              inputManagerCLIClient.askParamsRemoveComputer();
             }
             break;
           case "7":
             if (help) {
-              outputManagerCLI.showHelp(7);
+              outputManagerCLIClient.showHelp(7);
             } else {
-              inputManagerCLI.askParamsRemoveCompany();
+              inputManagerCLIClient.askParamsRemoveCompany();
             }
             break;
           case "menu":
-            outputManagerCLI.showHelp(8);
+            outputManagerCLIClient.showHelp(8);
             break;
           case "ls":
             if (help) {
-              outputManagerCLI.showHelp(9);
+              outputManagerCLIClient.showHelp(9);
             } else {
-              inputManagerCLI.askParamsLs();
+              inputManagerCLIClient.askParamsLs();
             }
             break;
           case "computers":
@@ -151,30 +151,30 @@ public class CommandLineInterface {
             break;
           case "show":
             if (help) {
-              outputManagerCLI.showHelp(10);
+              outputManagerCLIClient.showHelp(10);
             } else {
-              inputManagerCLI.askParamsShow();
+              inputManagerCLIClient.askParamsShow();
             }
             break;
           case "add":
             if (help) {
-              outputManagerCLI.showHelp(11);
+              outputManagerCLIClient.showHelp(11);
             } else {
-              inputManagerCLI.askParamsAdd();
+              inputManagerCLIClient.askParamsAdd();
             }
             break;
           case "update":
             if (help) {
-              outputManagerCLI.showHelp(12);
+              outputManagerCLIClient.showHelp(12);
             } else {
-              inputManagerCLI.askParamsUpdate();
+              inputManagerCLIClient.askParamsUpdate();
             }
             break;
           case "remove":
             if (help) {
-              outputManagerCLI.showHelp(13);
+              outputManagerCLIClient.showHelp(13);
             } else {
-              inputManagerCLI.askParamsRemove();
+              inputManagerCLIClient.askParamsRemove();
             }
             break;
           case "q":

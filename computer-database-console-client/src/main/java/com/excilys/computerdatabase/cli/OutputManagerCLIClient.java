@@ -24,7 +24,7 @@ import com.excilys.computerdatabase.webservice.IComputerWebService;
 *
 * @author Jeremy SCARELLA
 */
-public class OutputManagerCLI {
+public class OutputManagerCLIClient {
 
   /*
    * Scanner sc : get the user input
@@ -43,7 +43,7 @@ public class OutputManagerCLI {
   */
   private ICompanyWebService  companyWebService;
 
-  public OutputManagerCLI(final ClassPathXmlApplicationContext context) {
+  public OutputManagerCLIClient(final ClassPathXmlApplicationContext context) {
     sc = new Scanner(System.in);
     computerWebService = (IComputerWebService) context.getBean(IComputerWebService.class);
     companyWebService = (ICompanyWebService) context.getBean(ICompanyWebService.class);
@@ -98,7 +98,7 @@ public class OutputManagerCLI {
   //        userInput = null;
   //
   //        userInput = sc.nextLine().trim().toLowerCase();
-  //        if (userInput == null || userInput.isEmpty() || "".equals(userInput)) {
+  //        if (StringValidator.isEmpty(userInput)) {
   //          if (page.hasNext()) {
   //            page = computerWebService.getPagedList("", page.nextPageable());
   //            System.out.println("Page " + (page.getNumber() + 1) + " out of "
@@ -273,7 +273,7 @@ public class OutputManagerCLI {
   //        userInput = null;
   //
   //        userInput = sc.nextLine().trim().toLowerCase();
-  //        if (userInput.isEmpty() || "".equals(userInput)) {
+  //        if (StringValidator.isEmpty(userInput)) {
   //          if (page.hasNext()) {
   //            page = companyWebService.getPagedList(page.nextPageable());
   //            System.out.println("Page " + (page.getNumber() + 1) + " out of "

@@ -87,7 +87,8 @@ public class ComputerService implements IComputerService {
   @Override
   public Computer addByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - ADD BY COMPUTER");
-    if (computer != null && !StringValidator.isEmpty(computer.getName())) {
+    if (computer != null && computer.getName() != null
+        && StringValidator.isValidName(computer.getName())) {
       Computer addedComputer = computerRepository.save(computer);
       if (computerRepository.exists(addedComputer.getId())) {
         return computerRepository.findOne(addedComputer.getId());
@@ -99,13 +100,15 @@ public class ComputerService implements IComputerService {
 
   /**
    * Update a computer in the database using a Computer instance.
-   * @param computer: instance of the computer that needs to be added to the database. Must have an id at least. 
+   * @param computer: instance of the computer that needs to be added to the database. Must have an id and a name at least. 
    * @return An instance of the computer that was updated in the database or null if the UPDATE did not work.
    */
   @Override
   public Computer updateByComputer(final Computer computer) {
     LOGGER.debug("ComputerService - UPDATE BY COMPUTER");
-    if (computer != null && computerRepository.exists(computer.getId())) {
+    if (computer != null && computer.getId() != null && computer.getName() != null
+        && StringValidator.isValidName(computer.getName())
+        && computerRepository.exists(computer.getId())) {
       computerRepository.save(computer);
       return computerRepository.findOne(computer.getId());
     } else {

@@ -47,7 +47,7 @@ public class ComputerDtoValidator implements Validator {
       errors.rejectValue("id", "error-computer-id");
     }
 
-    if (StringValidator.isEmpty(computerDto.getName())) {
+    if (!StringValidator.isValidName(computerDto.getName())) {
       errors.rejectValue("name", "error-computer-name");
     }
 
@@ -77,8 +77,9 @@ public class ComputerDtoValidator implements Validator {
       errorMap.put("eId", "Incorrect id: must be a strictly positive integer");
     }
 
-    if (StringValidator.isEmpty(computerDto.getName())) {
-      errorMap.put("eName", "Incorrect name: can't be empty or only spaces");
+    if (!StringValidator.isValidName(computerDto.getName())) {
+      errorMap.put("eName",
+          "Incorrect name: can't be empty or only spaces or have its length > 255 characters");
     }
 
     if (!StringValidator.isEmpty(computerDto.getIntroduced())) {

@@ -1,6 +1,6 @@
 package com.excilys.computerdatabase;
 
-import com.excilys.computerdatabase.cli.CommandLineInterface;
+import com.excilys.computerdatabase.cli.CommandLineInterfaceClient;
 
 /**
 * Program's entry point
@@ -9,7 +9,7 @@ import com.excilys.computerdatabase.cli.CommandLineInterface;
 */
 public class MainConsoleClient {
   public static void main(final String[] args) {
-    final CommandLineInterface cli = new CommandLineInterface();
+    final CommandLineInterfaceClient cli = new CommandLineInterfaceClient();
     cli.start();
   }
 }

@@ -96,7 +96,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> show command aborted");
         return;
       } else {
@@ -129,8 +129,14 @@ public class InputManagerCLI {
         System.out.println("-> add command aborted");
         return;
       } else {
-        builder.name(userInput);
-        break;
+        if (!StringValidator.isValidName(userInput)) {
+          System.out
+              .println("Non valid name (cannot be empty or set to 'null' or have its length > 255 characters)");
+          continue;
+        } else {
+          builder.name(userInput);
+          break;
+        }
       }
     }
 
@@ -141,8 +147,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -163,8 +168,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -185,8 +189,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
@@ -219,8 +222,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> update command aborted");
         return;
       } else {
@@ -245,8 +247,9 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (StringValidator.isEmpty(userInput) || "null".equals(userInput)) {
-        System.out.println("Non valid name (cannot be empty or set to 'null')");
+      if (!StringValidator.isValidName(userInput)) {
+        System.out
+            .println("Non valid name (cannot be empty or set to 'null' or have its length > 255 characters)");
         continue;
       } else {
         builder.name(userInput);
@@ -261,8 +264,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -283,8 +285,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isDate(userInput, "yyyy-MM-dd")) {
@@ -305,8 +306,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || "".equals(userInput)
-          || "null".equals(userInput)) {
+      if (StringValidator.isEmpty(userInput)) {
         break;
       } else {
         if (StringValidator.isPositiveLong(userInput)) {
@@ -370,7 +370,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> remove computer command aborted");
         return;
       } else {
@@ -395,7 +395,7 @@ public class InputManagerCLI {
       userInput = null;
 
       userInput = sc.nextLine().trim().toLowerCase();
-      if (userInput.isEmpty() || userInput == null || userInput.equals("")) {
+      if (StringValidator.isEmpty(userInput)) {
         System.out.println("-> remove company command aborted");
         return;
       } else {

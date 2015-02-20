@@ -59,10 +59,10 @@ public final class StringValidator {
   }
 
   /**
-  * Checks if a String is empty
-  * @param str : string to check
-  * @return true if it  is empty
-  */
+   * Checks if a String is empty
+   * @param str : string to check
+   * @return true if it  is empty
+   */
   public static boolean isEmpty(final String str) {
     if (!StringUtils.isNotBlank(str)) {
       return true;
@@ -71,6 +71,24 @@ public final class StringValidator {
       return true;
     }
     return false;
+  }
+
+  /**
+  * Checks if a String is a valid name
+  * @param str : string to check
+  * @return true if it  is valid
+  */
+  public static boolean isValidName(final String str) {
+    if (!StringUtils.isNotBlank(str)) {
+      return false;
+    }
+    if ("null".equals(str.trim().toLowerCase())) {
+      return false;
+    }
+    if (str.length() >= 255) {
+      return false;
+    }
+    return true;
   }
 
   /**
