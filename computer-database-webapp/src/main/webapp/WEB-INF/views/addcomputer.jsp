@@ -23,21 +23,21 @@
                     <form:form id="form" action="addcomputer" method="POST" commandName="computerDto">
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName"><spring:message code="computer-name"/></label>
+                                <label for="name"><spring:message code="computer-name"/></label>
                     			<spring:message code="computer-name" var="placeholdername"/>
                             	<form:input path="name" type="text" class="form-control" id="name" placeholder="${placeholdername}" required="required"/>
-                            	<form:errors path="name" cssClass="error"/>
+                            	<form:errors id="eName" path="name" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="computer-introduced"/></label>
                                 <spring:message code="date-placeholder" var="placeholderdate"/>
                                 <form:input path="introduced" type="date" class="form-control" id="introduced" placeholder="${placeholderdate}"/>
-                            	<form:errors path="introduced" cssClass="error"/>
+                            	<form:errors id="eIntroduced" path="introduced" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="computer-discontinued"/></label>
                                 <form:input path="discontinued" class="form-control" id="discontinued" placeholder="${placeholderdate}"/>
-                            	<form:errors path="discontinued" cssClass="error"/>
+                            	<form:errors id="eDiscontinued" path="discontinued" cssClass="error"/>
                             </div>
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="computer-company"/></label>
@@ -47,11 +47,11 @@
                                    	<option value="${company.id}"><c:out value="${company.name}"/></option>
                                    	</c:forEach>
                                 </form:select>
-                                <form:errors path="companyId" cssClass="error"/>
+                                <form:errors id="eCompanyId" path="companyId" cssClass="error"/>
                             </div>                  
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="<spring:message code="button-add"/>" class="btn btn-primary">
+                            <input id ="submit" type="submit" value="<spring:message code="button-add"/>" class="btn btn-primary">
                             <spring:message code="text-or"/>
                             <a href="dashboard" class="btn btn-default"><spring:message code="button-cancel"/></a>
                         </div>

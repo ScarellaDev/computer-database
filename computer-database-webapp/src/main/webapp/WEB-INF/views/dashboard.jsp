@@ -39,8 +39,8 @@
 		</form>
 		
 		<div class="container" style="margin-top: 10px;">
-			<c:if test="${not empty message}"><div class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
-			<c:if test="${not empty errormessage}"><div class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
+			<c:if test="${not empty message}"><div id="message" class="alert alert-success text-center"><c:out value="${message}"/></div></c:if>
+			<c:if test="${not empty errormessage}"><div id="errormessage" class="alert alert-danger text-center"><c:out value="${errormessage}"/></div></c:if>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
